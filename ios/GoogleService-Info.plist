@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>698452890369-ljif0ka378ss5i64bbgsg8mt0ilci5bg.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.698452890369-ljif0ka378ss5i64bbgsg8mt0ilci5bg</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>698452890369-2qjd50o4mgtts2mj27h3ct9j6r7eij1v.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAOLv0rhA2mi5ZWlVhbVtlPStxgl69n5cc</string>
+	<key>GCM_SENDER_ID</key>
+	<string>698452890369</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.polymathe.mywine</string>
+	<key>PROJECT_ID</key>
+	<string>mywine-9221a</string>
+	<key>STORAGE_BUCKET</key>
+	<string>mywine-9221a.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:698452890369:ios:1f8ead146eafb60120c100</string>
+	<key>DATABASE_URL</key>
+	<string>https://mywine-9221a.firebaseio.com</string>
+</dict>
+</plist>
