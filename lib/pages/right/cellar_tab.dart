@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:mywine/pages/right/shelf_right.dart';
 import 'package:mywine/shelf.dart';
 import 'package:provider/provider.dart';
+import 'package:sqlbrite/sqlbrite.dart';
 
 class CellarTab extends StatefulWidget {
   const CellarTab({Key? key}) : super(key: key);
@@ -37,40 +38,35 @@ class _CellarTabState extends State<CellarTab> {
   }
 
   Widget _drawCellar({required List<Cellar> snapshot}) {
-    // if (snapshot.connectionState == ConnectionState.done) {
     return Container(
       child: Column(
         children: snapshot
             .map(
               (cellar) => Column(
                 children: [
-                  Text(cellar.name),
-                  // ScrollConfiguration(
-                  //   behavior: ScrollBehavior(),
-                  //   child: SingleChildScrollView(
-                  //     scrollDirection: Axis.horizontal,
-                  //     child: Padding(
-                  //       padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-                  //       child: DrawCellar(cellarId: cellar.id),
-                  //     ),
-                  //   ),
-                  // ),
+                  ScrollConfiguration(
+                    behavior: ScrollBehavior(),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                        child: DrawCellar(cellarId: cellar.id),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             )
             .toList(),
       ),
     );
-    // }
-
-    // return Container(
-    //   height: 10,
-    // );
   }
 
   @override
   Widget build(BuildContext context) {
     final cellars = Provider.of<List<Cellar>>(context);
+
+    BriteDatabase briteDb = Provider.of<BriteDatabase>(context, listen: false);
 
     return MainContainer(
       title: "Mes caves",
@@ -98,7 +94,20 @@ class _CellarTabState extends State<CellarTab> {
               color: Colors.red,
               child: InkWell(
                 child: Text("Go to"),
-                onTap: () => Navigator.pushNamed(context, "/second"),
+                // onTap: () => Navigator.pushNamed(context, "/second"),
+                onTap: () async {
+                  await briteDb.insert(
+                    'wine',
+                    Wine(
+                      id: "2id",
+                      appellation: "appellation",
+                      createdAt: 2,
+                      editedAt: 2,
+                      enabled: true,
+                    ).toJson(),
+                  );
+                  // print(await briteDb.query("wine"));
+                },
               ),
             ),
           ],

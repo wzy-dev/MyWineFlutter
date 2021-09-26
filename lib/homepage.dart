@@ -27,7 +27,7 @@ class _HomepageState extends State<Homepage> {
       _tabHistory.removeWhere((pageIndex) => pageIndex == index);
       _tabHistory.insert(0, index);
       if (_tabHistory.length > 3) _tabHistory.removeLast();
-      print(_tabHistory);
+
       setState(() => _selectedIndex = index);
     }
   }
@@ -36,15 +36,12 @@ class _HomepageState extends State<Homepage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        bool test = !await Navigator.maybePop(
+        bool canPop = !await Navigator.maybePop(
             _navigatorKeys[_selectedIndex]!.currentState!.context);
-        print(test);
-        if (test) {
-          print(_tabHistory.length);
-          if (_tabHistory.length == 1) {
-            print('pop');
-            return true;
-          }
+
+        if (canPop) {
+          if (_tabHistory.length == 1) return true;
+
           setState(() => _selectedIndex = _tabHistory[1]);
           _tabHistory.removeAt(0);
         }

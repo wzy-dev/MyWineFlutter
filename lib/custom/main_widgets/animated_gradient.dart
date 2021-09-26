@@ -23,8 +23,8 @@ class _AnimatedGradientState extends State<AnimatedGradient> {
   late Color bottomColor;
   late Color topColor;
 
-  Alignment begin = Alignment.topRight;
-  Alignment end = Alignment.bottomLeft;
+  Alignment begin = Alignment.bottomRight;
+  Alignment end = Alignment.topLeft;
 
   @override
   void initState() {
@@ -32,9 +32,9 @@ class _AnimatedGradientState extends State<AnimatedGradient> {
     topColor = colorList[1];
 
     WidgetsBinding.instance!.addPostFrameCallback((_) {
-      setState(() {
-        bottomColor = colorList[3];
-      });
+      // setState(() {
+      //   bottomColor = colorList[3];
+      // });
     });
 
     super.initState();

@@ -4,12 +4,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mywine/shelf.dart';
-import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-
-// This is our global ServiceLocator
-GetIt getIt = GetIt.instance;
+import 'package:sqflite/sqflite.dart';
+import 'package:sqflite/utils/utils.dart';
+import 'package:sqlbrite/sqlbrite.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,17 +32,58 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+  late Future _db;
+  late BriteDatabase _briteDb;
 
-  Stream<List<Cellar>> streamOfCellars() {
-    var ref = FirebaseFirestore.instance.collection('test');
-    return ref.snapshots().map(
-        (list) => list.docs.map((doc) => Cellar.fromFirestore(doc)).toList());
+  @override
+  void initState() {
+    _db = _initDb();
+    super.initState();
+  }
+
+  Future<bool> tableExists(DatabaseExecutor db, String table) async {
+    int count = firstIntValue(await db.query('sqlite_master',
+            columns: ['COUNT(*)'],
+            where: 'type = ? AND name = ?',
+            whereArgs: ['table', table])) ??
+        0;
+    return count > 0;
+  }
+
+  Future _initDb() async {
+    final db = await openDatabase('mywine_db.db');
+
+    await db.execute("DROP TABLE IF EXISTS last_update");
+    await db.execute("DROP TABLE IF EXISTS cellars");
+    await db.execute("DROP TABLE IF EXISTS wines");
+
+    if (!await tableExists(db, "wines")) {
+      // Create a table
+      await db.execute(
+          'CREATE TABLE wines (id STRING PRIMARY KEY, createdAt INTEGER, editedAt INTEGER, enabled INTEGER, appellation STRING)');
+    }
+
+    if (!await tableExists(db, "cellars")) {
+      // Create a table
+      await db.execute(
+          'CREATE TABLE cellars (id STRING PRIMARY KEY, createdAt INTEGER, editedAt INTEGER, enabled INTEGER, name STRING)');
+    }
+
+    if (!await tableExists(db, "last_update")) {
+      // Create a table
+      await db.execute(
+          'CREATE TABLE last_update (id INTEGER PRIMARY KEY AUTOINCREMENT, tableName STRING, datetime INTEGER)');
+      db.insert("last_update", {"tableName": "wines", "datetime": 0});
+      db.insert("last_update", {"tableName": "cellars", "datetime": 0});
+    }
+
+    _briteDb = BriteDatabase(db);
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: _initialization,
+        future: Future.wait([_initialization, _db]),
         builder: (BuildContext context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done)
             return Center(
@@ -56,12 +95,7 @@ class _MyAppState extends State<MyApp> {
               email: "mumu17100@gmail.com", password: "mumumumu17.");
 
           return MultiProvider(
-            providers: [
-              StreamProvider<List<Cellar>>(
-                create: (_) => streamOfCellars(),
-                initialData: [],
-              ),
-            ],
+            providers: CustomProvider.generateProvidersList(briteDb: _briteDb),
             child: MaterialApp(
               title: 'MyWine',
               initialRoute: '/',
@@ -107,8 +141,6 @@ class _MyAppState extends State<MyApp> {
 
                 // Navigation
                 appBarTheme: AppBarTheme(
-                  // backwardsCompatibility: false,
-                  // brightness: Brightness.dark,
                   backgroundColor: Color.fromRGBO(219, 84, 97, 1),
                   centerTitle: false,
                   titleTextStyle: TextStyle(

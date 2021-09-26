@@ -10,6 +10,9 @@ export 'custom/main_widgets/search_bar.dart';
 export 'custom/main_widgets/shadow_box.dart';
 export 'custom/main_widgets/animated_gradient.dart';
 
+// Methods
+export 'custom/methods/custom_methods.dart';
+
 // Navigators
 export 'navigators/root_navigator.dart';
 export 'navigators/left_navigator.dart';
@@ -18,7 +21,12 @@ export 'navigators/right_navigator.dart';
 
 // Database
 export 'database.dart';
-export 'models/cellar.dart';
+export 'models/provider.dart';
+export 'models/cellar/cellar.dart';
+export 'models/block/block.dart';
+export 'models/position/position.dart';
+export 'models/wine/wine.dart';
+export 'models/appellation/appellation.dart';
 
 // Pages //
 

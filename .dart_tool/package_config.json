@@ -380,6 +380,18 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "rxdart",
+      "rootUri": "file:///Users/simonwegrzyn/Flutter/.pub-cache/hosted/pub.dartlang.org/rxdart-0.27.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "rxdart_ext",
+      "rootUri": "file:///Users/simonwegrzyn/Flutter/.pub-cache/hosted/pub.dartlang.org/rxdart_ext-0.1.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "shelf",
       "rootUri": "file:///Users/simonwegrzyn/Flutter/.pub-cache/hosted/pub.dartlang.org/shelf-1.2.0",
       "packageUri": "lib/",
@@ -416,6 +428,24 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "sqflite",
+      "rootUri": "file:///Users/simonwegrzyn/Flutter/.pub-cache/hosted/pub.dartlang.org/sqflite-2.0.0+4",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "sqflite_common",
+      "rootUri": "file:///Users/simonwegrzyn/Flutter/.pub-cache/hosted/pub.dartlang.org/sqflite_common-2.0.1+1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "sqlbrite",
+      "rootUri": "file:///Users/simonwegrzyn/Flutter/.pub-cache/hosted/pub.dartlang.org/sqlbrite-2.2.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.14"
+    },
+    {
       "name": "stack_trace",
       "rootUri": "file:///Users/simonwegrzyn/Flutter/.pub-cache/hosted/pub.dartlang.org/stack_trace-1.10.0",
       "packageUri": "lib/",
@@ -436,6 +466,12 @@
     {
       "name": "string_scanner",
       "rootUri": "file:///Users/simonwegrzyn/Flutter/.pub-cache/hosted/pub.dartlang.org/string_scanner-1.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "synchronized",
+      "rootUri": "file:///Users/simonwegrzyn/Flutter/.pub-cache/hosted/pub.dartlang.org/synchronized-3.0.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -494,7 +530,7 @@
       "languageVersion": "2.12"
     }
   ],
-  "generated": "2021-09-21T21:10:32.623614Z",
+  "generated": "2021-09-26T14:48:39.656626Z",
   "generator": "pub",
   "generatorVersion": "2.14.2"
 }
