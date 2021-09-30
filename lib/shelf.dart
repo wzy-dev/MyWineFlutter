@@ -43,3 +43,4 @@ export 'pages/middle/add_tab.dart';
 
 // Right
 export 'pages/right/cellar_tab.dart';
+export 'pages/right/block_tab.dart';

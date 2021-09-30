@@ -12,6 +12,7 @@ Wine _$WineFromJson(Map<String, dynamic> json) => Wine(
       editedAt: json['editedAt'] as int,
       enabled: json['enabled'] as bool? ?? false,
       appellation: json['appellation'] as String,
+      quantity: json['quantity'] as int,
     );
 
 Map<String, dynamic> _$WineToJson(Wine instance) => <String, dynamic>{
@@ -20,4 +21,5 @@ Map<String, dynamic> _$WineToJson(Wine instance) => <String, dynamic>{
       'editedAt': instance.editedAt,
       'enabled': instance.enabled,
       'appellation': instance.appellation,
+      'quantity': instance.quantity,
     };

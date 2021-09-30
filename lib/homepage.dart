@@ -17,7 +17,7 @@ class _HomepageState extends State<Homepage> {
     2: GlobalKey<NavigatorState>(),
   };
 
-  int _selectedIndex = 0;
+  int _selectedIndex = 2;
 
   void _onItemTapped(int index) {
     if (index == _selectedIndex) {

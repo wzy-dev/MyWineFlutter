@@ -12,6 +12,7 @@ Appellation _$AppellationFromJson(Map<String, dynamic> json) => Appellation(
       editedAt: json['editedAt'] as int,
       enabled: json['enabled'] as bool? ?? false,
       color: json['color'] as String,
+      name: json['name'] as String,
     );
 
 Map<String, dynamic> _$AppellationToJson(Appellation instance) =>
@@ -21,4 +22,5 @@ Map<String, dynamic> _$AppellationToJson(Appellation instance) =>
       'editedAt': instance.editedAt,
       'enabled': instance.enabled,
       'color': instance.color,
+      'name': instance.name,
     };

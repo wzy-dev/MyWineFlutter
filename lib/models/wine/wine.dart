@@ -14,14 +14,15 @@ class Wine {
 
   // Custom
   String appellation;
+  int quantity;
 
-  Wine({
-    required this.id,
-    required this.createdAt,
-    required this.editedAt,
-    this.enabled = false,
-    required this.appellation,
-  });
+  Wine(
+      {required this.id,
+      required this.createdAt,
+      required this.editedAt,
+      this.enabled = false,
+      required this.appellation,
+      required this.quantity});
 
   factory Wine.fromJson(Map<String, dynamic> json) {
     Map<String, dynamic> jsonCopy = Map.of(json);

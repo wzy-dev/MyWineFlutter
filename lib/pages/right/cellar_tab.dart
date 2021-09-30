@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:mywine/pages/right/shelf_right.dart';
 import 'package:mywine/shelf.dart';
-import 'package:provider/provider.dart';
-import 'package:sqlbrite/sqlbrite.dart';
 
 class CellarTab extends StatefulWidget {
   const CellarTab({Key? key}) : super(key: key);
@@ -64,54 +62,120 @@ class _CellarTabState extends State<CellarTab> {
 
   @override
   Widget build(BuildContext context) {
-    final cellars = Provider.of<List<Cellar>>(context);
-
-    BriteDatabase briteDb = Provider.of<BriteDatabase>(context, listen: false);
-
     return MainContainer(
       title: "Mes caves",
-      child: Padding(
+      child: ListView(
         padding: const EdgeInsets.all(15),
-        child: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              child: ShadowBox(
-                child: _shaderMask(
-                  child: AnimatedSize(
-                    duration: Duration(milliseconds: 500),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 15, 0, 15),
-                      child: _drawCellar(
-                        snapshot: cellars,
-                      ),
+        shrinkWrap: true,
+        children: [
+          Container(
+            width: double.infinity,
+            child: ShadowBox(
+              child: _shaderMask(
+                child: AnimatedSize(
+                  duration: Duration(milliseconds: 500),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 15, 0, 15),
+                    child: _drawCellar(
+                      snapshot: MyDatabase.getCellars(context: context),
                     ),
                   ),
                 ),
               ),
             ),
-            Container(
-              color: Colors.red,
-              child: InkWell(
-                child: Text("Go to"),
-                // onTap: () => Navigator.pushNamed(context, "/second"),
-                onTap: () async {
-                  await briteDb.insert(
-                    'wine',
-                    Wine(
-                      id: "2id",
-                      appellation: "appellation",
-                      createdAt: 2,
-                      editedAt: 2,
-                      enabled: true,
-                    ).toJson(),
-                  );
-                  // print(await briteDb.query("wine"));
-                },
-              ),
-            ),
-          ],
-        ),
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          Text(
+            "${MyDatabase.countFreeWines(context: context).toString()} bouteilles en vrac"
+                .toUpperCase(),
+            style: Theme.of(context).textTheme.headline1,
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          Column(
+            children: MyDatabase.getFreeWines(context: context).map((map) {
+              Wine wine = map["wine"] as Wine;
+              int freeQuantity = map["freeQuantity"] as int;
+              Map<String, dynamic>? enhancedWine =
+                  MyDatabase.getEnhancedWineById(
+                      context: context, wineId: wine.id);
+              if (enhancedWine == null) return Container();
+
+              return Container(
+                clipBehavior: Clip.hardEdge,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(3),
+                    bottomLeft: Radius.circular(3),
+                    topRight: Radius.circular(20),
+                    bottomRight: Radius.circular(20),
+                  ),
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black38, spreadRadius: 0, blurRadius: 10),
+                  ],
+                ),
+                child: IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Container(
+                        width: 5,
+                        color: Colors.red,
+                      ),
+                      Expanded(
+                        child: Material(
+                          child: ListTile(
+                            onTap: () {},
+                            tileColor: Colors.white,
+                            title: Text(
+                              "château hennebelle".toUpperCase(),
+                              style: Theme.of(context).textTheme.headline2,
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  enhancedWine["appellation"].name,
+                                  style: Theme.of(context).textTheme.subtitle1,
+                                ),
+                                Text(
+                                  freeQuantity.toString(),
+                                  style: Theme.of(context).textTheme.headline2,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }).toList(),
+          )
+          // Container(
+          //   color: Colors.red,
+          //   child: InkWell(
+          //     child: Text("Go to"),
+          //     // onTap: () => Navigator.pushNamed(context, "/second"),
+          //     // onTap: () async {
+          //     //   Wine wine = Wine(
+          //     //     id: "2id",
+          //     //     appellation: "appellation",
+          //     //     createdAt: 2,
+          //     //     editedAt: 2,
+          //     //     enabled: true,
+          //     //   );
+          //     //   await DatabaseSelectors.addWine(context: context, wine: wine);
+          //     // },
+          //   ),
+          // ),
+        ],
       ),
     );
   }

@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import '../model_methods.dart';
+
 part 'appellation.g.dart';
 
 @JsonSerializable()
@@ -13,6 +15,7 @@ class Appellation {
 
   // Custom
   String color;
+  String name;
 
   Appellation({
     required this.id,
@@ -20,19 +23,25 @@ class Appellation {
     required this.editedAt,
     this.enabled = false,
     required this.color,
+    required this.name,
   });
 
-  factory Appellation.fromJson(Map<String, dynamic> json) =>
-      _$AppellationFromJson(json);
+  factory Appellation.fromJson(Map<String, dynamic> json) {
+    Map<String, dynamic> jsonCopy = Map.of(json);
+    jsonCopy = ModelMethods.intToBool(jsonCopy);
+    return _$AppellationFromJson(jsonCopy);
+  }
 
-  Map<dynamic, dynamic> toJson() => _$AppellationToJson(this);
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> json = _$AppellationToJson(this);
+    return ModelMethods.boolToInt(json);
+  }
 
   factory Appellation.fromFirestore(DocumentSnapshot documentSnapshot) {
     var data = documentSnapshot.data() as Map<String, dynamic>;
 
     data['id'] = documentSnapshot.reference.id;
 
-    Appellation appellation = Appellation.fromJson(data);
-    return appellation;
+    return _$AppellationFromJson(data);
   }
 }

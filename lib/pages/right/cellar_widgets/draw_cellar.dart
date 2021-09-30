@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 import 'package:mywine/pages/right/shelf_right.dart';
 import 'package:mywine/shelf.dart';
-import 'package:provider/provider.dart';
 
 class DrawCellar extends StatelessWidget {
   const DrawCellar({
@@ -18,12 +17,15 @@ class DrawCellar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final blocks = Provider.of<List<Block>>(context);
+    final blocks = MyDatabase.getBlocks(context: context);
 
-    return _drawBlock(blocks);
+    return _drawBlock(
+        context: context,
+        blocks: blocks.where((block) => block.cellar == cellarId).toList());
   }
 
-  Widget _drawBlock(List<Block> blocks) {
+  Widget _drawBlock(
+      {required BuildContext context, required List<Block> blocks}) {
     Map lineExtremity =
         CustomMethods.getExtremity(list: blocks, propertyToCompare: "y");
 
@@ -33,7 +35,7 @@ class DrawCellar extends StatelessWidget {
     List<Row> rows = [];
 
     for (var y = lineExtremity["max"]; y >= lineExtremity["min"]; y--) {
-      List<Padding> cells = [];
+      List<Widget> cells = [];
 
       for (var x = columnExtremity["min"]; x <= columnExtremity["max"]; x++) {
         Block? cell = blocks.firstWhereOrNull(
@@ -58,25 +60,43 @@ class DrawCellar extends StatelessWidget {
             ),
           );
         } else {
+          DrawBlock _drawBlock = DrawBlock(
+            blockId: cell.id,
+            nbLine: cell.nbLine,
+            nbColumn: cell.nbColumn,
+            sizeCell: sizeCell,
+          );
           cells.add(
-            Padding(
-              padding: EdgeInsets.all(marginBlock),
-              child: Container(
-                width: (nbColumnExtremity["max"] * sizeCell).toDouble(),
-                height: (nbLineExtremity["max"] * sizeCell).toDouble(),
-                child: Align(
-                  alignment: Alignment(
-                    CustomMethods.getAlignment(cell.horizontalAlignment),
-                    CustomMethods.getAlignment(cell.verticalAlignment),
-                  ),
-                  child: Container(
-                    width: cell.nbColumn.toDouble() * sizeCell,
-                    height: cell.nbLine.toDouble() * sizeCell,
-                    child: DrawBlock(
-                      blockId: cell.id,
-                      nbLine: cell.nbLine,
-                      nbColumn: cell.nbColumn,
-                      sizeCell: sizeCell,
+            Container(
+              clipBehavior: Clip.hardEdge,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
+              child: Material(
+                color: Colors.white,
+                child: InkWell(
+                  onTap: () => Navigator.pushNamed(context, "/block",
+                      arguments: ScreenArguments(_drawBlock)),
+                  child: Padding(
+                    padding: EdgeInsets.all(marginBlock),
+                    child: Container(
+                      width: (nbColumnExtremity["max"] * sizeCell).toDouble(),
+                      height: (nbLineExtremity["max"] * sizeCell).toDouble(),
+                      child: Align(
+                        alignment: Alignment(
+                          CustomMethods.getAlignment(cell.horizontalAlignment),
+                          CustomMethods.getAlignment(cell.verticalAlignment),
+                        ),
+                        child: Container(
+                          width: cell.nbColumn.toDouble() * sizeCell,
+                          height: cell.nbLine.toDouble() * sizeCell,
+                          child: Hero(
+                            transitionOnUserGestures: true,
+                            child: Material(child: _drawBlock),
+                            tag: "block${cell.id}",
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),

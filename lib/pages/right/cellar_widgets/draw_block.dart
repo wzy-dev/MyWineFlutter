@@ -51,7 +51,7 @@ class DrawBlock extends StatelessWidget {
       List<Container> cells = [];
 
       for (var x = 1; x <= nbColumn; x++) {
-        String? color = Database.getColorByPosition(
+        String? color = MyDatabase.getColorByPosition(
             context: context, x: x, y: y, block: blockId);
 
         if (color == null) {

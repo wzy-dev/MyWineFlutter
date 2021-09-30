@@ -16,10 +16,10 @@ class RightNavigator extends StatelessWidget {
     switch (route) {
       case "/":
         return CellarTab();
-      case "/second":
-        return SecondSon();
+      case "/block":
+        return BlockTab();
       default:
-        return SecondSon();
+        return CellarTab();
     }
   }
 
@@ -28,12 +28,14 @@ class RightNavigator extends StatelessWidget {
     return CustomScaffold(
       heroTag: "right",
       child: Navigator(
+        observers: [HeroController()],
         key: navigatorKey,
         initialRoute: '/',
         onGenerateRoute: (routeSettings) {
           return MaterialPageRoute(
             builder: (context) =>
                 _routeBuilders(context: context, route: routeSettings.name!),
+            settings: routeSettings,
           );
         },
       ),

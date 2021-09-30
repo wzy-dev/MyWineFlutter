@@ -5,18 +5,29 @@ import 'package:provider/provider.dart';
 import 'package:sqlbrite/sqlbrite.dart';
 
 class CustomProvider {
-  static _mapFromFirestore({required String name, required item}) {
+  static Map<String, dynamic> _mapFromFirestore(
+      {required String name, required item}) {
     switch (name) {
       case "wines":
         return Wine.fromFirestore(item).toJson();
       case "cellars":
         return Cellar.fromFirestore(item).toJson();
+      case "blocks":
+        return Block.fromFirestore(item).toJson();
+      case "positions":
+        return Position.fromFirestore(item).toJson();
+      case "appellations":
+        return Appellation.fromFirestore(item).toJson();
+      default:
+        print("Add an enter in the _mapFromFirstore function");
+        return {};
     }
   }
 
-  static void getLastUpdate({
+  static void getLastUpdateCollection({
     required String tableName,
     required BriteDatabase briteDb,
+    List<String>? whereList,
   }) {
     briteDb
         .query(
@@ -30,7 +41,51 @@ class CustomProvider {
       int datetime = DateTime.now().toUtc().millisecondsSinceEpoch.toInt();
       FirebaseFirestore.instance
           .collection(tableName)
-          .where("owner", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+          .where(
+            "owner",
+            whereIn: whereList ?? [FirebaseAuth.instance.currentUser!.uid],
+          )
+          .where("editedAt", isGreaterThan: lastUpdate)
+          .get()
+          .then((value) {
+        for (var item in value.docs) {
+          briteDb.insert(
+            tableName,
+            _mapFromFirestore(item: item, name: tableName),
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
+        }
+        briteDb.update(
+          "last_update",
+          {"datetime": datetime},
+          where: "tableName = ?",
+          whereArgs: [tableName],
+        );
+      });
+    });
+  }
+
+  static void getLastUpdateSubCollection({
+    required String tableName,
+    required BriteDatabase briteDb,
+    List<String>? whereList,
+  }) {
+    briteDb
+        .query(
+      "last_update",
+      where: "tableName = ?",
+      whereArgs: [tableName],
+      limit: 1,
+    )
+        .then((lastUpdateMap) {
+      int lastUpdate = int.parse(lastUpdateMap[0]["datetime"].toString());
+      int datetime = DateTime.now().toUtc().millisecondsSinceEpoch.toInt();
+      FirebaseFirestore.instance
+          .collectionGroup(tableName)
+          .where(
+            "owner",
+            whereIn: whereList ?? [FirebaseAuth.instance.currentUser!.uid],
+          )
           .where("editedAt", isGreaterThan: lastUpdate)
           .get()
           .then((value) {
@@ -52,7 +107,7 @@ class CustomProvider {
   }
 
   static Stream<List<Wine>> streamOfWines({required BriteDatabase briteDb}) {
-    getLastUpdate(tableName: "wines", briteDb: briteDb);
+    getLastUpdateCollection(tableName: "wines", briteDb: briteDb);
     return briteDb.createQuery(
       "wines",
       where: 'enabled = ?',
@@ -62,75 +117,56 @@ class CustomProvider {
 
   static Stream<List<Cellar>> streamOfCellars(
       {required BriteDatabase briteDb}) {
-    getLastUpdate(tableName: "cellars", briteDb: briteDb);
+    getLastUpdateCollection(tableName: "cellars", briteDb: briteDb);
     return briteDb.createQuery(
       "cellars",
       where: 'enabled = ?',
       whereArgs: ['1'],
     ).mapToList((row) => Cellar.fromJson(row));
-    // briteDb.query("last_update", orderBy: "id DESC", limit: 1).then((value) {
-    //   int lastUpdate = int.parse(value[0]["datetime"].toString());
-    //   int datetime = DateTime.now().toUtc().millisecondsSinceEpoch.toInt();
-    //   FirebaseFirestore.instance
-    //       .collection("cellars")
-    //       .where("owner", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-    //       .where("editedAt", isGreaterThan: lastUpdate)
-    //       .get()
-    //       .then((value) {
-    //     for (var item in value.docs) {
-    //       briteDb.insert('cellars', Cellar.fromFirestore(item).toJson());
-    //     }
-    //     briteDb.insert("last_update", {"datetime": datetime});
-    //   });
-    // });
-
-    // return briteDb.createQuery(
-    //   'cellars',
-    //   where: 'enabled = ?',
-    //   whereArgs: ['1'],
-    // ).mapToList((row) => Cellar.fromJson(row));
-
-    // var ref = FirebaseFirestore.instance
-    //     .collection("cellars")
-    //     .where("owner", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-    //     .where("enabled", isEqualTo: true);
-
-    // return ref.snapshots().map(
-    //     (list) => list.docs.map((doc) => Cellar.fromFirestore(doc)).toList());
   }
 
   static Stream<List<Block>> streamOfBlocks({required BriteDatabase briteDb}) {
-    var ref = FirebaseFirestore.instance
-        .collectionGroup("blocks")
-        .where("owner", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-        .where("enabled", isEqualTo: true);
-
-    return ref.snapshots().map(
-        (list) => list.docs.map((doc) => Block.fromFirestore(doc)).toList());
+    getLastUpdateSubCollection(tableName: "blocks", briteDb: briteDb);
+    return briteDb.createQuery(
+      "blocks",
+      where: 'enabled = ?',
+      whereArgs: ['1'],
+    ).mapToList((row) => Block.fromJson(row));
   }
 
   static Stream<List<Position>> streamOfPositions(
       {required BriteDatabase briteDb}) {
-    var ref = FirebaseFirestore.instance
-        .collectionGroup("positions")
-        .where("owner", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-        .where("enabled", isEqualTo: true);
-
-    return ref.snapshots().map(
-        (list) => list.docs.map((doc) => Position.fromFirestore(doc)).toList());
+    getLastUpdateSubCollection(tableName: "positions", briteDb: briteDb);
+    return briteDb.createQuery(
+      "positions",
+      where: 'enabled = ?',
+      whereArgs: ['1'],
+    ).mapToList((row) => Position.fromJson(row));
   }
 
   static Stream<List<Appellation>> streamOfAppellations(
       {required BriteDatabase briteDb}) {
-    var ref1 = FirebaseFirestore.instance
-        .collection("appellations")
-        .where("owner", whereIn: [
-      "admin",
-      FirebaseAuth.instance.currentUser!.uid
-    ]).where("enabled", isEqualTo: true);
+    getLastUpdateCollection(
+        tableName: "appellations",
+        briteDb: briteDb,
+        whereList: [
+          "admin",
+          FirebaseAuth.instance.currentUser!.uid,
+        ]);
+    return briteDb.createQuery(
+      "appellations",
+      where: 'enabled = ?',
+      whereArgs: ['1'],
+    ).mapToList((row) => Appellation.fromJson(row));
+    // var ref = FirebaseFirestore.instance
+    //     .collection("appellations")
+    //     .where("owner", whereIn: [
+    //   "admin",
+    //   FirebaseAuth.instance.currentUser!.uid
+    // ]).where("enabled", isEqualTo: true);
 
-    return ref1.snapshots().map((list) =>
-        list.docs.map((doc) => Appellation.fromFirestore(doc)).toList());
+    // return ref.snapshots().map((list) =>
+    //     list.docs.map((doc) => Appellation.fromFirestore(doc)).toList());
   }
 
   static generateProvidersList({required BriteDatabase briteDb}) {

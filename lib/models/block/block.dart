@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import '../model_methods.dart';
+
 part 'block.g.dart';
 
 @JsonSerializable()
@@ -12,6 +14,7 @@ class Block {
   bool? enabled;
 
   // Custom
+  String cellar;
   String? horizontalAlignment;
   String? verticalAlignment;
   int nbColumn;
@@ -24,6 +27,7 @@ class Block {
     required this.createdAt,
     required this.editedAt,
     this.enabled = false,
+    required this.cellar,
     this.horizontalAlignment = "center",
     this.verticalAlignment = "center",
     required this.nbColumn,
@@ -32,17 +36,23 @@ class Block {
     required this.y,
   });
 
-  factory Block.fromJson(Map<String, dynamic> json) => _$BlockFromJson(json);
+  factory Block.fromJson(Map<String, dynamic> json) {
+    Map<String, dynamic> jsonCopy = Map.of(json);
+    jsonCopy = ModelMethods.intToBool(jsonCopy);
+    return _$BlockFromJson(jsonCopy);
+  }
 
-  Map<dynamic, dynamic> toJson() => _$BlockToJson(this);
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> json = _$BlockToJson(this);
+    return ModelMethods.boolToInt(json);
+  }
 
   factory Block.fromFirestore(DocumentSnapshot documentSnapshot) {
     var data = documentSnapshot.data() as Map<String, dynamic>;
 
     data['id'] = documentSnapshot.reference.id;
 
-    Block block = Block.fromJson(data);
-    return block;
+    return _$BlockFromJson(data);
   }
 
   Map<String, dynamic> _toMap() {

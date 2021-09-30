@@ -1,20 +1,21 @@
 class CustomMethods {
   static Map<String, int> getExtremity(
       {required List list, required String propertyToCompare}) {
-    if (list.length == 0)
+    List sortedList = [...list];
+    if (sortedList.length == 0)
       return {
         "min": 0,
         "max": 0,
       };
 
-    if (list.isNotEmpty) {
-      list.sort((a, b) =>
+    if (sortedList.isNotEmpty) {
+      sortedList.sort((a, b) =>
           a.get(propertyToCompare).compareTo(b.get(propertyToCompare)));
     }
 
     final Map<String, int> result = {
-      "min": list.first.get(propertyToCompare),
-      "max": list.last.get(propertyToCompare),
+      "min": sortedList.first.get(propertyToCompare),
+      "max": sortedList.last.get(propertyToCompare),
     };
 
     return result;
