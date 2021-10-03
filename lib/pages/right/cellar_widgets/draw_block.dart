@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mywine/shelf.dart';
+import 'package:collection/collection.dart';
 
 class DrawBlock extends StatelessWidget {
   const DrawBlock({
@@ -7,17 +8,17 @@ class DrawBlock extends StatelessWidget {
     required this.blockId,
     required this.nbLine,
     required this.nbColumn,
-    this.sizeCell = 20.0,
+    this.onPress,
   }) : super(key: key);
 
   final String blockId;
   final int nbLine;
   final int nbColumn;
-  final double sizeCell;
+  final Function? onPress;
 
-  Widget _drawCircle({String? color}) {
+  Widget _drawCircle({required BuildContext context, String? wine}) {
     Color _color;
-    switch (color) {
+    switch (wine) {
       case "r":
         _color = Color.fromRGBO(219, 61, 77, 1);
         break;
@@ -34,10 +35,14 @@ class DrawBlock extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(2.0),
       child: Container(
+        clipBehavior: Clip.hardEdge,
         decoration: BoxDecoration(
           border: Border.all(),
-          color: _color,
           shape: BoxShape.circle,
+        ),
+        child: GestureDetector(
+          onTap: onPress != null && wine != null ? () => onPress!(wine) : null,
+          child: Container(),
         ),
       ),
     );
@@ -45,47 +50,38 @@ class DrawBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Row> rows = [];
+    List<Widget> rows = [];
+    List<Position> positions =
+        MyDatabase.getPositionsByBlockId(context: context, blockId: blockId);
 
     for (var y = nbLine; y >= 1; y--) {
-      List<Container> cells = [];
+      List<Widget> cells = [];
 
       for (var x = 1; x <= nbColumn; x++) {
-        String? color = MyDatabase.getColorByPosition(
-            context: context, x: x, y: y, block: blockId);
+        Position? position = positions
+            .firstWhereOrNull((position) => position.x == x && position.y == y);
 
-        if (color == null) {
-          cells.add(
-            Container(
-              child: Container(
-                width: sizeCell,
-                height: sizeCell,
-                child: _drawCircle(),
-              ),
+        cells.add(
+          Expanded(
+            child: _drawCircle(
+              context: context,
+              wine: position?.wine ?? null,
             ),
-          );
-        } else {
-          cells.add(
-            Container(
-              child: Container(
-                width: sizeCell,
-                height: sizeCell,
-                child: Center(
-                  child: _drawCircle(
-                    color: color,
-                  ),
-                ),
-              ),
-            ),
-          );
-        }
+          ),
+        );
       }
 
       rows.add(
-        Row(children: cells),
+        Expanded(
+          child: Row(
+            children: cells,
+          ),
+        ),
       );
     }
 
-    return Column(children: rows);
+    return Column(
+      children: rows,
+    );
   }
 }

@@ -21,8 +21,15 @@ class MyDatabase {
     return Provider.of<List<Position>>(context);
   }
 
+  static List<Position> getPositionsByBlockId(
+      {required BuildContext context, required String blockId}) {
+    return getPositions(context: context)
+        .where((position) => position.block == blockId)
+        .toList();
+  }
+
   static List<Wine> getWines({required BuildContext context}) {
-    return Provider.of<List<Wine>>(context);
+    return Provider.of<List<Wine>>(context, listen: false);
   }
 
   static Wine? getWineById(
@@ -52,7 +59,7 @@ class MyDatabase {
   }
 
   static List<Appellation> getAppellations({required BuildContext context}) {
-    return Provider.of<List<Appellation>>(context);
+    return Provider.of<List<Appellation>>(context, listen: false);
   }
 
   static Appellation? getAppellationById(
@@ -90,6 +97,25 @@ class MyDatabase {
       'wines',
       wine.toJson(),
     );
+  }
+
+  static Map<String, dynamic>? getEnhancedWineByPosition({
+    required BuildContext context,
+    required String block,
+    required int x,
+    required int y,
+  }) {
+    List<Position> positions = getPositions(context: context);
+    Position? position = positions.firstWhereOrNull(
+      (element) => element.y == y && element.x == x && element.block == block,
+    );
+
+    if (position == null) return null;
+
+    Map<String, dynamic>? wine =
+        getEnhancedWineById(context: context, wineId: position.wine);
+
+    return wine;
   }
 
   static String? getColorByPosition(

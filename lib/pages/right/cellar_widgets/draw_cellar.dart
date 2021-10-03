@@ -8,11 +8,15 @@ class DrawCellar extends StatelessWidget {
     Key? key,
     required this.cellarId,
     this.sizeCell = 22.0,
+    this.horizontalPadding = 15,
+    this.verticalPadding = 15,
     this.marginBlock = 5.0,
   }) : super(key: key);
 
   final String cellarId;
   final double sizeCell;
+  final double horizontalPadding;
+  final double verticalPadding;
   final double marginBlock;
 
   @override
@@ -64,7 +68,6 @@ class DrawCellar extends StatelessWidget {
             blockId: cell.id,
             nbLine: cell.nbLine,
             nbColumn: cell.nbColumn,
-            sizeCell: sizeCell,
           );
           cells.add(
             Container(
@@ -73,7 +76,7 @@ class DrawCellar extends StatelessWidget {
                 borderRadius: BorderRadius.all(Radius.circular(10)),
               ),
               child: Material(
-                color: Colors.white,
+                type: MaterialType.transparency,
                 child: InkWell(
                   onTap: () => Navigator.pushNamed(context, "/block",
                       arguments: ScreenArguments(_drawBlock)),
@@ -87,13 +90,16 @@ class DrawCellar extends StatelessWidget {
                           CustomMethods.getAlignment(cell.horizontalAlignment),
                           CustomMethods.getAlignment(cell.verticalAlignment),
                         ),
-                        child: Container(
-                          width: cell.nbColumn.toDouble() * sizeCell,
-                          height: cell.nbLine.toDouble() * sizeCell,
-                          child: Hero(
-                            transitionOnUserGestures: true,
-                            child: Material(child: _drawBlock),
-                            tag: "block${cell.id}",
+                        child: Hero(
+                          transitionOnUserGestures: true,
+                          tag: "block${cell.id}",
+                          child: Container(
+                            width: cell.nbColumn.toDouble() * sizeCell,
+                            height: cell.nbLine.toDouble() * sizeCell,
+                            child: Material(
+                              type: MaterialType.transparency,
+                              child: _drawBlock,
+                            ),
                           ),
                         ),
                       ),
@@ -107,14 +113,26 @@ class DrawCellar extends StatelessWidget {
       }
       rows.add(
         Row(
-          children: cells,
+          children: [
+            SizedBox(
+              width: horizontalPadding,
+            ),
+            ...cells,
+            SizedBox(
+              width: horizontalPadding,
+            )
+          ],
           mainAxisSize: MainAxisSize.min,
         ),
       );
     }
 
     return Container(
-      child: Column(children: rows),
+      child: Column(children: [
+        SizedBox(height: verticalPadding),
+        ...rows,
+        SizedBox(height: verticalPadding),
+      ]),
     );
   }
 }

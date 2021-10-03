@@ -16,7 +16,7 @@ class MiddleNavigator extends StatelessWidget {
     switch (route) {
       case "/":
         return AddTab();
-      case "/secondadd":
+      case "/second":
         return SecondSon();
       default:
         return AddTab();

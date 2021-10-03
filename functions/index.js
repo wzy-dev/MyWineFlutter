@@ -64,4 +64,34 @@ export const toFirestoreVarieties = functions.https.onRequest(async (req, res) =
   res.sendStatus(200);
 });
 
+export const addCacheColorToPositions = functions.https.onRequest(async (req, res) => {
+  var cellars = await db.collectionGroup("cellars").get();
+  var blocks = await db.collection("cellars/"+cellar.id+"blocks").get();
+
+  await Promise.all(blocks.docs.map((block) => { 
+      db.collection("wines").doc(position.data().wine).get().then((wine) => {
+        if (wine.data()) {
+          db.collection("appellations").doc(wine.data().appellation).get().then((appellation) => {
+            if (appellation.data()) {
+              db.collectionGroup("positions").doc(position.data().id).update({"color":appellation.color})
+            }
+          })
+        }
+      })
+  }));
+
+  await Promise.all(positions.docs.map((position) => 
+    db.collection("wines").doc(position.data().wine).get().then((wine) => {
+      if (wine.data()) {
+        db.collection("appellations").doc(wine.data().appellation).get().then((appellation) => {
+          if (appellation.data()) {
+            db.collectionGroup("positions").doc(position.data().id).update({"color":appellation.color})
+          }
+        })
+      }
+    })
+  ));
+  res.sendStatus(200);
+});
+
 

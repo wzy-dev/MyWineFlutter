@@ -6,6 +6,10 @@ class AddTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MainContainer(child: Text("AddTab"));
+    return MainContainer(
+        child: InkWell(
+      child: Text("AddTab"),
+      onTap: () => Navigator.pushNamed(context, "/second"),
+    ));
   }
 }

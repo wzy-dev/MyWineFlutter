@@ -9,14 +9,22 @@ class MainContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Theme.of(context).backgroundColor,
-      child: Column(
-        children: [
-          AppBar(title: Text(title ?? "")),
-          child,
-        ],
-      ),
+    final AppBar _appBar = AppBar(
+      title: Text(title ?? ""),
+    );
+    final double _heightAppBar = _appBar.preferredSize.height;
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Container(
+          margin: EdgeInsets.fromLTRB(
+              0, _heightAppBar + MediaQuery.of(context).padding.top, 0, 0),
+          color: Theme.of(context).backgroundColor,
+          child: child,
+        ),
+        Positioned(top: 0, left: 0, right: 0, child: _appBar),
+      ],
     );
   }
 }
