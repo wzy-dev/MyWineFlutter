@@ -90,10 +90,10 @@ class _CellarTabState extends State<CellarTab> {
                   height: 20,
                 ),
                 Column(
-                  children:
-                      MyDatabase.getFreeWines(context: context).map((map) {
-                    Wine wine = map["wine"] as Wine;
-                    int freeQuantity = map["freeQuantity"] as int;
+                  children: MyDatabase.getFreeWines(context: context)
+                      .map((freeWines) {
+                    Wine wine = freeWines["wine"] as Wine;
+                    int freeQuantity = freeWines["freeQuantity"] as int;
                     Map<String, dynamic>? enhancedWine =
                         MyDatabase.getEnhancedWineById(
                             context: context, wineId: wine.id);
@@ -134,7 +134,7 @@ class _CellarTabState extends State<CellarTab> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        enhancedWine["appellation"].name,
+                                        enhancedWine["appellation"]["name"],
                                         style: Theme.of(context)
                                             .textTheme
                                             .subtitle1,

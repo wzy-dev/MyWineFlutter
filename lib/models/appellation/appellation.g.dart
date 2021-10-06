@@ -13,6 +13,12 @@ Appellation _$AppellationFromJson(Map<String, dynamic> json) => Appellation(
       enabled: json['enabled'] as bool? ?? false,
       color: json['color'] as String,
       name: json['name'] as String,
+      region: json['region'] as String,
+      label: json['label'] as String?,
+      tempmin: json['tempmin'] as int?,
+      tempmax: json['tempmax'] as int?,
+      yearmin: json['yearmin'] as int?,
+      yearmax: json['yearmax'] as int?,
     );
 
 Map<String, dynamic> _$AppellationToJson(Appellation instance) =>
@@ -23,4 +29,10 @@ Map<String, dynamic> _$AppellationToJson(Appellation instance) =>
       'enabled': instance.enabled,
       'color': instance.color,
       'name': instance.name,
+      'region': instance.region,
+      'label': instance.label,
+      'tempmin': instance.tempmin,
+      'tempmax': instance.tempmax,
+      'yearmin': instance.yearmin,
+      'yearmax': instance.yearmax,
     };

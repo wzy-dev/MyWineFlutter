@@ -18,6 +18,12 @@ class CustomProvider {
         return Position.fromFirestore(item).toJson();
       case "appellations":
         return Appellation.fromFirestore(item).toJson();
+      case "domains":
+        return Domain.fromFirestore(item).toJson();
+      case "regions":
+        return Region.fromFirestore(item).toJson();
+      case "countries":
+        return Country.fromFirestore(item).toJson();
       default:
         print("Add an enter in the _mapFromFirstore function");
         return {};
@@ -158,15 +164,48 @@ class CustomProvider {
       where: 'enabled = ?',
       whereArgs: ['1'],
     ).mapToList((row) => Appellation.fromJson(row));
-    // var ref = FirebaseFirestore.instance
-    //     .collection("appellations")
-    //     .where("owner", whereIn: [
-    //   "admin",
-    //   FirebaseAuth.instance.currentUser!.uid
-    // ]).where("enabled", isEqualTo: true);
+  }
 
-    // return ref.snapshots().map((list) =>
-    //     list.docs.map((doc) => Appellation.fromFirestore(doc)).toList());
+  static Stream<List<Domain>> streamOfDomains(
+      {required BriteDatabase briteDb}) {
+    getLastUpdateCollection(tableName: "domains", briteDb: briteDb, whereList: [
+      "admin",
+      FirebaseAuth.instance.currentUser!.uid,
+    ]);
+    return briteDb.createQuery(
+      "domains",
+      where: 'enabled = ?',
+      whereArgs: ['1'],
+    ).mapToList((row) => Domain.fromJson(row));
+  }
+
+  static Stream<List<Region>> streamOfRegions(
+      {required BriteDatabase briteDb}) {
+    getLastUpdateCollection(tableName: "regions", briteDb: briteDb, whereList: [
+      "admin",
+      FirebaseAuth.instance.currentUser!.uid,
+    ]);
+    return briteDb.createQuery(
+      "regions",
+      where: 'enabled = ?',
+      whereArgs: ['1'],
+    ).mapToList((row) => Region.fromJson(row));
+  }
+
+  static Stream<List<Country>> streamOfCountries(
+      {required BriteDatabase briteDb}) {
+    getLastUpdateCollection(
+        tableName: "countries",
+        briteDb: briteDb,
+        whereList: [
+          "admin",
+          FirebaseAuth.instance.currentUser!.uid,
+        ]);
+    return briteDb.createQuery(
+      "countries",
+      where: 'enabled = ?',
+      whereArgs: ['1'],
+    ).mapToList((row) => Country.fromJson(row));
   }
 
   static generateProvidersList({required BriteDatabase briteDb}) {
@@ -189,6 +228,18 @@ class CustomProvider {
       ),
       StreamProvider<List<Appellation>>(
         create: (_) => CustomProvider.streamOfAppellations(briteDb: briteDb),
+        initialData: [],
+      ),
+      StreamProvider<List<Domain>>(
+        create: (_) => CustomProvider.streamOfDomains(briteDb: briteDb),
+        initialData: [],
+      ),
+      StreamProvider<List<Region>>(
+        create: (_) => CustomProvider.streamOfRegions(briteDb: briteDb),
+        initialData: [],
+      ),
+      StreamProvider<List<Country>>(
+        create: (_) => CustomProvider.streamOfCountries(briteDb: briteDb),
         initialData: [],
       ),
       Provider<BriteDatabase>(

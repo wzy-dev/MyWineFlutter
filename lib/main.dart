@@ -3,7 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:mywine/flutter_initializer.dart';
+import 'package:flutter/widgets.dart';
+import 'package:mywine/database_initializer.dart';
 import 'package:mywine/shelf.dart';
 import 'package:provider/provider.dart';
 
@@ -38,7 +39,7 @@ class MyApp extends StatelessWidget {
             title: 'MyWine',
             initialRoute: '/',
             onGenerateRoute: (routeSettings) => RootNavigator.onGenerateRoute(
-                context: context, route: routeSettings.name!),
+                context: context, settings: routeSettings),
             theme: ThemeData(
               // Colors
               primaryColor: Color.fromRGBO(5, 60, 92, 1),
@@ -50,13 +51,13 @@ class MyApp extends StatelessWidget {
                 secondaryVariant: Colors.white,
                 surface: Colors.white,
                 background: Colors.white,
-                error: Colors.white,
-                onPrimary: Colors.white,
-                onSecondary: Colors.white,
+                error: Color.fromRGBO(219, 84, 97, 1),
+                onPrimary: Color.fromRGBO(5, 60, 92, 1),
+                onSecondary: Color.fromRGBO(219, 84, 97, 1),
                 onSurface: Colors.white,
                 onBackground: Colors.white,
                 onError: Colors.white,
-                brightness: Brightness.dark,
+                brightness: Brightness.light,
               ),
               hintColor: Color.fromRGBO(47, 111, 143, 1),
               backgroundColor: Color.fromRGBO(245, 245, 245, 1),
@@ -73,6 +74,12 @@ class MyApp extends StatelessWidget {
                   fontSize: 18,
                   fontFamily: "Ubuntu",
                 ),
+                headline4: TextStyle(
+                  color: Color.fromRGBO(47, 111, 143, 1),
+                  fontSize: 20,
+                  fontFamily: "Ubuntu",
+                  fontWeight: FontWeight.bold,
+                ),
                 headline3: TextStyle(
                   color: Color.fromRGBO(104, 105, 99, 1),
                   fontSize: 15,
@@ -80,7 +87,12 @@ class MyApp extends StatelessWidget {
                 ),
                 subtitle1: TextStyle(
                   color: Color.fromRGBO(104, 105, 99, 1),
-                  fontSize: 15,
+                  fontSize: 18,
+                  fontFamily: "OpenSans",
+                ),
+                subtitle2: TextStyle(
+                  color: Color.fromRGBO(104, 105, 99, 1),
+                  fontSize: 13,
                   fontFamily: "OpenSans",
                 ),
                 bodyText1: TextStyle(color: Colors.black),

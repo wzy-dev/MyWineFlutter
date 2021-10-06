@@ -12,7 +12,16 @@ Wine _$WineFromJson(Map<String, dynamic> json) => Wine(
       editedAt: json['editedAt'] as int,
       enabled: json['enabled'] as bool? ?? false,
       appellation: json['appellation'] as String,
+      domain: json['domain'] as String,
       quantity: json['quantity'] as int,
+      millesime: json['millesime'] as int,
+      size: json['size'] as int,
+      bio: json['bio'] as bool? ?? false,
+      sparkling: json['sparkling'] as bool? ?? false,
+      tempmin: json['tempmin'] as int?,
+      tempmax: json['tempmax'] as int?,
+      yearmin: json['yearmin'] as int?,
+      yearmax: json['yearmax'] as int?,
     );
 
 Map<String, dynamic> _$WineToJson(Wine instance) => <String, dynamic>{
@@ -21,5 +30,14 @@ Map<String, dynamic> _$WineToJson(Wine instance) => <String, dynamic>{
       'editedAt': instance.editedAt,
       'enabled': instance.enabled,
       'appellation': instance.appellation,
+      'domain': instance.domain,
       'quantity': instance.quantity,
+      'millesime': instance.millesime,
+      'size': instance.size,
+      'bio': instance.bio,
+      'sparkling': instance.sparkling,
+      'tempmin': instance.tempmin,
+      'tempmax': instance.tempmax,
+      'yearmin': instance.yearmin,
+      'yearmax': instance.yearmax,
     };

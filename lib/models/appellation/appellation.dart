@@ -16,6 +16,12 @@ class Appellation {
   // Custom
   String color;
   String name;
+  String region;
+  String? label;
+  int? tempmin;
+  int? tempmax;
+  int? yearmin;
+  int? yearmax;
 
   Appellation({
     required this.id,
@@ -24,17 +30,27 @@ class Appellation {
     this.enabled = false,
     required this.color,
     required this.name,
+    required this.region,
+    this.label,
+    this.tempmin,
+    this.tempmax,
+    this.yearmin,
+    this.yearmax,
   });
 
   factory Appellation.fromJson(Map<String, dynamic> json) {
     Map<String, dynamic> jsonCopy = Map.of(json);
-    jsonCopy = ModelMethods.intToBool(jsonCopy);
+    jsonCopy = ModelMethods.intToBool(json: jsonCopy, property: "enabled");
     return _$AppellationFromJson(jsonCopy);
   }
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = _$AppellationToJson(this);
-    return ModelMethods.boolToInt(json);
+    return ModelMethods.boolToInt(json: json, property: "enabled");
+  }
+
+  Map<String, dynamic> toJsonWithBool() {
+    return _$AppellationToJson(this);
   }
 
   factory Appellation.fromFirestore(DocumentSnapshot documentSnapshot) {

@@ -4,13 +4,20 @@ import '../shelf.dart';
 
 class RootNavigator {
   static MaterialPageRoute onGenerateRoute(
-      {required BuildContext context, required String route}) {
-    switch (route) {
+      {required BuildContext context, required RouteSettings settings}) {
+    switch (settings.name ?? null) {
       case "/":
         return MaterialPageRoute(
             builder: (context) => Scaffold(
                   body: Homepage(),
                 ));
+      case "/wine":
+        return MaterialPageRoute(
+            builder: (context) => Scaffold(
+                  body: WineDetails(),
+                ),
+            fullscreenDialog: true,
+            settings: settings);
       case "/second":
         return MaterialPageRoute(
             builder: (context) => Scaffold(
@@ -29,17 +36,4 @@ class RootNavigator {
                 ));
     }
   }
-  // static Map<String, Function> _routes = {
-  //   '/': (context) => Homepage(),
-  //   '/second': (context) => SecondSon(),
-  //   '/third': (context) => SecondSon(),
-  // };
-
-  // static onGenerateRoute(routeSettings) {
-  //   //RootNavigator
-  //   return MaterialPageRoute(
-  //     builder: (context) => Scaffold(
-  //         body: ,
-  //   );
-  // }
 }

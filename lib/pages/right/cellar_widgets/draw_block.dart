@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mywine/shelf.dart';
 import 'package:collection/collection.dart';
 
-class DrawBlock extends StatelessWidget {
+class DrawBlock extends StatefulWidget {
   const DrawBlock({
     Key? key,
     required this.blockId,
@@ -16,33 +16,101 @@ class DrawBlock extends StatelessWidget {
   final int nbColumn;
   final Function? onPress;
 
-  Widget _drawCircle({required BuildContext context, String? wine}) {
-    Color _color;
-    switch (wine) {
+  @override
+  State<DrawBlock> createState() => _DrawBlockState();
+}
+
+class _DrawBlockState extends State<DrawBlock> {
+  Map<String, int>? _selectedCoor;
+  Map<String, int>? _focusCoor;
+
+  Widget _drawCircle({
+    required BuildContext context,
+    required Map<String, int> coor,
+    String? wineId,
+  }) {
+    Color _circleColor;
+    String? _appellationColor;
+
+    if (wineId != null)
+      _appellationColor = MyDatabase.getEnhancedWineById(
+              context: context, wineId: wineId)?["appellation"]["color"] ??
+          null;
+
+    switch (_appellationColor) {
       case "r":
-        _color = Color.fromRGBO(219, 61, 77, 1);
+        _circleColor = Color.fromRGBO(219, 61, 77, 1);
         break;
       case "w":
-        _color = Color.fromRGBO(248, 216, 114, 1);
+        _circleColor = Color.fromRGBO(248, 216, 114, 1);
         break;
       case "p":
-        _color = Color.fromRGBO(255, 212, 196, 1);
+        _circleColor = Color.fromRGBO(255, 212, 196, 1);
         break;
       default:
-        _color = Colors.white;
+        _circleColor = Colors.white;
     }
+
+    bool isSelected = false;
+    bool isFocus = false;
+
+    _selectedCoor != null &&
+            _selectedCoor!["x"] == coor["x"] &&
+            _selectedCoor!["y"] == coor["y"] &&
+            widget.onPress != null
+        ? isSelected = true
+        : isSelected = false;
+
+    _focusCoor != null &&
+            _focusCoor!["x"] == coor["x"] &&
+            _focusCoor!["y"] == coor["y"] &&
+            widget.onPress != null
+        ? isFocus = true
+        : isFocus = false;
 
     return Padding(
       padding: const EdgeInsets.all(2.0),
-      child: Container(
-        clipBehavior: Clip.hardEdge,
-        decoration: BoxDecoration(
-          border: Border.all(),
-          shape: BoxShape.circle,
-        ),
-        child: GestureDetector(
-          onTap: onPress != null && wine != null ? () => onPress!(wine) : null,
-          child: Container(),
+      child: GestureDetector(
+        onTapDown: widget.onPress != null && wineId != null
+            ? (down) {
+                setState(() {
+                  _focusCoor = coor;
+                });
+              }
+            : null,
+        onTapUp: widget.onPress != null && wineId != null
+            ? (up) {
+                setState(() {
+                  _selectedCoor = coor;
+                  _focusCoor = null;
+                });
+                return widget.onPress!(wineId);
+              }
+            : null,
+        onTapCancel: widget.onPress != null && wineId != null
+            ? () {
+                setState(() {
+                  _focusCoor = null;
+                });
+              }
+            : null,
+        child: AnimatedContainer(
+          duration: Duration(milliseconds: 400),
+          clipBehavior: Clip.hardEdge,
+          height: double.infinity,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            border: Border.all(),
+            shape: BoxShape.circle,
+            color: isFocus
+                ? Theme.of(context).hintColor
+                : (isSelected ? Theme.of(context).primaryColor : _circleColor),
+          ),
+          child: AnimatedOpacity(
+            duration: Duration(milliseconds: 300),
+            opacity: isSelected ? 1 : 0,
+            child: Icon(Icons.check, color: Colors.white),
+          ),
         ),
       ),
     );
@@ -51,13 +119,13 @@ class DrawBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<Widget> rows = [];
-    List<Position> positions =
-        MyDatabase.getPositionsByBlockId(context: context, blockId: blockId);
+    List<Position> positions = MyDatabase.getPositionsByBlockId(
+        context: context, blockId: widget.blockId);
 
-    for (var y = nbLine; y >= 1; y--) {
+    for (var y = widget.nbLine; y >= 1; y--) {
       List<Widget> cells = [];
 
-      for (var x = 1; x <= nbColumn; x++) {
+      for (var x = 1; x <= widget.nbColumn; x++) {
         Position? position = positions
             .firstWhereOrNull((position) => position.x == x && position.y == y);
 
@@ -65,7 +133,8 @@ class DrawBlock extends StatelessWidget {
           Expanded(
             child: _drawCircle(
               context: context,
-              wine: position?.wine ?? null,
+              coor: {"x": x, "y": y},
+              wineId: position?.wine ?? null,
             ),
           ),
         );

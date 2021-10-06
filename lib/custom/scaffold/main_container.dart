@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
 class MainContainer extends StatelessWidget {
   const MainContainer({Key? key, required this.child, this.title})
@@ -10,6 +11,7 @@ class MainContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AppBar _appBar = AppBar(
+      iconTheme: IconThemeData(color: Colors.white),
       title: Text(title ?? ""),
     );
     final double _heightAppBar = _appBar.preferredSize.height;

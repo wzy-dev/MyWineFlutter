@@ -38,13 +38,13 @@ class Block {
 
   factory Block.fromJson(Map<String, dynamic> json) {
     Map<String, dynamic> jsonCopy = Map.of(json);
-    jsonCopy = ModelMethods.intToBool(jsonCopy);
+    jsonCopy = ModelMethods.intToBool(json: jsonCopy, property: "enabled");
     return _$BlockFromJson(jsonCopy);
   }
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = _$BlockToJson(this);
-    return ModelMethods.boolToInt(json);
+    return ModelMethods.boolToInt(json: json, property: "enabled");
   }
 
   factory Block.fromFirestore(DocumentSnapshot documentSnapshot) {

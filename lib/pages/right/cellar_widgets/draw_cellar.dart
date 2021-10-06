@@ -79,7 +79,7 @@ class DrawCellar extends StatelessWidget {
                 type: MaterialType.transparency,
                 child: InkWell(
                   onTap: () => Navigator.pushNamed(context, "/block",
-                      arguments: ScreenArguments(_drawBlock)),
+                      arguments: BlockTabArguments(_drawBlock)),
                   child: Padding(
                     padding: EdgeInsets.all(marginBlock),
                     child: Container(
@@ -127,12 +127,14 @@ class DrawCellar extends StatelessWidget {
       );
     }
 
-    return Container(
-      child: Column(children: [
-        SizedBox(height: verticalPadding),
-        ...rows,
-        SizedBox(height: verticalPadding),
-      ]),
-    );
+    return (rows.length > 1
+        ? Container(
+            child: Column(children: [
+              SizedBox(height: verticalPadding),
+              ...rows,
+              SizedBox(height: verticalPadding),
+            ]),
+          )
+        : Container());
   }
 }

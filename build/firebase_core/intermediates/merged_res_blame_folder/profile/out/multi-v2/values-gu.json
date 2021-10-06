@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\Users\\Simon\\Documents\\Github\\MyWineFlutter\\build\\firebase_core\\intermediates\\res\\merged\\profile\\values-gu\\values-gu.xml",
+            "outputFile": "/Users/simonwegrzyn/Documents sur mon Mac/development/MyWineFlutter/build/firebase_core/intermediates/res/merged/profile/values-gu/values-gu.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\Simon\\.gradle\\caches\\transforms-2\\files-2.1\\f4a15a5606c9a028857d8a3e89eefa0f\\core-1.1.0\\res\\values-gu\\values-gu.xml",
+                    "source": "/Users/simonwegrzyn/.gradle/caches/transforms-2/files-2.1/f4a15a5606c9a028857d8a3e89eefa0f/core-1.1.0/res/values-gu/values-gu.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
@@ -21,7 +21,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\Simon\\.gradle\\caches\\transforms-2\\files-2.1\\9d3ebf861ced2bc6fde51a467c749fe4\\jetified-play-services-basement-17.0.0\\res\\values-gu\\values.xml",
+                    "source": "/Users/simonwegrzyn/.gradle/caches/transforms-2/files-2.1/9d3ebf861ced2bc6fde51a467c749fe4/jetified-play-services-basement-17.0.0/res/values-gu/values.xml",
                     "from": {
                         "startLines": "4",
                         "startColumns": "0",
@@ -40,10 +40,10 @@
             ]
         },
         {
-            "outputFile": "C:\\Users\\Simon\\Documents\\Github\\MyWineFlutter\\build\\firebase_core\\intermediates\\incremental\\mergeProfileResources\\merged.dir\\values-gu\\values-gu.xml",
+            "outputFile": "/Users/simonwegrzyn/Documents sur mon Mac/development/MyWineFlutter/build/firebase_core/intermediates/incremental/mergeProfileResources/merged.dir/values-gu/values-gu.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\Simon\\.gradle\\caches\\transforms-2\\files-2.1\\f4a15a5606c9a028857d8a3e89eefa0f\\core-1.1.0\\res\\values-gu\\values-gu.xml",
+                    "source": "/Users/simonwegrzyn/.gradle/caches/transforms-2/files-2.1/f4a15a5606c9a028857d8a3e89eefa0f/core-1.1.0/res/values-gu/values-gu.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
@@ -60,7 +60,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\Simon\\.gradle\\caches\\transforms-2\\files-2.1\\9d3ebf861ced2bc6fde51a467c749fe4\\jetified-play-services-basement-17.0.0\\res\\values-gu\\values.xml",
+                    "source": "/Users/simonwegrzyn/.gradle/caches/transforms-2/files-2.1/9d3ebf861ced2bc6fde51a467c749fe4/jetified-play-services-basement-17.0.0/res/values-gu/values.xml",
                     "from": {
                         "startLines": "4",
                         "startColumns": "0",
