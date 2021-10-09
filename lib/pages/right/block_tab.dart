@@ -39,7 +39,7 @@ class _BlockTabState extends State<BlockTab> {
             ),
             //Slide under the fab
             SizedBox(
-              height: 20,
+              height: 10,
             ),
           ],
         ),
@@ -57,9 +57,14 @@ class _BlockTabState extends State<BlockTab> {
     return result;
   }
 
-  Container _drawBlock(
+  Widget _drawBlock(
       DrawBlock _originBlock, int _sizeCell, BuildContext context) {
-    return Container(
+    return Card(
+      margin: const EdgeInsets.all(0),
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(0),
+      ),
       color: Colors.white,
       child: AnimatedSize(
         duration: Duration(milliseconds: 500),
@@ -138,7 +143,7 @@ class _CarouselItemState extends State<CarouselItem> {
     Map? wine = widget._enhancedWine[widget.index - 1];
 
     return AnimatedPositioned(
-      duration: Duration(milliseconds: 300),
+      duration: Duration(milliseconds: 250),
       left: widget.index == widget._enhancedWine.length
           ? isBuild
               ? 0

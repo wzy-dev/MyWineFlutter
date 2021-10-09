@@ -15,7 +15,7 @@ class CustomCard extends StatelessWidget {
     return Card(
       clipBehavior: Clip.hardEdge,
       margin: margin,
-      elevation: 3,
+      elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15.0),
       ),

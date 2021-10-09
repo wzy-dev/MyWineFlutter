@@ -30,52 +30,44 @@ class CustomScaffold extends StatelessWidget {
       floatingActionButton:
           // Cacher quand clavier ouvert
           (true == true
-              ? AnimatedContainer(
-                  duration: ((MediaQuery.of(context).viewInsets.bottom == 0.0)
-                      ? Duration(milliseconds: 150)
-                      : Duration(milliseconds: 0)),
-                  width: (MediaQuery.of(context).viewInsets.bottom == 0.0)
-                      ? 65
-                      : 0,
-                  // height: (MediaQuery.of(context).viewInsets.bottom == 0.0)
-                  //     ? 65
-                  //     : 0,
-                  decoration: BoxDecoration(shape: BoxShape.circle),
+              ? Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 22, 0, 0),
                   child: Material(
                     elevation: 3,
-                    shape: CircleBorder(),
-                    child: AnimatedGradient(
-                      // Container(
-                      //   decoration: BoxDecoration(
-                      //     shape: BoxShape.circle,
-                      //     gradient: LinearGradient(
-                      //         begin: Alignment.topLeft,
-                      //         end: Alignment.bottomRight,
-                      //         colors: [
-                      //           Color.fromRGBO(7, 93, 143, 1),
-                      //           Color.fromRGBO(7, 93, 143, 1),
-                      //           Color.fromRGBO(219, 61, 77, 1),
-                      //         ],
-                      //         stops: [
-                      //           0,
-                      //           0.15,
-                      //           1
-                      //         ]),
-                      //   ),
-                      child: FloatingActionButton(
-                        clipBehavior: Clip.hardEdge,
-                        heroTag: heroTag,
-                        mini: true,
-                        elevation: 0,
-                        splashColor: Color.fromRGBO(219, 84, 97, 0.26),
-                        focusElevation: 1,
-                        backgroundColor: Colors.transparent,
-                        child: Icon(
-                          fabIcon != null ? fabIcon : Icons.add_rounded,
-                          color: Colors.white,
-                          size: 35,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(15.0))),
+                    clipBehavior: Clip.hardEdge,
+                    child: AnimatedContainer(
+                      duration:
+                          ((MediaQuery.of(context).viewInsets.bottom == 0.0)
+                              ? Duration(milliseconds: 150)
+                              : Duration(milliseconds: 0)),
+                      width: (MediaQuery.of(context).viewInsets.bottom == 0.0)
+                          ? 48
+                          : 0,
+                      height: (MediaQuery.of(context).viewInsets.bottom == 0.0)
+                          ? 48
+                          : 0,
+                      child: AnimatedGradient(
+                        child: FloatingActionButton(
+                          shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(15.0))),
+                          heroTag: heroTag,
+                          mini: true,
+                          splashColor: Color.fromRGBO(219, 84, 97, 0.26),
+                          focusElevation: 0,
+                          hoverElevation: 0,
+                          highlightElevation: 0,
+                          elevation: 0,
+                          backgroundColor: Colors.transparent,
+                          child: Icon(
+                            fabIcon != null ? fabIcon : Icons.add_rounded,
+                            color: Colors.white,
+                            size: 40,
+                          ),
+                          onPressed: () => onItemTapped(1),
                         ),
-                        onPressed: () => onItemTapped(1),
                       ),
                     ),
                   ),
@@ -99,8 +91,16 @@ class CustomScaffold extends StatelessWidget {
               BottomAppBar(
                 color: Colors.white,
                 elevation: 2,
-                shape: CircularNotchedRectangle(),
-                notchMargin: 6,
+                shape: AutomaticNotchedShape(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.elliptical(30, 30),
+                    ),
+                  ),
+                  RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(20.0))),
+                ),
+                notchMargin: 8,
                 child: Container(
                   height: heightNavBar,
                 ),

@@ -10,31 +10,25 @@ class AnimatedGradient extends StatefulWidget {
 }
 
 class _AnimatedGradientState extends State<AnimatedGradient> {
-  List<Color> colorList = [
-    Color.fromRGBO(9, 118, 181, 1),
-    Color.fromRGBO(219, 84, 97, 1),
-    Color.fromRGBO(9, 118, 181, 1),
-    Color.fromRGBO(219, 84, 97, 1),
-    Color.fromRGBO(9, 118, 181, 1),
-  ];
-
-  int index = 0;
-
   late Color bottomColor;
+  late Color middleColor;
   late Color topColor;
 
-  Alignment begin = Alignment.bottomRight;
-  Alignment end = Alignment.topLeft;
+  final double minValue = 0.4;
+  final double maxValue = 0.6;
+
+  double middlePosition = 0.4;
 
   @override
   void initState() {
-    bottomColor = colorList[0];
-    topColor = colorList[1];
+    bottomColor = Color.fromRGBO(219, 84, 97, 1);
+    middleColor = Color.fromRGBO(122, 100, 136, 1);
+    topColor = Color.fromRGBO(9, 118, 181, 1);
 
     WidgetsBinding.instance!.addPostFrameCallback((_) {
-      // setState(() {
-      //   bottomColor = colorList[3];
-      // });
+      setState(() {
+        middlePosition = maxValue;
+      });
     });
 
     super.initState();
@@ -46,23 +40,19 @@ class _AnimatedGradientState extends State<AnimatedGradient> {
       duration: Duration(seconds: 5),
       onEnd: () {
         setState(() {
-          index = index + 1;
-
-          // animate the color
-          bottomColor = colorList[index % colorList.length];
-          topColor = colorList[(index + 1) % colorList.length];
-
-          //// animate the alignment
-          // begin = alignmentList[index % alignmentList.length];
-          // end = alignmentList[(index + 2) % alignmentList.length];
+          if (middlePosition == minValue) {
+            middlePosition = maxValue;
+          } else if (middlePosition == maxValue) {
+            middlePosition = minValue;
+          }
         });
       },
       decoration: BoxDecoration(
-        shape: BoxShape.circle,
         gradient: LinearGradient(
-          begin: begin,
-          end: end,
-          colors: [bottomColor, topColor],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          stops: [0, middlePosition, 1],
+          colors: [bottomColor, middleColor, topColor],
         ),
       ),
       child: widget.child,

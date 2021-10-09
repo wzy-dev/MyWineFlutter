@@ -64,7 +64,12 @@ class _CellarTabState extends State<CellarTab> {
         padding: const EdgeInsets.all(0),
         shrinkWrap: true,
         children: [
-          Container(
+          Card(
+            margin: const EdgeInsets.all(0),
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(0),
+            ),
             color: Colors.white,
             child: AnimatedSize(
               duration: Duration(milliseconds: 500),
@@ -99,33 +104,39 @@ class _CellarTabState extends State<CellarTab> {
                             context: context, wineId: wine.id);
                     if (enhancedWine == null) return Container();
 
-                    return Container(
+                    return Card(
                       clipBehavior: Clip.hardEdge,
-                      decoration: BoxDecoration(
+                      margin: const EdgeInsets.all(0),
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(3),
-                          bottomLeft: Radius.circular(3),
-                          topRight: Radius.circular(20),
-                          bottomRight: Radius.circular(20),
+                          topLeft: Radius.circular(5),
+                          bottomLeft: Radius.circular(5),
+                          topRight: Radius.circular(15),
+                          bottomRight: Radius.circular(15),
                         ),
-                        color: Colors.white,
-                        boxShadow: ShadowBox.shadow1(),
                       ),
+                      color: Colors.white,
                       child: IntrinsicHeight(
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             Container(
-                              width: 5,
-                              color: Colors.red,
+                              width: 10,
+                              color: Color.fromRGBO(219, 61, 77, 1),
                             ),
                             Expanded(
                               child: Material(
                                 child: ListTile(
-                                  onTap: () {},
+                                  onTap: () {
+                                    Navigator.of(context, rootNavigator: true)
+                                        .pushNamed("/wine",
+                                            arguments: WineDetailsArguments(
+                                                enhancedWine["id"]));
+                                  },
                                   tileColor: Colors.white,
                                   title: Text(
-                                    "château hennebelle".toUpperCase(),
+                                    "${enhancedWine["domain"].name.toUpperCase()} ${enhancedWine["millesime"]}",
                                     style:
                                         Theme.of(context).textTheme.headline2,
                                   ),

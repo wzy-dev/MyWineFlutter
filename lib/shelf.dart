@@ -14,6 +14,7 @@ export 'custom/main_widgets/card.dart';
 
 // Methods
 export 'custom/methods/custom_methods.dart';
+export 'custom/methods/search_methods.dart';
 
 // Navigators
 export 'navigators/root_navigator.dart';

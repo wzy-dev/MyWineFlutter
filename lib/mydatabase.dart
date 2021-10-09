@@ -167,6 +167,17 @@ class MyDatabase {
     return totalFreeWines;
   }
 
+  static int countFreeWineById(
+      {required BuildContext context, required String wineId}) {
+    Wine? wine = getWineById(context: context, wineId: wineId);
+    List<Position> positions = getPositions(context: context);
+
+    if (wine == null) return 0;
+
+    return wine.quantity -
+        positions.where((position) => position.wine == wineId).length;
+  }
+
   static Future<void> addWine(
       {required BuildContext context, required Wine wine}) {
     BriteDatabase _briteDb = getBriteDatabase(context: context);
