@@ -264,17 +264,36 @@ class WineDetails extends StatelessWidget {
     return pourcent;
   }
 
-  String _getLabelColor(indexColor) {
-    switch (indexColor) {
-      case "r":
-        return "Rouge";
-      case "w":
-        return "Blanc";
-      case "p":
-        return "Rosé";
-      default:
-        return "Inconnu";
-    }
+  Widget _drawTemp(
+      {required BuildContext context, required Map<String, dynamic> wine}) {
+    int? tempmin = wine["appellation"]["tempmin"];
+    int? tempmax = wine["appellation"]["tempmax"];
+
+    if (tempmin == null && tempmax == null) return Container();
+
+    return Container(
+      width: double.infinity,
+      child: CustomCard(
+        margin: const EdgeInsets.all(0),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.thermostat_outlined,
+              ),
+              tempmin != null
+                  ? tempmax != null
+                      ? Text(
+                          "Servir entre ${tempmin.toString()}°C et ${tempmax.toString()}°C")
+                      : Text("Servir à plus de ${tempmin.toString()}°C")
+                  : Text("Servir à moins de ${tempmax.toString()}°C"),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -348,7 +367,8 @@ class WineDetails extends StatelessWidget {
                         context: context,
                         icon: Icons.palette_outlined,
                         label: "Couleur",
-                        value: _getLabelColor(_wine["appellation"]["color"]),
+                        value: CustomMethods.getColorLabelByIndex(
+                            _wine["appellation"]["color"]),
                       ),
                       _wineInfoItem(
                         context: context,
@@ -391,6 +411,9 @@ class WineDetails extends StatelessWidget {
             child: _drawStock(
                 context: context, wine: _wine, nbFreeWine: _nbFreeWine),
           ),
+          SizedBox(height: 20),
+          // Affichage de la température
+          _drawTemp(context: context, wine: _wine),
         ],
       ),
     );

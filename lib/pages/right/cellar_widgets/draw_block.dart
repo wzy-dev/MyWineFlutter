@@ -37,19 +37,8 @@ class _DrawBlockState extends State<DrawBlock> {
               context: context, wineId: wineId)?["appellation"]["color"] ??
           null;
 
-    switch (_appellationColor) {
-      case "r":
-        _circleColor = Color.fromRGBO(219, 61, 77, 1);
-        break;
-      case "w":
-        _circleColor = Color.fromRGBO(248, 216, 114, 1);
-        break;
-      case "p":
-        _circleColor = Color.fromRGBO(255, 212, 196, 1);
-        break;
-      default:
-        _circleColor = Colors.white;
-    }
+    _circleColor =
+        CustomMethods.getColorRgbaByIndex(_appellationColor)["color"]!;
 
     bool isSelected = false;
     bool isFocus = false;

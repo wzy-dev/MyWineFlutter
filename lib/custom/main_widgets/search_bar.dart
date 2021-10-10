@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:mywine/custom/main_widgets/card.dart';
 
 class CustomSearchBar extends StatelessWidget {
-  const CustomSearchBar({Key? key, required this.onChange}) : super(key: key);
+  const CustomSearchBar(
+      {Key? key, required this.onChange, required this.focusNode})
+      : super(key: key);
 
+  final FocusNode focusNode;
   final Function onChange;
 
   @override
@@ -16,6 +19,7 @@ class CustomSearchBar extends StatelessWidget {
           children: [
             Expanded(
               child: TextField(
+                focusNode: focusNode,
                 onChanged: (value) => onChange(value),
                 cursorColor: Theme.of(context).primaryColor,
                 style: TextStyle(color: Colors.grey.shade800, fontSize: 15),

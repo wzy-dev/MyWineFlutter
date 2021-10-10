@@ -10,6 +10,13 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> {
   List<int> _tabHistory = [0];
+  late FocusNode searchFieldFocusNode;
+
+  @override
+  void initState() {
+    searchFieldFocusNode = FocusNode();
+    super.initState();
+  }
 
   final _navigatorKeys = {
     0: GlobalKey<NavigatorState>(),
@@ -21,9 +28,14 @@ class _HomepageState extends State<Homepage> {
 
   void _onItemTapped(int index) {
     if (index == _selectedIndex) {
-      // pop to first route
+      searchFieldFocusNode.unfocus();
+      // Si on touche le tab actif on revient à la route initiale
+      if (_selectedIndex == 0)
+        _navigatorKeys[index]!.currentState!.maybePop().then(
+            (value) => value ? null : searchFieldFocusNode.requestFocus());
       _navigatorKeys[index]!.currentState!.popUntil((route) => route.isFirst);
     } else {
+      // Changer de tab
       _tabHistory.removeWhere((pageIndex) => pageIndex == index);
       _tabHistory.insert(0, index);
       if (_tabHistory.length > 3) _tabHistory.removeLast();
@@ -70,6 +82,7 @@ class _HomepageState extends State<Homepage> {
         navigatorKey: navigatorKey,
         tabIndex: index,
         onItemTapped: _onItemTapped,
+        focusNode: searchFieldFocusNode,
       ),
       MiddleNavigator(
         navigatorKey: navigatorKey,

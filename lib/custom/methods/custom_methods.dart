@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class CustomMethods {
   static Map<String, int> getExtremity(
       {required List list, required String propertyToCompare}) {
@@ -31,6 +33,59 @@ class CustomMethods {
         return 1;
       default:
         return 0;
+    }
+  }
+
+  static String getCatName(String cat) {
+    switch (cat) {
+      case "appellation":
+        return "Appellation";
+      case "domain":
+        return "Domaine";
+      case "country":
+        return "Pays";
+      case "region":
+        return "Région";
+      default:
+        return "Unknow";
+    }
+  }
+
+  static String getColorLabelByIndex(indexColor) {
+    switch (indexColor) {
+      case "r":
+        return "Rouge";
+      case "w":
+        return "Blanc";
+      case "p":
+        return "Rosé";
+      default:
+        return "Inconnu";
+    }
+  }
+
+  static Map<String, Color> getColorRgbaByIndex(indexColor) {
+    switch (indexColor) {
+      case "r":
+        return {
+          "color": Color.fromRGBO(219, 61, 77, 1),
+          "contrasted": Colors.white70,
+        };
+      case "w":
+        return {
+          "color": Color.fromRGBO(248, 216, 114, 1),
+          "contrasted": Colors.black54,
+        };
+      case "p":
+        return {
+          "color": Color.fromRGBO(255, 212, 196, 1),
+          "contrasted": Colors.black54,
+        };
+      default:
+        return {
+          "color": Colors.white,
+          "contrasted": Colors.black54,
+        };
     }
   }
 }
