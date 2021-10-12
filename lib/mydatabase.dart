@@ -32,6 +32,21 @@ class MyDatabase {
     return Provider.of<List<Wine>>(context);
   }
 
+  static List<Map<String, dynamic>> getEnhancedWines(
+      {required BuildContext context}) {
+    List<Map<String, dynamic>> wines = [];
+
+    Provider.of<List<Wine>>(context, listen: false).forEach(
+      (wine) {
+        Map<String, dynamic>? enhancedWine =
+            getEnhancedWineById(context: context, wineId: wine.id);
+        if (enhancedWine != null) wines.add(enhancedWine);
+      },
+    );
+
+    return wines;
+  }
+
   static Wine? getWineById(
       {required BuildContext context, required String wineId}) {
     return Provider.of<List<Wine>>(context, listen: false)

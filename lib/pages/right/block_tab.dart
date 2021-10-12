@@ -182,19 +182,16 @@ class _CarouselItemState extends State<CarouselItem> {
                       icon: Icon(Icons.info_outline),
                       onPress: () {
                         Navigator.of(context, rootNavigator: true).pushNamed(
-                            "/wine",
-                            arguments: WineDetailsArguments(wine["id"]));
+                          "/wine",
+                          arguments: WineDetailsArguments(wineId: wine["id"]),
+                        );
                       },
                       backgroundColor: Theme.of(context).hintColor,
                     ),
                     CustomFlatButton(
                       title: "Trouver mes bouteilles",
                       icon: Icon(Icons.search_outlined),
-                      onPress: () {
-                        Navigator.of(context, rootNavigator: true).pushNamed(
-                            "/wine",
-                            arguments: WineDetailsArguments(wine["id"]));
-                      },
+                      onPress: () {},
                       backgroundColor: Color.fromRGBO(26, 143, 52, 1),
                     ),
                     CustomFlatButton(

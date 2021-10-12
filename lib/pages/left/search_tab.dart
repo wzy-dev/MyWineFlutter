@@ -71,6 +71,7 @@ class _SearchTabState extends State<SearchTab> {
                     height: 20,
                   ),
                   CustomSearchBar(
+                    context: context,
                     onChange: _onSearch,
                     focusNode: widget.focusNode,
                   ),
@@ -144,7 +145,7 @@ class _SearchTabState extends State<SearchTab> {
                       title: Row(
                         children: [
                           Text(
-                            r.item["nameWithSpace"].toUpperCase(),
+                            "${r.item["nameWithSpace"].toUpperCase()} ",
                             style: Theme.of(context).textTheme.headline4,
                           ),
                           _totalQuantity > 0
@@ -182,8 +183,7 @@ class _SearchTabState extends State<SearchTab> {
                               child: Row(
                                 children: [
                                   Text(
-                                    CustomMethods.getColorLabelByIndex(a.color)
-                                        .toUpperCase(),
+                                    "${CustomMethods.getColorLabelByIndex(a.color).toUpperCase()} ",
                                     style: TextStyle(
                                         color: _colorScheme["contrasted"]!),
                                   ),
@@ -209,7 +209,7 @@ class _SearchTabState extends State<SearchTab> {
                         title: Row(
                           children: [
                             Text(
-                              r.item["nameWithSpace"].toUpperCase(),
+                              "${r.item["nameWithSpace"].toUpperCase()} ",
                               style: Theme.of(context).textTheme.headline4,
                             ),
                             _totalQuantity > 0
@@ -245,51 +245,5 @@ class _SearchTabState extends State<SearchTab> {
       ),
     );
     return _listResults;
-  }
-}
-
-class Badge extends StatelessWidget {
-  const Badge({
-    Key? key,
-    required this.value,
-    this.mini = false,
-    this.textColor,
-  }) : super(key: key);
-
-  final int value;
-  final bool mini;
-  final Color? textColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(left: 5),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(100)),
-        color: (textColor == null
-            ? Theme.of(context).hintColor
-            : Colors.transparent),
-        border: (textColor == null
-            ? Border.all(width: 0)
-            : Border.all(
-                color: textColor!,
-                width: 1.5,
-              )),
-      ),
-      child: Padding(
-        padding: (mini
-            ? const EdgeInsets.fromLTRB(5, 2, 5, 2)
-            : const EdgeInsets.fromLTRB(8, 3, 8, 3)),
-        child: Text(
-          value.toString(),
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: textColor ?? Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: (mini ? 11 : 13),
-          ),
-        ),
-      ),
-    );
   }
 }

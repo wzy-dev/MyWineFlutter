@@ -4,9 +4,13 @@ import 'package:animate_icons/animate_icons.dart';
 
 class CustomSearchBar extends StatefulWidget {
   const CustomSearchBar(
-      {Key? key, required this.onChange, required this.focusNode})
+      {Key? key,
+      required this.context,
+      required this.onChange,
+      required this.focusNode})
       : super(key: key);
 
+  final BuildContext context;
   final FocusNode focusNode;
   final Function onChange;
 
@@ -46,7 +50,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
 
                   return widget.onChange(value);
                 },
-                cursorColor: Theme.of(context).primaryColor,
+                cursorColor: Theme.of(context).hintColor,
                 style: TextStyle(color: Colors.grey.shade800, fontSize: 15),
                 decoration: InputDecoration(
                   hintText: "bourgogne, saint-émilion...",

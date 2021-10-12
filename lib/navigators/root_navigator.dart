@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mywine/pages/root/wine_list.dart';
 
 import '../shelf.dart';
 
@@ -12,18 +13,23 @@ class RootNavigator {
                   body: Homepage(),
                 ));
       case "/wine":
+        final WineDetailsArguments arguments =
+            settings.arguments as WineDetailsArguments;
+
         return MaterialPageRoute(
-            builder: (context) => Scaffold(
-                  body: WineDetails(),
-                ),
-            fullscreenDialog: true,
-            settings: settings);
-      case "/second":
+          builder: (context) => Scaffold(
+            body: WineDetails(),
+          ),
+          fullscreenDialog: arguments.fullScreenDialog,
+          settings: settings,
+        );
+      case "/winelist":
         return MaterialPageRoute(
-            builder: (context) => Scaffold(
-                  body: SecondSon(),
-                ),
-            fullscreenDialog: true);
+          builder: (context) => Scaffold(
+            body: WineList(),
+          ),
+          fullscreenDialog: true,
+        );
       case "/third":
         return MaterialPageRoute(
             builder: (context) => Scaffold(

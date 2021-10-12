@@ -42,7 +42,8 @@ class MyApp extends StatelessWidget {
                 context: context, settings: routeSettings),
             theme: ThemeData(
               // Colors
-              primaryColor: Color.fromRGBO(5, 60, 92, 1),
+              primaryColor: Colors.red,
+              // primaryColor: Color.fromRGBO(5, 60, 92, 1),
               colorScheme: ColorScheme(
                 primary: Color.fromRGBO(5, 60, 92, 1),
                 primaryVariant: Color.fromRGBO(138, 162, 158, 1),

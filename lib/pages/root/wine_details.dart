@@ -3,9 +3,10 @@ import 'package:mywine/custom/scaffold/main_container.dart';
 import 'package:mywine/shelf.dart';
 
 class WineDetailsArguments {
-  final String wineId;
+  WineDetailsArguments({required this.wineId, this.fullScreenDialog = true});
 
-  WineDetailsArguments(this.wineId);
+  final String wineId;
+  final bool fullScreenDialog;
 }
 
 class WineDetails extends StatelessWidget {

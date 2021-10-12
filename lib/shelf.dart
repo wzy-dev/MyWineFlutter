@@ -11,6 +11,8 @@ export 'custom/main_widgets/shadow_box.dart';
 export 'custom/main_widgets/animated_gradient.dart';
 export 'custom/main_widgets/button.dart';
 export 'custom/main_widgets/card.dart';
+export 'custom/main_widgets/wine_item.dart';
+export 'custom/main_widgets/badge.dart';
 
 // Methods
 export 'custom/methods/custom_methods.dart';
