@@ -68,6 +68,14 @@ class MyDatabase {
     return Provider.of<List<Appellation>>(context);
   }
 
+  static List<Appellation> getAppellationsWithStock(
+      {required BuildContext context}) {
+    return Provider.of<List<Appellation>>(context, listen: false)
+        .where((a) =>
+            getQuantityOfAppellation(context: context, appellationId: a.id) > 0)
+        .toList();
+  }
+
   static Appellation? getAppellationById(
       {required BuildContext context, required String appellationId}) {
     return Provider.of<List<Appellation>>(context, listen: false)
@@ -97,6 +105,12 @@ class MyDatabase {
 
   static List<Region> getRegions({required BuildContext context}) {
     return Provider.of<List<Region>>(context);
+  }
+
+  static List<Region> getRegionsWithStock({required BuildContext context}) {
+    return Provider.of<List<Region>>(context, listen: false)
+        .where((r) => getQuantityOfRegion(context: context, regionId: r.id) > 0)
+        .toList();
   }
 
   static Region? getRegionById(
@@ -129,6 +143,13 @@ class MyDatabase {
     return Provider.of<List<Country>>(context);
   }
 
+  static List<Country> getCountriesWithStock({required BuildContext context}) {
+    return Provider.of<List<Country>>(context, listen: false)
+        .where(
+            (c) => getQuantityOfCountry(context: context, countryId: c.id) > 0)
+        .toList();
+  }
+
   static Country? getCountryById(
       {required BuildContext context, required String countryId}) {
     return Provider.of<List<Country>>(context, listen: false)
@@ -137,6 +158,12 @@ class MyDatabase {
 
   static List<Domain> getDomains({required BuildContext context}) {
     return Provider.of<List<Domain>>(context);
+  }
+
+  static List<Domain> getDomainsWithStock({required BuildContext context}) {
+    return Provider.of<List<Domain>>(context, listen: false)
+        .where((d) => getQuantityOfDomain(context: context, domainId: d.id) > 0)
+        .toList();
   }
 
   static Domain? getDomainById(
@@ -232,5 +259,73 @@ class MyDatabase {
     if (appellation == null) return null;
 
     return appellation.color;
+  }
+
+  static int getQuantityOfAppellation({
+    required BuildContext context,
+    required String appellationId,
+  }) {
+    final List<Wine> _wines = Provider.of<List<Wine>>(context, listen: false);
+    int quantity = 0;
+
+    _wines
+        .where((wine) => wine.appellation == appellationId)
+        .forEach((wine) => quantity += wine.quantity);
+
+    return quantity;
+  }
+
+  static int getQuantityOfDomain({
+    required BuildContext context,
+    required String domainId,
+  }) {
+    final List<Wine> _wines = Provider.of<List<Wine>>(context, listen: false);
+    int quantity = 0;
+
+    _wines
+        .where((wine) => wine.domain == domainId)
+        .forEach((wine) => quantity += wine.quantity);
+
+    return quantity;
+  }
+
+  static int getQuantityOfCountry({
+    required BuildContext context,
+    required String countryId,
+  }) {
+    final List<Region> _regions =
+        Provider.of<List<Region>>(context, listen: false);
+    final List<Appellation> _appellations =
+        Provider.of<List<Appellation>>(context, listen: false);
+    final List<Wine> _wines = Provider.of<List<Wine>>(context, listen: false);
+    int quantity = 0;
+
+    _regions.where((region) => region.country == countryId).forEach(
+          (r) => _appellations.where((a) => a.region == r.id).forEach(
+                (a) => _wines
+                    .where((w) => w.appellation == a.id)
+                    .forEach((wine) => quantity += wine.quantity),
+              ),
+        );
+
+    return quantity;
+  }
+
+  static int getQuantityOfRegion({
+    required BuildContext context,
+    required String regionId,
+  }) {
+    final List<Appellation> _appellations =
+        Provider.of<List<Appellation>>(context, listen: false);
+    final List<Wine> _wines = Provider.of<List<Wine>>(context, listen: false);
+    int quantity = 0;
+
+    _appellations.where((a) => a.region == regionId).forEach(
+          (a) => _wines
+              .where((w) => w.appellation == a.id)
+              .forEach((wine) => quantity += wine.quantity),
+        );
+
+    return quantity;
   }
 }

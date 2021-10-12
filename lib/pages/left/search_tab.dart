@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:mywine/shelf.dart';
 
 class SearchTab extends StatefulWidget {
@@ -41,9 +42,9 @@ class _SearchTabState extends State<SearchTab> {
   @override
   Widget build(BuildContext context) {
     appellations = MyDatabase.getAppellations(context: context);
-    domains = MyDatabase.getDomains(context: context);
-    regions = MyDatabase.getRegions(context: context);
-    countries = MyDatabase.getCountries(context: context);
+    domains = MyDatabase.getDomainsWithStock(context: context);
+    regions = MyDatabase.getRegionsWithStock(context: context);
+    countries = MyDatabase.getCountriesWithStock(context: context);
     return GestureDetector(
       onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
       child: MainContainer(
@@ -78,7 +79,6 @@ class _SearchTabState extends State<SearchTab> {
             ),
             Expanded(
               child: ListView(
-                // crossAxisAlignment: CrossAxisAlignment.start,
                 padding: const EdgeInsets.all(0),
                 children: _drawResults(context),
               ),
@@ -92,93 +92,152 @@ class _SearchTabState extends State<SearchTab> {
   List<Widget> _drawResults(BuildContext context) {
     List<Widget> _listResults = [];
 
-    results
-        .map(
-          (r) => _listResults.add(
-            Container(
-              margin: const EdgeInsets.symmetric(vertical: 5),
-              child: Material(
-                color: Colors.transparent,
-                child: (r.item["cat"] == "appellation" &&
-                        r.item["entity"].length > 1
-                    ? ExpansionTile(
-                        backgroundColor: Color.fromRGBO(255, 255, 255, 0.8),
-                        tilePadding: const EdgeInsets.symmetric(horizontal: 20),
-                        childrenPadding: const EdgeInsets.fromLTRB(0, 0, 0, 20),
-                        title: Text(
-                          r.item["nameWithSpace"].toUpperCase(),
-                          style: Theme.of(context).textTheme.headline4,
+    results.map(
+      (r) {
+        Map<String, int> _quantity = {};
+        int _totalQuantity = 0;
+        switch (r.item["cat"]) {
+          case "appellation":
+            r.item["entity"].forEach((appellation) {
+              final int stock = MyDatabase.getQuantityOfAppellation(
+                  context: context, appellationId: appellation.id);
+              _quantity[appellation.id] = stock;
+              _totalQuantity += stock;
+            });
+            break;
+          case "domain":
+            Domain domain = r.item["entity"][0];
+            final int stock = MyDatabase.getQuantityOfDomain(
+                context: context, domainId: domain.id);
+            _quantity[domain.id] = stock;
+            _totalQuantity += stock;
+            break;
+          case "region":
+            Region region = r.item["entity"][0];
+            final int stock = MyDatabase.getQuantityOfRegion(
+                context: context, regionId: region.id);
+            _quantity[region.id] = stock;
+            _totalQuantity += stock;
+            break;
+          case "country":
+            Country country = r.item["entity"][0];
+            final int stock = MyDatabase.getQuantityOfCountry(
+                context: context, countryId: country.id);
+            _quantity[country.id] = stock;
+            _totalQuantity += stock;
+            break;
+          default:
+            _quantity = {};
+        }
+
+        _listResults.add(
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 5),
+            child: Material(
+              color: Colors.transparent,
+              child: (r.item["cat"] == "appellation" &&
+                      r.item["entity"].length > 1
+                  ? ExpansionTile(
+                      backgroundColor: Color.fromRGBO(255, 255, 255, 0.8),
+                      tilePadding: const EdgeInsets.symmetric(horizontal: 20),
+                      childrenPadding: const EdgeInsets.fromLTRB(0, 0, 0, 20),
+                      title: Row(
+                        children: [
+                          Text(
+                            r.item["nameWithSpace"].toUpperCase(),
+                            style: Theme.of(context).textTheme.headline4,
+                          ),
+                          _totalQuantity > 0
+                              ? Badge(value: _totalQuantity)
+                              : Container(),
+                        ],
+                      ),
+                      subtitle: Row(
+                        children: [
+                          Text(
+                            CustomMethods.getCatName(r.item["cat"])
+                                .toLowerCase(),
+                            style: Theme.of(context).textTheme.subtitle2,
+                          ),
+                          Text(
+                            " / plusieurs couleurs",
+                            style: Theme.of(context).textTheme.subtitle2,
+                          ),
+                        ],
+                      ),
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: r.item["entity"].map<Widget>((a) {
+                            Map<String, Color> _colorScheme =
+                                CustomMethods.getColorRgbaByIndex(a.color);
+
+                            return ElevatedButton(
+                              onPressed: () {},
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        _colorScheme["color"]!),
+                              ),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    CustomMethods.getColorLabelByIndex(a.color)
+                                        .toUpperCase(),
+                                    style: TextStyle(
+                                        color: _colorScheme["contrasted"]!),
+                                  ),
+                                  _quantity[a.id]! > 0
+                                      ? Badge(
+                                          value: _quantity[a.id]!,
+                                          mini: true,
+                                          textColor: _colorScheme["contrasted"],
+                                        )
+                                      : Container(),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ],
+                    )
+                  : InkWell(
+                      onTap: () {},
+                      child: ListTile(
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 20),
+                        title: Row(
+                          children: [
+                            Text(
+                              r.item["nameWithSpace"].toUpperCase(),
+                              style: Theme.of(context).textTheme.headline4,
+                            ),
+                            _totalQuantity > 0
+                                ? Badge(value: _totalQuantity)
+                                : Container(),
+                          ],
                         ),
                         subtitle: Row(
                           children: [
                             Text(
-                              CustomMethods.getCatName(r.item["cat"]),
+                              CustomMethods.getCatName(r.item["cat"])
+                                  .toLowerCase(),
                               style: Theme.of(context).textTheme.subtitle2,
                             ),
-                            Text(
-                              " (plusieurs couleurs)",
-                              style: Theme.of(context).textTheme.subtitle2,
-                            ),
-                          ],
-                        ),
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: r.item["entity"].map<Widget>((a) {
-                              Map<String, Color> _colorScheme =
-                                  CustomMethods.getColorRgbaByIndex(a.color);
-                              return ElevatedButton(
-                                onPressed: () {},
-                                style: ButtonStyle(
-                                  backgroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                          _colorScheme["color"]!),
-                                ),
-                                child: Text(
-                                  CustomMethods.getColorLabelByIndex(a.color),
-                                  style: TextStyle(
-                                      color: _colorScheme["contrasted"]!),
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                        ],
-                      )
-                    : InkWell(
-                        onTap: () {},
-                        child: ListTile(
-                          contentPadding:
-                              const EdgeInsets.symmetric(horizontal: 20),
-                          title: Text(
-                            r.item["nameWithSpace"].toUpperCase(),
-                            style: Theme.of(context).textTheme.headline4,
-                          ),
-                          subtitle: Row(
-                            children: [
+                            if (r.item["cat"] == "appellation")
                               Text(
-                                CustomMethods.getCatName(r.item["cat"]),
+                                " / ${CustomMethods.getColorLabelByIndex(r.item["entity"][0].color).toLowerCase()}",
                                 style: Theme.of(context).textTheme.subtitle2,
                               ),
-                              if (r.item["cat"] == "appellation")
-                                Text(
-                                  " (${CustomMethods.getColorLabelByIndex(r.item["entity"][0].color).toLowerCase()})",
-                                  style: Theme.of(context).textTheme.subtitle2,
-                                ),
-                            ],
-                          ),
+                          ],
                         ),
-                      )),
-              ),
+                      ),
+                    )),
             ),
           ),
-        )
-        .toList();
-
-    // results
-    //     .map(
-    //       (r) =>
-    //     )
-    //     .toList();
+        );
+      },
+    ).toList();
 
     _listResults.add(
       SizedBox(
@@ -186,5 +245,51 @@ class _SearchTabState extends State<SearchTab> {
       ),
     );
     return _listResults;
+  }
+}
+
+class Badge extends StatelessWidget {
+  const Badge({
+    Key? key,
+    required this.value,
+    this.mini = false,
+    this.textColor,
+  }) : super(key: key);
+
+  final int value;
+  final bool mini;
+  final Color? textColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(left: 5),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(100)),
+        color: (textColor == null
+            ? Theme.of(context).hintColor
+            : Colors.transparent),
+        border: (textColor == null
+            ? Border.all(width: 0)
+            : Border.all(
+                color: textColor!,
+                width: 1.5,
+              )),
+      ),
+      child: Padding(
+        padding: (mini
+            ? const EdgeInsets.fromLTRB(5, 2, 5, 2)
+            : const EdgeInsets.fromLTRB(8, 3, 8, 3)),
+        child: Text(
+          value.toString(),
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: textColor ?? Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: (mini ? 11 : 13),
+          ),
+        ),
+      ),
+    );
   }
 }

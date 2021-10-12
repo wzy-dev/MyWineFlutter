@@ -34,7 +34,7 @@ class CustomElevatedButton extends StatelessWidget {
         ),
         alignment: Alignment.centerLeft,
         backgroundColor: MaterialStateProperty.all<Color>(
-          backgroundColor ?? Color.fromRGBO(138, 162, 158, 1),
+          backgroundColor ?? Theme.of(context).colorScheme.primaryVariant,
         ),
         foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
         shape: MaterialStateProperty.all<RoundedRectangleBorder>(

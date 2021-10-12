@@ -40,7 +40,7 @@ class CustomScaffold extends StatelessWidget {
                     child: AnimatedContainer(
                       duration:
                           ((MediaQuery.of(context).viewInsets.bottom == 0.0)
-                              ? Duration(milliseconds: 150)
+                              ? Duration(milliseconds: 50)
                               : Duration(milliseconds: 0)),
                       width: (MediaQuery.of(context).viewInsets.bottom == 0.0)
                           ? 48
@@ -136,7 +136,9 @@ class CustomScaffold extends StatelessWidget {
                               ),
                               color: (selectedIndex == 0
                                   ? Theme.of(context).primaryColor
-                                  : Color.fromRGBO(138, 162, 158, 1)),
+                                  : Theme.of(context)
+                                      .colorScheme
+                                      .primaryVariant),
                               iconSize: iconSize,
                               onPressed: () => onItemTapped(0),
                             ),
@@ -165,7 +167,7 @@ class CustomScaffold extends StatelessWidget {
                             ),
                             color: (selectedIndex == 2
                                 ? Theme.of(context).primaryColor
-                                : Color.fromRGBO(138, 162, 158, 1)),
+                                : Theme.of(context).colorScheme.primaryVariant),
                             iconSize: iconSize,
                             onPressed: () => onItemTapped(2),
                           ),
