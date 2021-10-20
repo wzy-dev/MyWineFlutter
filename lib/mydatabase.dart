@@ -79,13 +79,29 @@ class MyDatabase {
     return enhancedWine;
   }
 
-  static List<Appellation> getAppellations({required BuildContext context}) {
-    return Provider.of<List<Appellation>>(context);
+  static List<dynamic> getOnce(
+      {required BuildContext context, required List<dynamic> dataList}) {
+    List<dynamic> result = [];
+
+    dataList.forEach((data) => result.indexWhere((dataAdded) =>
+                data.name.toLowerCase() == dataAdded.name.toLowerCase()) ==
+            -1
+        ? result.add(data)
+        : null);
+
+    result.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+    print(result);
+    return result;
+  }
+
+  static List<Appellation> getAppellations(
+      {required BuildContext context, bool listen = true}) {
+    return Provider.of<List<Appellation>>(context, listen: listen);
   }
 
   static List<Appellation> getAppellationsWithStock(
       {required BuildContext context}) {
-    return Provider.of<List<Appellation>>(context, listen: false)
+    return getAppellations(context: context, listen: false)
         .where((a) =>
             getQuantityOfAppellation(context: context, appellationId: a.id) > 0)
         .toList();
@@ -118,8 +134,9 @@ class MyDatabase {
     return enhancedAppellation;
   }
 
-  static List<Region> getRegions({required BuildContext context}) {
-    return Provider.of<List<Region>>(context);
+  static List<Region> getRegions(
+      {required BuildContext context, bool listen = true}) {
+    return Provider.of<List<Region>>(context, listen: listen);
   }
 
   static List<Region> getRegionsWithStock({required BuildContext context}) {
@@ -171,8 +188,9 @@ class MyDatabase {
         .firstWhereOrNull((country) => country.id == countryId);
   }
 
-  static List<Domain> getDomains({required BuildContext context}) {
-    return Provider.of<List<Domain>>(context);
+  static List<Domain> getDomains(
+      {required BuildContext context, bool listen = true}) {
+    return Provider.of<List<Domain>>(context, listen: listen);
   }
 
   static List<Domain> getDomainsWithStock({required BuildContext context}) {

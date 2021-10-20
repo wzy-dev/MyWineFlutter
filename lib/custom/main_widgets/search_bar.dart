@@ -3,15 +3,17 @@ import 'package:mywine/custom/main_widgets/card.dart';
 import 'package:animate_icons/animate_icons.dart';
 
 class CustomSearchBar extends StatefulWidget {
-  const CustomSearchBar(
-      {Key? key,
-      required this.context,
-      required this.onChange,
-      required this.focusNode})
-      : super(key: key);
+  const CustomSearchBar({
+    Key? key,
+    required this.context,
+    required this.onChange,
+    this.placeholder = "bourgogne, saint-émilion...",
+    this.focusNode,
+  }) : super(key: key);
 
   final BuildContext context;
-  final FocusNode focusNode;
+  final FocusNode? focusNode;
+  final String placeholder;
   final Function onChange;
 
   @override
@@ -53,7 +55,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                 cursorColor: Theme.of(context).hintColor,
                 style: TextStyle(color: Colors.grey.shade800, fontSize: 15),
                 decoration: InputDecoration(
-                  hintText: "bourgogne, saint-émilion...",
+                  hintText: widget.placeholder,
                   hintStyle:
                       TextStyle(color: Colors.grey.shade500, fontSize: 15),
                   border: InputBorder.none,

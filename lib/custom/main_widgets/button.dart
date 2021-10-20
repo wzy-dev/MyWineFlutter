@@ -3,27 +3,32 @@ import 'package:flutter/material.dart';
 class CustomElevatedButton extends StatelessWidget {
   const CustomElevatedButton({
     required this.title,
-    this.onPress,
     required this.icon,
+    this.onPress,
     this.backgroundColor,
+    this.dense = false,
     Key? key,
   }) : super(key: key);
 
   final String title;
-  final Function? onPress;
   final Icon icon;
+  final Function? onPress;
   final Color? backgroundColor;
+  final bool dense;
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
       onPressed: onPress == null ? null : () => onPress!(),
       icon: Padding(
-        padding: const EdgeInsets.fromLTRB(5, 0, 8, 0),
+        padding: dense
+            ? const EdgeInsets.all(0)
+            : const EdgeInsets.fromLTRB(5, 0, 8, 0),
         child: icon,
       ),
       label: Padding(
-        padding: const EdgeInsets.only(left: 4),
+        padding:
+            dense ? const EdgeInsets.all(0) : const EdgeInsets.only(left: 4),
         child: Text(
           title.toUpperCase(),
         ),

@@ -28,14 +28,13 @@ class WineItem extends StatelessWidget {
         ),
       ),
       color: Colors.white,
-      child: IntrinsicHeight(
+      child: Container(
+        color: CustomMethods.getColorRgbaByIndex(
+            enhancedWine["appellation"]["color"])["color"],
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Container(
               width: 10,
-              color: CustomMethods.getColorRgbaByIndex(
-                  enhancedWine["appellation"]["color"])["color"],
             ),
             expandable
                 ? Expanded(
@@ -45,15 +44,46 @@ class WineItem extends StatelessWidget {
                       child: ExpansionTile(
                         title: _drawTitle(context),
                         subtitle: _drawSubTitle(context),
-                        tilePadding: const EdgeInsets.fromLTRB(10, 8, 10, 15),
+                        collapsedBackgroundColor: Colors.white,
+                        backgroundColor: Colors.white,
+                        tilePadding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
                         expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Padding(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 7),
+                                horizontal: 10, vertical: 0),
                             child: CustomElevatedButton(
-                              title: "Text",
+                              title: "Voir la fiche de ce vin",
                               icon: Icon(Icons.info_outline),
+                              onPress: () {
+                                Navigator.of(context, rootNavigator: true)
+                                    .pushNamed(
+                                  "/wine",
+                                  arguments: WineDetailsArguments(
+                                      wineId: enhancedWine["id"]),
+                                );
+                              },
+                              backgroundColor: Theme.of(context).hintColor,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 0),
+                            child: CustomFlatButton(
+                              title: "Trouver mes bouteilles",
+                              icon: Icon(Icons.search_outlined),
+                              onPress: () {},
+                              backgroundColor: Color.fromRGBO(26, 143, 52, 1),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 0),
+                            child: CustomFlatButton(
+                              title: "Boire cette bouteille",
+                              icon: Icon(Icons.wine_bar_outlined),
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.secondary,
                             ),
                           ),
                         ],
@@ -64,7 +94,7 @@ class WineItem extends StatelessWidget {
                     child: Material(
                       child: ListTile(
                         contentPadding:
-                            const EdgeInsets.fromLTRB(10, 8, 10, 15),
+                            const EdgeInsets.fromLTRB(10, 8, 10, 10),
                         onTap: () {
                           Navigator.of(context, rootNavigator: true).pushNamed(
                             "/wine",
@@ -87,16 +117,22 @@ class WineItem extends StatelessWidget {
   }
 
   Column _drawSubTitle(BuildContext context) {
+    Map<String, Color> _colorScheme =
+        CustomMethods.getColorRgbaByIndex(enhancedWine["appellation"]["color"]);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        SizedBox(height: 3),
         Text(
           enhancedWine["appellation"]["name"],
           style: Theme.of(context).textTheme.subtitle1,
         ),
-        SizedBox(height: 5),
-        // Badge(value: freeQuantity ?? enhancedWine["quantity"]),
-        Text("567"),
+        SizedBox(height: 7),
+        Badge(
+          value: freeQuantity ?? enhancedWine["quantity"],
+          color: _colorScheme["color"],
+          contrastedColor: _colorScheme["contrasted"],
+        ),
       ],
     );
   }
@@ -104,7 +140,7 @@ class WineItem extends StatelessWidget {
   Text _drawTitle(BuildContext context) {
     return Text(
       "${enhancedWine["domain"].name.toUpperCase()} ${enhancedWine["millesime"]}",
-      style: Theme.of(context).textTheme.headline2,
+      style: Theme.of(context).textTheme.headline4,
     );
   }
 }

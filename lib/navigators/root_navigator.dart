@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mywine/pages/root/wine_list.dart';
-
 import '../shelf.dart';
 
 class RootNavigator {
@@ -30,16 +28,31 @@ class RootNavigator {
           ),
           fullscreenDialog: true,
         );
-      case "/third":
+      case "/filters":
         return MaterialPageRoute(
             builder: (context) => Scaffold(
-                  body: ThirdSon(),
+                  body: Filters(),
                 ));
+      case "/filter/appellation":
+        return MaterialPageRoute(
+          builder: (context) => Scaffold(
+            body: FilterAppellation(),
+          ),
+          settings: settings,
+        );
+      case "/filter/domain":
+        return MaterialPageRoute(
+          builder: (context) => Scaffold(
+            body: FilterDomain(),
+          ),
+          settings: settings,
+        );
       default:
         return MaterialPageRoute(
-            builder: (context) => Scaffold(
-                  body: Homepage(),
-                ));
+          builder: (context) => Scaffold(
+            body: Homepage(),
+          ),
+        );
     }
   }
 }

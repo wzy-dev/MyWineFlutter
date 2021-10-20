@@ -191,7 +191,7 @@ class _SearchTabState extends State<SearchTab> {
                                       ? Badge(
                                           value: _quantity[a.id]!,
                                           mini: true,
-                                          textColor: _colorScheme["contrasted"],
+                                          color: _colorScheme["contrasted"],
                                         )
                                       : Container(),
                                 ],

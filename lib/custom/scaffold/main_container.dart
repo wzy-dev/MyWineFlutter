@@ -3,18 +3,24 @@ import 'package:flutter/cupertino.dart';
 
 class MainContainer extends StatelessWidget {
   const MainContainer(
-      {Key? key, required this.child, this.title, this.backgroundColor})
+      {Key? key,
+      required this.child,
+      this.title,
+      this.backgroundColor,
+      this.action})
       : super(key: key);
 
   final Widget child;
   final String? title;
   final Color? backgroundColor;
+  final Widget? action;
 
   @override
   Widget build(BuildContext context) {
     final AppBar _appBar = AppBar(
       iconTheme: IconThemeData(color: Colors.white),
       title: Text(title ?? ""),
+      actions: [action ?? Container()],
     );
     final double _heightAppBar = _appBar.preferredSize.height;
 

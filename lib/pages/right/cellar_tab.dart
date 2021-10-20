@@ -11,29 +11,6 @@ class CellarTab extends StatefulWidget {
 }
 
 class _CellarTabState extends State<CellarTab> {
-  // ShaderMask _shaderMask() {
-  //   return ShaderMask(
-  //     shaderCallback: (Rect rect) {
-  //       return LinearGradient(
-  //         begin: Alignment.centerLeft,
-  //         end: Alignment.centerRight,
-  //         colors: [
-  //           Colors.white,
-  //           Colors.white,
-  //           Color.fromRGBO(0, 0, 0, 0.5),
-  //           Color.fromRGBO(0, 0, 0, 0),
-  //           Color.fromRGBO(0, 0, 0, 0),
-  //           Color.fromRGBO(0, 0, 0, 0.5),
-  //           Colors.white,
-  //           Colors.white
-  //         ],
-  //         stops: [0.0, 0.01, 0.03, 0.05, 0.95, 0.97, 0.99, 1.0],
-  //       ).createShader(rect);
-  //     },
-  //     blendMode: BlendMode.dstOut,
-  //   );
-  // }
-
   Widget _drawCellar({required List<Cellar> snapshot}) {
     return Container(
       child: Column(
@@ -129,7 +106,7 @@ class _CellarTabState extends State<CellarTab> {
           ),
           //Slide under the fab
           SizedBox(
-            height: 80,
+            height: 110,
           ),
         ],
       ),

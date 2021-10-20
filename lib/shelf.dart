@@ -13,6 +13,7 @@ export 'custom/main_widgets/button.dart';
 export 'custom/main_widgets/card.dart';
 export 'custom/main_widgets/wine_item.dart';
 export 'custom/main_widgets/badge.dart';
+export 'custom/main_widgets/filter_search.dart';
 
 // Methods
 export 'custom/methods/custom_methods.dart';
@@ -43,6 +44,10 @@ export 'homepage.dart';
 export 'pages/root/wine_details.dart';
 export 'pages/root/second_son.dart';
 export 'pages/root/third_son.dart';
+export 'pages/root/wine_list.dart';
+export 'pages/root/filters/filters.dart';
+export 'pages/root/filters/filter_appellation.dart';
+export 'pages/root/filters/filter_domain.dart';
 
 // Left
 export 'pages/left/search_tab.dart';
