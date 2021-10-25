@@ -1,14 +1,14 @@
 [
     {
-        "merged": "/Users/simonwegrzyn/Documents sur mon Mac/development/MyWineFlutter/build/firebase_auth/intermediates/res/merged/profile/color/common_google_signin_btn_tint.xml",
-        "source": "/Users/simonwegrzyn/.gradle/caches/transforms-2/files-2.1/93fbae78ce8dc134e45274d9cd223907/jetified-play-services-base-17.1.0/res/color/common_google_signin_btn_tint.xml"
+        "merged": "C:\\Users\\Simon\\Documents\\Github\\MyWineFlutter\\build\\firebase_auth\\intermediates\\res\\merged\\profile\\color\\common_google_signin_btn_text_light.xml",
+        "source": "C:\\Users\\Simon\\.gradle\\caches\\transforms-2\\files-2.1\\93fbae78ce8dc134e45274d9cd223907\\jetified-play-services-base-17.1.0\\res\\color\\common_google_signin_btn_text_light.xml"
     },
     {
-        "merged": "/Users/simonwegrzyn/Documents sur mon Mac/development/MyWineFlutter/build/firebase_auth/intermediates/res/merged/profile/color/common_google_signin_btn_text_dark.xml",
-        "source": "/Users/simonwegrzyn/.gradle/caches/transforms-2/files-2.1/93fbae78ce8dc134e45274d9cd223907/jetified-play-services-base-17.1.0/res/color/common_google_signin_btn_text_dark.xml"
+        "merged": "C:\\Users\\Simon\\Documents\\Github\\MyWineFlutter\\build\\firebase_auth\\intermediates\\res\\merged\\profile\\color\\common_google_signin_btn_tint.xml",
+        "source": "C:\\Users\\Simon\\.gradle\\caches\\transforms-2\\files-2.1\\93fbae78ce8dc134e45274d9cd223907\\jetified-play-services-base-17.1.0\\res\\color\\common_google_signin_btn_tint.xml"
     },
     {
-        "merged": "/Users/simonwegrzyn/Documents sur mon Mac/development/MyWineFlutter/build/firebase_auth/intermediates/res/merged/profile/color/common_google_signin_btn_text_light.xml",
-        "source": "/Users/simonwegrzyn/.gradle/caches/transforms-2/files-2.1/93fbae78ce8dc134e45274d9cd223907/jetified-play-services-base-17.1.0/res/color/common_google_signin_btn_text_light.xml"
+        "merged": "C:\\Users\\Simon\\Documents\\Github\\MyWineFlutter\\build\\firebase_auth\\intermediates\\res\\merged\\profile\\color\\common_google_signin_btn_text_dark.xml",
+        "source": "C:\\Users\\Simon\\.gradle\\caches\\transforms-2\\files-2.1\\93fbae78ce8dc134e45274d9cd223907\\jetified-play-services-base-17.1.0\\res\\color\\common_google_signin_btn_text_dark.xml"
     }
 ]

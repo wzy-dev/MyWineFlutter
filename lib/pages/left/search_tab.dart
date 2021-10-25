@@ -170,11 +170,19 @@ class _SearchTabState extends State<SearchTab> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: r.item["entity"].map<Widget>((a) {
-                            Map<String, Color> _colorScheme =
-                                CustomMethods.getColorRgbaByIndex(a.color);
+                            Map<String, dynamic> _colorScheme =
+                                CustomMethods.getColorByIndex(a.color);
 
                             return ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () =>
+                                  Navigator.of(context, rootNavigator: true)
+                                      .pushNamed(
+                                "/winelist",
+                                arguments: WineListArguments(
+                                  selectedAppellations: [r.item["name"]],
+                                  selectedColors: [a.color],
+                                ),
+                              ),
                               style: ButtonStyle(
                                 backgroundColor:
                                     MaterialStateProperty.all<Color>(
@@ -183,7 +191,7 @@ class _SearchTabState extends State<SearchTab> {
                               child: Row(
                                 children: [
                                   Text(
-                                    "${CustomMethods.getColorLabelByIndex(a.color).toUpperCase()} ",
+                                    "${CustomMethods.getColorByIndex(a.color)["name"].toUpperCase()} ",
                                     style: TextStyle(
                                         color: _colorScheme["contrasted"]!),
                                   ),
@@ -202,7 +210,21 @@ class _SearchTabState extends State<SearchTab> {
                       ],
                     )
                   : InkWell(
-                      onTap: () {},
+                      onTap: () =>
+                          Navigator.of(context, rootNavigator: true).pushNamed(
+                        "/winelist",
+                        arguments: WineListArguments(
+                          selectedRegions: r.item["cat"] == "region"
+                              ? [r.item["name"]]
+                              : null,
+                          selectedAppellations: r.item["cat"] == "appellation"
+                              ? [r.item["name"]]
+                              : null,
+                          selectedDomains: r.item["cat"] == "domain"
+                              ? [r.item["name"]]
+                              : null,
+                        ),
+                      ),
                       child: ListTile(
                         contentPadding:
                             const EdgeInsets.symmetric(horizontal: 20),
@@ -226,7 +248,7 @@ class _SearchTabState extends State<SearchTab> {
                             ),
                             if (r.item["cat"] == "appellation")
                               Text(
-                                " / ${CustomMethods.getColorLabelByIndex(r.item["entity"][0].color).toLowerCase()}",
+                                " / ${CustomMethods.getColorByIndex(r.item["entity"][0].color)["name"].toLowerCase()}",
                                 style: Theme.of(context).textTheme.subtitle2,
                               ),
                           ],

@@ -1,27 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "/Users/simonwegrzyn/Documents sur mon Mac/development/MyWineFlutter/build/firebase_core/intermediates/res/merged/profile/values-ka/values-ka.xml",
+            "outputFile": "C:\\Users\\Simon\\Documents\\Github\\MyWineFlutter\\build\\firebase_core\\intermediates\\incremental\\mergeProfileResources\\merged.dir\\values-ka\\values-ka.xml",
             "map": [
                 {
-                    "source": "/Users/simonwegrzyn/.gradle/caches/transforms-2/files-2.1/f4a15a5606c9a028857d8a3e89eefa0f/core-1.1.0/res/values-ka/values-ka.xml",
-                    "from": {
-                        "startLines": "2",
-                        "startColumns": "4",
-                        "startOffsets": "55",
-                        "endColumns": "100",
-                        "endOffsets": "151"
-                    },
-                    "to": {
-                        "startLines": "3",
-                        "startColumns": "4",
-                        "startOffsets": "307",
-                        "endColumns": "100",
-                        "endOffsets": "403"
-                    }
-                },
-                {
-                    "source": "/Users/simonwegrzyn/.gradle/caches/transforms-2/files-2.1/9d3ebf861ced2bc6fde51a467c749fe4/jetified-play-services-basement-17.0.0/res/values-ka/values.xml",
+                    "source": "C:\\Users\\Simon\\.gradle\\caches\\transforms-2\\files-2.1\\9d3ebf861ced2bc6fde51a467c749fe4\\jetified-play-services-basement-17.0.0\\res\\values-ka\\values.xml",
                     "from": {
                         "startLines": "4",
                         "startColumns": "0",
@@ -35,32 +18,32 @@
                         "startOffsets": "105",
                         "endColumns": "201",
                         "endOffsets": "302"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\Simon\\.gradle\\caches\\transforms-2\\files-2.1\\f4a15a5606c9a028857d8a3e89eefa0f\\core-1.1.0\\res\\values-ka\\values-ka.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "100",
+                        "endOffsets": "151"
+                    },
+                    "to": {
+                        "startLines": "3",
+                        "startColumns": "4",
+                        "startOffsets": "307",
+                        "endColumns": "100",
+                        "endOffsets": "403"
                     }
                 }
             ]
         },
         {
-            "outputFile": "/Users/simonwegrzyn/Documents sur mon Mac/development/MyWineFlutter/build/firebase_core/intermediates/incremental/mergeProfileResources/merged.dir/values-ka/values-ka.xml",
+            "outputFile": "C:\\Users\\Simon\\Documents\\Github\\MyWineFlutter\\build\\firebase_core\\intermediates\\res\\merged\\profile\\values-ka\\values-ka.xml",
             "map": [
                 {
-                    "source": "/Users/simonwegrzyn/.gradle/caches/transforms-2/files-2.1/f4a15a5606c9a028857d8a3e89eefa0f/core-1.1.0/res/values-ka/values-ka.xml",
-                    "from": {
-                        "startLines": "2",
-                        "startColumns": "4",
-                        "startOffsets": "55",
-                        "endColumns": "100",
-                        "endOffsets": "151"
-                    },
-                    "to": {
-                        "startLines": "3",
-                        "startColumns": "4",
-                        "startOffsets": "307",
-                        "endColumns": "100",
-                        "endOffsets": "403"
-                    }
-                },
-                {
-                    "source": "/Users/simonwegrzyn/.gradle/caches/transforms-2/files-2.1/9d3ebf861ced2bc6fde51a467c749fe4/jetified-play-services-basement-17.0.0/res/values-ka/values.xml",
+                    "source": "C:\\Users\\Simon\\.gradle\\caches\\transforms-2\\files-2.1\\9d3ebf861ced2bc6fde51a467c749fe4\\jetified-play-services-basement-17.0.0\\res\\values-ka\\values.xml",
                     "from": {
                         "startLines": "4",
                         "startColumns": "0",
@@ -74,6 +57,23 @@
                         "startOffsets": "105",
                         "endColumns": "201",
                         "endOffsets": "302"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\Simon\\.gradle\\caches\\transforms-2\\files-2.1\\f4a15a5606c9a028857d8a3e89eefa0f\\core-1.1.0\\res\\values-ka\\values-ka.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "100",
+                        "endOffsets": "151"
+                    },
+                    "to": {
+                        "startLines": "3",
+                        "startColumns": "4",
+                        "startOffsets": "307",
+                        "endColumns": "100",
+                        "endOffsets": "403"
                     }
                 }
             ]

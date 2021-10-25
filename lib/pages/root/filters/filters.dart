@@ -1,18 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mywine/shelf.dart';
 
-class SizeBottle {
-  SizeBottle({required this.name});
-
-  final String name;
-}
-
-class ColorBottle {
-  ColorBottle({required this.name});
-
-  final String name;
-}
-
 class Filters extends StatefulWidget {
   const Filters({Key? key}) : super(key: key);
 
@@ -22,68 +10,57 @@ class Filters extends StatefulWidget {
 
 class _FiltersState extends State<Filters> {
   List<String> _selectedAppellations = [];
+  List<ColorBottle> _selectedColors = [];
   List<String> _selectedDomains = [];
-  List<String> _selectedRegions = [];
-  List<String> _selectedSizes = [];
-  List<String> _selectedColors = [];
-  bool _regionIsExpanded = false;
-  bool _sizeIsExpanded = false;
-  bool _colorIsExpanded = false;
-  List<Appellation>? _filteredAppellationsList;
-  List<Domain>? _filteredDomainsList;
+  List<Region> _selectedRegions = [];
+  List<SizeBottle> _selectedSizes = [];
+  bool _regionIsExpanded = true;
+  bool _colorIsExpanded = true;
+  bool _sizeIsExpanded = true;
   late List<Map<String, dynamic>> _listWines;
 
   @override
   void initState() {
-    _listWines = MyDatabase.getEnhancedWines(context: context);
+    _listWines = MyDatabase.getEnhancedWines(context: context)
+        .where((wine) => wine["quantity"] > 0)
+        .toList();
     super.initState();
   }
 
-  _getEquivalentInTwoLists(
-      {required List<Map<String, dynamic>> firstList,
-      required List<Map<String, dynamic>> lastList}) {
-    if (firstList.length == 0) return lastList;
-    if (lastList.length == 0) return firstList;
+  List<Region> _setFilteredRegions() {
+    List<Map<String, dynamic>> listWines = _getWineList("region");
+    List<Region> filteredRegionsList = [];
 
-    List<Map<String, dynamic>> result = [];
+    listWines.forEach((wine) {
+      Region? region = MyDatabase.getRegionById(
+          context: context, regionId: wine["appellation"]["region"]["id"]);
 
-    firstList.forEach((aElement) {
-      Map<String, dynamic> wine = lastList.firstWhere(
-          (bElement) => bElement["id"] == aElement["id"],
-          orElse: () => {"id": null});
-      if (wine["id"] != null) {
-        result.add(wine);
+      if (region != null) {
+        filteredRegionsList.add(region);
       }
     });
 
-    return result;
+    if (filteredRegionsList.length > 0) {
+      List toRemove = [];
+      _selectedRegions.forEach((selectedRegion) {
+        int index = filteredRegionsList.indexWhere(
+            (filteredRegion) => filteredRegion.name == selectedRegion.name);
+        if (index == -1) toRemove.add(selectedRegion);
+      });
+      _selectedRegions.removeWhere((element) => toRemove.contains(element));
+      return filteredRegionsList;
+    }
+
+    if (filteredRegionsList.length == 0) return [];
+
+    return MyDatabase.getUsedRegions(context: context, listen: false);
   }
 
-  void _filter() {
-    List<Map<String, dynamic>> filteredListWinesRegionAndAppellation = [];
-    List<Map<String, dynamic>> filteredListWinesRegion = [];
-    List<Map<String, dynamic>> filteredListWinesAppellation = [];
-    List<Map<String, dynamic>> filteredListWinesDomain = [];
-
-    // On récupere tous les vins de chaque filtres (region, appellation, domaine...)
-
-    _selectedRegions.forEach((region) => _listWines
-        .where((wine) => wine["appellation"]["region"]["name"] == region)
-        .forEach((wine) => filteredListWinesRegion.add(wine)));
-
-    _selectedAppellations.forEach((appellation) => _listWines
-        .where((wine) => wine["appellation"]["name"] == appellation)
-        .forEach((wine) => filteredListWinesAppellation.add(wine)));
-
-    _selectedDomains.forEach((domain) => _listWines
-        .where((wine) => wine["domain"].name == domain)
-        .forEach((wine) => filteredListWinesDomain.add(wine)));
-
-    // On récupere la liste des appellations en fonction des régions
-
+  List<Appellation> _setFilteredAppellations() {
+    List<Map<String, dynamic>> listWines = _getWineList("appellation");
     List<Appellation> filteredAppellationsList = [];
 
-    filteredListWinesRegion.forEach((wine) {
+    listWines.forEach((wine) {
       Appellation? appellation = MyDatabase.getAppellationById(
           context: context, appellationId: wine["appellation"]["id"]);
 
@@ -92,23 +69,59 @@ class _FiltersState extends State<Filters> {
       }
     });
 
-    if (filteredAppellationsList.length > 0)
-      _filteredAppellationsList = filteredAppellationsList;
+    if (filteredAppellationsList.length > 0) {
+      List toRemove = [];
+      _selectedAppellations.forEach((selectedAppellation) {
+        int index = filteredAppellationsList.indexWhere((filteredAppellation) =>
+            filteredAppellation.name == selectedAppellation);
+        if (index == -1) toRemove.add(selectedAppellation);
+      });
+      _selectedAppellations
+          .removeWhere((element) => toRemove.contains(element));
+      return filteredAppellationsList;
+    }
 
-    if (filteredAppellationsList.length == 0)
-      _selectedRegions.length > 0
-          ? _filteredAppellationsList = []
-          : _filteredAppellationsList = null;
+    if (filteredAppellationsList.length == 0) return [];
+    return MyDatabase.getUsedAppellations(context: context, listen: false);
+  }
 
-    // On récupere la liste des domaines en fonction des régions et des appellations
+  List<ColorBottle> _setFilteredColors() {
+    List<Map<String, dynamic>> listWines = _getWineList("color");
+    List<ColorBottle> filteredColorsList = [];
 
-    filteredListWinesRegionAndAppellation = _getEquivalentInTwoLists(
-        firstList: filteredListWinesRegion,
-        lastList: filteredListWinesAppellation);
+    if (listWines.indexWhere((wine) => wine["appellation"]["color"] == "r") >
+        -1)
+      filteredColorsList.add(ColorBottle(
+          name: CustomMethods.getColorByIndex("r")["name"], value: "r"));
+    if (listWines.indexWhere((wine) => wine["appellation"]["color"] == "w") >
+        -1)
+      filteredColorsList.add(ColorBottle(
+          name: CustomMethods.getColorByIndex("w")["name"], value: "w"));
+    if (listWines.indexWhere((wine) => wine["appellation"]["color"] == "p") >
+        -1)
+      filteredColorsList.add(ColorBottle(
+          name: CustomMethods.getColorByIndex("p")["name"], value: "p"));
+    print(listWines.where((wine) => wine["appellation"]["color"] == "p"));
+    if (filteredColorsList.length > 0) {
+      List toRemove = [];
+      _selectedColors.forEach((selectedColor) {
+        int index = filteredColorsList.indexWhere(
+            (filteredColor) => filteredColor.name == selectedColor.name);
+        if (index == -1) toRemove.add(selectedColor);
+      });
+      _selectedColors.removeWhere((element) => toRemove.contains(element));
+      return filteredColorsList;
+    }
 
+    if (filteredColorsList.length == 0) return [];
+    return MyDatabase.getUsedColors(context: context);
+  }
+
+  List<Domain> _setFilteredDomains() {
+    List<Map<String, dynamic>> listWines = _getWineList("domain");
     List<Domain> filteredDomainsList = [];
 
-    filteredListWinesRegionAndAppellation.forEach((wine) {
+    listWines.forEach((wine) {
       Domain? domain = wine["domain"];
 
       if (domain != null) {
@@ -116,13 +129,75 @@ class _FiltersState extends State<Filters> {
       }
     });
 
-    if (filteredDomainsList.length > 0)
-      _filteredDomainsList = filteredDomainsList;
+    if (filteredDomainsList.length > 0) {
+      List toRemove = [];
+      _selectedDomains.forEach((selectedDomain) {
+        int index = filteredDomainsList.indexWhere(
+            (filteredDomain) => filteredDomain.name == selectedDomain);
+        if (index == -1) toRemove.add(selectedDomain);
+      });
+      _selectedDomains.removeWhere((element) => toRemove.contains(element));
+      return filteredDomainsList;
+    }
 
-    if (filteredDomainsList.length == 0)
-      _selectedAppellations.length > 0
-          ? _filteredDomainsList = []
-          : _filteredDomainsList = null;
+    if (filteredDomainsList.length == 0) return [];
+    return MyDatabase.getUsedDomains(context: context, listen: false);
+  }
+
+  List<SizeBottle> _setFilteredSizes() {
+    List<Map<String, dynamic>> listWines = _getWineList("size");
+    List<SizeBottle> filteredSizesList = [];
+
+    if (listWines.indexWhere((wine) => wine["size"] == 750) > -1)
+      filteredSizesList.add(SizeBottle(name: "Bouteille", value: 750));
+    if (listWines.indexWhere((wine) => wine["size"] == 1500) > -1)
+      filteredSizesList.add(SizeBottle(name: "Magnum", value: 1500));
+
+    if (filteredSizesList.length > 0) {
+      List toRemove = [];
+      _selectedSizes.forEach((selectedSize) {
+        int index = filteredSizesList.indexWhere(
+            (filteredSize) => filteredSize.name == selectedSize.name);
+        if (index == -1) toRemove.add(selectedSize);
+      });
+      _selectedSizes.removeWhere((element) => toRemove.contains(element));
+      return filteredSizesList;
+    }
+
+    if (filteredSizesList.length == 0) return [];
+    return [
+      SizeBottle(name: "Bouteille", value: 750),
+      SizeBottle(name: "Magnum", value: 1500),
+    ];
+  }
+
+  List<Map<String, dynamic>> _getWineList(String className) {
+    return _listWines
+        .where((wine) =>
+            (className == "region" ||
+                (_selectedRegions.length == 0 ||
+                    _selectedRegions.indexWhere((region) =>
+                            wine["appellation"]["region"]["name"] ==
+                            region.name) >
+                        -1)) &&
+            (className == "appellation" ||
+                (_selectedAppellations.length == 0 ||
+                    _selectedAppellations.indexWhere((appellation) =>
+                            wine["appellation"]["name"] == appellation) >
+                        -1)) &&
+            (className == "color" ||
+                (_selectedColors.length == 0 ||
+                    _selectedColors.indexWhere((color) =>
+                            wine["appellation"]["color"] == color.value) >
+                        -1)) &&
+            (className == "domain" ||
+                (_selectedDomains.length == 0 ||
+                    _selectedDomains.indexWhere((domain) => wine["domain"].name == domain) >
+                        -1)) &&
+            (className == "size" ||
+                (_selectedSizes.length == 0 ||
+                    _selectedSizes.indexWhere((size) => wine["size"] == size.value) > -1)))
+        .toList();
   }
 
   @override
@@ -136,6 +211,7 @@ class _FiltersState extends State<Filters> {
           _drawChipFilter(
             context: context,
             isExpanded: _regionIsExpanded,
+            className: "region",
             onPress: () => setState(
               () {
                 _regionIsExpanded = !_regionIsExpanded;
@@ -144,7 +220,7 @@ class _FiltersState extends State<Filters> {
             titleButton: "Chercher une région",
             data: MyDatabase.getOnce(
               context: context,
-              dataList: MyDatabase.getRegions(context: context, listen: false),
+              dataList: _setFilteredRegions(),
             ),
             selectedData: _selectedRegions,
           ),
@@ -152,6 +228,7 @@ class _FiltersState extends State<Filters> {
           _drawComplexFilter(
             context: context,
             selectedList: _selectedAppellations,
+            className: "appellation",
             titleButton: "Chercher une appellation",
             onOpenFilter: () async {
               List<String>? selectedAppellations =
@@ -160,15 +237,13 @@ class _FiltersState extends State<Filters> {
                       arguments: FilterAppellationArguments(
                           initialSelection: _selectedAppellations,
                           filteredAppellationsList:
-                              _filteredAppellationsList)) as List<String>?;
+                              _setFilteredAppellations())) as List<String>?;
 
               if (selectedAppellations == null) return;
 
               setState(() {
                 _selectedAppellations = selectedAppellations;
               });
-
-              _filter();
             },
             deleteAction: (int index) => setState(() {
               _selectedAppellations.removeAt(index);
@@ -177,10 +252,25 @@ class _FiltersState extends State<Filters> {
               _selectedAppellations = [];
             }),
           ),
+          // Filtre de la couleur
+          _drawChipFilter(
+            context: context,
+            isExpanded: _colorIsExpanded,
+            onPress: () => setState(
+              () {
+                _colorIsExpanded = !_colorIsExpanded;
+              },
+            ),
+            className: "color",
+            titleButton: "Chercher une couleur",
+            data: _setFilteredColors(),
+            selectedData: _selectedColors,
+          ),
           // Filtre du domaine
           _drawComplexFilter(
             context: context,
             selectedList: _selectedDomains,
+            className: "appellation",
             titleButton: "Chercher un domaine",
             onOpenFilter: () async {
               List<String>? selectedDomains =
@@ -188,7 +278,7 @@ class _FiltersState extends State<Filters> {
                           "/filter/domain",
                           arguments: FilterDomainArguments(
                               initialSelection: _selectedDomains,
-                              filteredDomainsList: _filteredDomainsList))
+                              filteredDomainsList: _setFilteredDomains()))
                       as List<String>?;
 
               if (selectedDomains == null) return;
@@ -196,8 +286,6 @@ class _FiltersState extends State<Filters> {
               setState(() {
                 _selectedDomains = selectedDomains;
               });
-
-              _filter();
             },
             deleteAction: (int index) => setState(() {
               _selectedDomains.removeAt(index);
@@ -215,29 +303,24 @@ class _FiltersState extends State<Filters> {
                 _sizeIsExpanded = !_sizeIsExpanded;
               },
             ),
+            className: "size",
             titleButton: "Chercher une contenance",
-            data: [
-              SizeBottle(name: "Bouteille"),
-              SizeBottle(name: "Magnum"),
-            ],
+            data: _setFilteredSizes(),
             selectedData: _selectedSizes,
           ),
-          // Filtre de la couleur
-          _drawChipFilter(
-            context: context,
-            isExpanded: _colorIsExpanded,
-            onPress: () => setState(
-              () {
-                _colorIsExpanded = !_colorIsExpanded;
-              },
-            ),
-            titleButton: "Chercher une couleur",
-            data: [
-              ColorBottle(name: "Rouge"),
-              ColorBottle(name: "Blanc"),
-              ColorBottle(name: "Rosé"),
-            ],
-            selectedData: _selectedColors,
+          // Appliquer les filtres
+          CustomElevatedButton(
+            title: "Appliquer",
+            icon: Icon(Icons.save_alt_outlined),
+            backgroundColor: Theme.of(context).colorScheme.secondary,
+            onPress: () => Navigator.of(context).pop({
+              "regions": _selectedRegions.map((region) => region.name).toList(),
+              "appellations": _selectedAppellations,
+              "colors": _selectedColors.map((color) => color.value).toList(),
+              "domains": _selectedDomains,
+              "sizes":
+                  _selectedSizes.map((size) => size.value.toString()).toList(),
+            }),
           ),
         ],
       ),
@@ -248,9 +331,10 @@ class _FiltersState extends State<Filters> {
       {required BuildContext context,
       required bool isExpanded,
       required Function onPress,
+      required String className,
       required String titleButton,
       required List<dynamic> data,
-      required List<String> selectedData}) {
+      required List<dynamic> selectedData}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -270,7 +354,7 @@ class _FiltersState extends State<Filters> {
                     spacing: 5,
                     children: data.map((e) {
                       int index = selectedData
-                          .indexWhere((element) => element == e.name);
+                          .indexWhere((element) => element.name == e.name);
 
                       return InputChip(
                         label: Text(e.name),
@@ -284,9 +368,8 @@ class _FiltersState extends State<Filters> {
                           setState(() {
                             index > -1
                                 ? selectedData.removeAt(index)
-                                : selectedData.add(e.name);
+                                : selectedData.add(e);
                           });
-                          _filter();
                         },
                         tooltip: "Supprimer",
                       );
@@ -305,6 +388,7 @@ class _FiltersState extends State<Filters> {
     required List<String> selectedList,
     required Function(int) deleteAction,
     required Function deleteAllAction,
+    required String className,
     required String titleButton,
   }) {
     return Column(
@@ -316,63 +400,25 @@ class _FiltersState extends State<Filters> {
           title: titleButton,
           onPress: onOpenFilter,
         ),
-        Container(
-          height: 50,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            separatorBuilder: (BuildContext context, int index) =>
-                SizedBox(width: 5),
-            itemCount: selectedList.length,
-            itemBuilder: (BuildContext context, int index) {
-              InputChip chip = _drawChip(
-                label: selectedList[index],
-                deleteAction: () {
-                  deleteAction(index);
-                  _filter();
-                },
+        Wrap(
+          spacing: 5,
+          children: [
+            selectedList.length >= 2
+                ? DeleteChip(
+                    label: "Tout supprimer",
+                    deleteAction: () => deleteAllAction(),
+                  )
+                : Container(),
+            ...selectedList.map((e) {
+              int index = selectedList.indexWhere((element) => element == e);
+              return DeleteChip(
+                label: e,
+                deleteAction: () => deleteAction(index),
               );
-
-              if (index == 0 && selectedList.length >= 2) {
-                return Row(
-                  children: [
-                    _drawChip(
-                      label: "Tout supprimer",
-                      deleteAction: () {
-                        deleteAllAction();
-                        _filter();
-                      },
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    chip
-                  ],
-                );
-              }
-
-              return chip;
-            },
-          ),
+            }).toList()
+          ],
         ),
       ],
-    );
-  }
-
-  InputChip _drawChip({required String label, required Function deleteAction}) {
-    return InputChip(
-      pressElevation: 2,
-      padding: const EdgeInsets.all(5),
-      side: BorderSide(),
-      backgroundColor: Colors.transparent,
-      label: Text(label),
-      deleteIcon: Icon(
-        Icons.clear_outlined,
-        size: 20,
-      ),
-      onDeleted: () => deleteAction(),
-      onPressed: () => deleteAction(),
-      deleteButtonTooltipMessage: "Supprimer",
-      tooltip: "Supprimer",
     );
   }
 }

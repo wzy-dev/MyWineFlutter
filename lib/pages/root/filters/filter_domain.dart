@@ -23,7 +23,7 @@ class FilterDomain extends StatelessWidget {
         context: context,
         dataList: args.filteredDomainsList != null
             ? args.filteredDomainsList!
-            : MyDatabase.getDomains(context: context, listen: false)));
+            : MyDatabase.getUsedDomains(context: context, listen: false)));
 
     return MainContainer(
       title: "Filtrer par un domaine",

@@ -368,8 +368,8 @@ class WineDetails extends StatelessWidget {
                         context: context,
                         icon: Icons.palette_outlined,
                         label: "Couleur",
-                        value: CustomMethods.getColorLabelByIndex(
-                            _wine["appellation"]["color"]),
+                        value: CustomMethods.getColorByIndex(
+                            _wine["appellation"]["color"])["name"],
                       ),
                       _wineInfoItem(
                         context: context,

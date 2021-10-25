@@ -22,9 +22,18 @@ class RootNavigator {
           settings: settings,
         );
       case "/winelist":
+        final WineListArguments? arguments =
+            settings.arguments as WineListArguments?;
+
         return MaterialPageRoute(
           builder: (context) => Scaffold(
-            body: WineList(),
+            body: WineList(
+              selectedRegions: arguments?.selectedRegions ?? null,
+              selectedAppellations: arguments?.selectedAppellations ?? null,
+              selectedColors: arguments?.selectedColors ?? null,
+              selectedDomains: arguments?.selectedDomains ?? null,
+              selectedSizes: arguments?.selectedSizes ?? null,
+            ),
           ),
           fullscreenDialog: true,
         );

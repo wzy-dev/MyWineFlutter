@@ -29,7 +29,7 @@ class WineItem extends StatelessWidget {
       ),
       color: Colors.white,
       child: Container(
-        color: CustomMethods.getColorRgbaByIndex(
+        color: CustomMethods.getColorByIndex(
             enhancedWine["appellation"]["color"])["color"],
         child: Row(
           children: [
@@ -117,8 +117,8 @@ class WineItem extends StatelessWidget {
   }
 
   Column _drawSubTitle(BuildContext context) {
-    Map<String, Color> _colorScheme =
-        CustomMethods.getColorRgbaByIndex(enhancedWine["appellation"]["color"]);
+    Map<String, dynamic> _colorScheme =
+        CustomMethods.getColorByIndex(enhancedWine["appellation"]["color"]);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

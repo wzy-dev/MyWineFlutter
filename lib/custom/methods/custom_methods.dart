@@ -51,38 +51,29 @@ class CustomMethods {
     }
   }
 
-  static String getColorLabelByIndex(indexColor) {
-    switch (indexColor) {
-      case "r":
-        return "Rouge";
-      case "w":
-        return "Blanc";
-      case "p":
-        return "Rosé";
-      default:
-        return "Inconnu";
-    }
-  }
-
-  static Map<String, Color> getColorRgbaByIndex(indexColor) {
+  static Map<String, dynamic> getColorByIndex(indexColor) {
     switch (indexColor) {
       case "r":
         return {
+          "name": "Rouge",
           "color": Color.fromRGBO(219, 61, 77, 1),
           "contrasted": Colors.white70,
         };
       case "w":
         return {
+          "name": "Blanc",
           "color": Color.fromRGBO(248, 216, 114, 1),
           "contrasted": Colors.black54,
         };
       case "p":
         return {
+          "name": "Rosé",
           "color": Color.fromRGBO(255, 212, 196, 1),
           "contrasted": Colors.black54,
         };
       default:
         return {
+          "name": "Inconnu",
           "color": Colors.white,
           "contrasted": Colors.black54,
         };

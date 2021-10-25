@@ -28,8 +28,9 @@ class MyDatabase {
         .toList();
   }
 
-  static List<Wine> getWines({required BuildContext context}) {
-    return Provider.of<List<Wine>>(context);
+  static List<Wine> getWines(
+      {required BuildContext context, bool listen = true}) {
+    return Provider.of<List<Wine>>(context, listen: listen);
   }
 
   static List<Map<String, dynamic>> getEnhancedWines(
@@ -90,13 +91,30 @@ class MyDatabase {
         : null);
 
     result.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
-    print(result);
+
     return result;
   }
 
   static List<Appellation> getAppellations(
       {required BuildContext context, bool listen = true}) {
     return Provider.of<List<Appellation>>(context, listen: listen);
+  }
+
+  static List<Appellation> getUsedAppellations(
+      {required BuildContext context, bool listen = true}) {
+    List<Appellation> listUsedAppellations = [];
+    List<Wine> listWines = MyDatabase.getWines(context: context, listen: false)
+        .where((element) => element.size > 0)
+        .toList();
+
+    listWines.forEach((wine) {
+      Appellation? appellation = MyDatabase.getAppellationById(
+          context: context, appellationId: wine.appellation);
+      if (appellation == null) return;
+      listUsedAppellations.add(appellation);
+    });
+    return List<Appellation>.from(
+        MyDatabase.getOnce(context: context, dataList: listUsedAppellations));
   }
 
   static List<Appellation> getAppellationsWithStock(
@@ -137,6 +155,26 @@ class MyDatabase {
   static List<Region> getRegions(
       {required BuildContext context, bool listen = true}) {
     return Provider.of<List<Region>>(context, listen: listen);
+  }
+
+  static List<Region> getUsedRegions(
+      {required BuildContext context, bool listen = true}) {
+    List<Region> listUsedRegions = [];
+    List<Wine> listWines = MyDatabase.getWines(context: context, listen: false)
+        .where((element) => element.size > 0)
+        .toList();
+
+    listWines.forEach((wine) {
+      Appellation? appellation = MyDatabase.getAppellationById(
+          context: context, appellationId: wine.appellation);
+      if (appellation == null) return;
+      Region? region = MyDatabase.getRegionById(
+          context: context, regionId: appellation.region);
+      if (region == null) return;
+      listUsedRegions.add(region);
+    });
+    return List<Region>.from(
+        MyDatabase.getOnce(context: context, dataList: listUsedRegions));
   }
 
   static List<Region> getRegionsWithStock({required BuildContext context}) {
@@ -191,6 +229,23 @@ class MyDatabase {
   static List<Domain> getDomains(
       {required BuildContext context, bool listen = true}) {
     return Provider.of<List<Domain>>(context, listen: listen);
+  }
+
+  static List<Domain> getUsedDomains(
+      {required BuildContext context, bool listen = true}) {
+    List<Domain> listUsedDomains = [];
+    List<Wine> listWines = MyDatabase.getWines(context: context, listen: false)
+        .where((element) => element.size > 0)
+        .toList();
+
+    listWines.forEach((wine) {
+      Domain? domain =
+          MyDatabase.getDomainById(context: context, domainId: wine.domain);
+      if (domain == null) return;
+      listUsedDomains.add(domain);
+    });
+    return List<Domain>.from(
+        MyDatabase.getOnce(context: context, dataList: listUsedDomains));
   }
 
   static List<Domain> getDomainsWithStock({required BuildContext context}) {
@@ -360,5 +415,46 @@ class MyDatabase {
         );
 
     return quantity;
+  }
+
+  static List<ColorBottle> getUsedColors({
+    required BuildContext context,
+  }) {
+    List<ColorBottle> listUsedColors = [];
+    List<Wine> listWines = MyDatabase.getWines(context: context, listen: false)
+        .where((element) => element.size > 0)
+        .toList();
+
+    listWines.forEach((wine) {
+      String? colorIndex = MyDatabase.getAppellationById(
+                  context: context, appellationId: wine.appellation)
+              ?.color ??
+          null;
+      if (colorIndex == null) return;
+      listUsedColors.add(ColorBottle(
+          name: CustomMethods.getColorByIndex(colorIndex)["name"],
+          value: colorIndex));
+    });
+    return List<ColorBottle>.from(
+        MyDatabase.getOnce(context: context, dataList: listUsedColors));
+  }
+
+  static List<SizeBottle> getUsedSizes({
+    required BuildContext context,
+  }) {
+    List<SizeBottle> listUsedSizes = [];
+    List<Wine> listWines = MyDatabase.getWines(context: context, listen: false)
+        .where((element) => element.size > 0)
+        .toList();
+
+    listWines.forEach((wine) {
+      String sizeIndex = wine.size.toString();
+
+      listUsedSizes.add(SizeBottle(
+          name: CustomMethods.getColorByIndex(sizeIndex)["name"],
+          value: int.parse(sizeIndex)));
+    });
+    return List<SizeBottle>.from(
+        MyDatabase.getOnce(context: context, dataList: listUsedSizes));
   }
 }

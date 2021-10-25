@@ -24,7 +24,7 @@ class FilterAppellation extends StatelessWidget {
         context: context,
         dataList: args.filteredAppellationsList != null
             ? args.filteredAppellationsList!
-            : MyDatabase.getAppellations(context: context, listen: false)));
+            : MyDatabase.getUsedAppellations(context: context, listen: false)));
     return MainContainer(
       title: "Filtrer par l'appellation",
       child: FilterSearch(

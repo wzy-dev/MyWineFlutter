@@ -37,8 +37,7 @@ class _DrawBlockState extends State<DrawBlock> {
               context: context, wineId: wineId)?["appellation"]["color"] ??
           null;
 
-    _circleColor =
-        CustomMethods.getColorRgbaByIndex(_appellationColor)["color"]!;
+    _circleColor = CustomMethods.getColorByIndex(_appellationColor)["color"]!;
 
     bool isSelected = false;
     bool isFocus = false;

@@ -14,6 +14,7 @@ export 'custom/main_widgets/card.dart';
 export 'custom/main_widgets/wine_item.dart';
 export 'custom/main_widgets/badge.dart';
 export 'custom/main_widgets/filter_search.dart';
+export 'custom/main_widgets/chip.dart';
 
 // Methods
 export 'custom/methods/custom_methods.dart';
@@ -36,6 +37,8 @@ export 'models/appellation/appellation.dart';
 export 'models/domain/domain.dart';
 export 'models/region/region.dart';
 export 'models/country/country.dart';
+export 'models/bottle/color.dart';
+export 'models/bottle/size.dart';
 
 // Pages //
 
