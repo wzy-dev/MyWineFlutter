@@ -3,13 +3,22 @@ import 'package:mywine/pages/right/shelf_right.dart';
 import 'package:mywine/shelf.dart';
 
 class BlockTabArguments {
-  final DrawBlock drawBlock;
+  BlockTabArguments(
+      {required this.drawBlock,
+      required this.resetSearch,
+      required this.cellarId,
+      this.searchedWine});
 
-  BlockTabArguments(this.drawBlock);
+  final DrawBlock drawBlock;
+  final Function resetSearch;
+  final String cellarId;
+  final Wine? searchedWine;
 }
 
 class BlockTab extends StatefulWidget {
-  const BlockTab({Key? key}) : super(key: key);
+  const BlockTab({Key? key, required this.arguments}) : super(key: key);
+
+  final BlockTabArguments arguments;
 
   @override
   State<BlockTab> createState() => _BlockTabState();
@@ -17,29 +26,59 @@ class BlockTab extends StatefulWidget {
 
 class _BlockTabState extends State<BlockTab> {
   List<Map<String, dynamic>?> _enhancedWine = [];
+  Map<String, int>? _selectedCoor;
+  late Wine? _searchedWine;
+  late final DrawBlock _originBlock;
+  late final Function _resetSearch;
+  late final String _cellarId;
+  final int _sizeCell = 40;
+
+  @override
+  void initState() {
+    _originBlock = widget.arguments.drawBlock;
+    _resetSearch = widget.arguments.resetSearch;
+    _searchedWine = widget.arguments.searchedWine;
+    _cellarId = widget.arguments.cellarId;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final args =
-        ModalRoute.of(context)!.settings.arguments as BlockTabArguments;
-    DrawBlock _originBlock = args.drawBlock;
-    final int _sizeCell = 40;
-
     return MainContainer(
-      title: "Mes caves",
+      title: Text(
+          MyDatabase.getCellarById(context: context, cellarId: _cellarId)
+                  ?.name ??
+              "ras"),
       child: SafeArea(
         top: false,
         child: Column(
           children: [
-            _drawBlock(_originBlock, _sizeCell, context),
+            _drawBlock(
+                originBlock: _originBlock,
+                sizeCell: _sizeCell,
+                context: context,
+                searchedWine: _searchedWine),
+            _searchedWine != null
+                ? Container(
+                    margin: const EdgeInsets.fromLTRB(15, 10, 15, 0),
+                    width: double.infinity,
+                    child: CustomElevatedButton(
+                      title: "Arrêter la recherche",
+                      icon: Icon(Icons.search_off_outlined),
+                      backgroundColor: Theme.of(context).colorScheme.secondary,
+                      onPress: () {
+                        setState(() {
+                          _searchedWine = null;
+                        });
+                        _resetSearch();
+                      },
+                    ),
+                  )
+                : Container(),
             Expanded(
               child: Stack(
                 children: _drawCarousel(),
               ),
-            ),
-            //Slide under the fab
-            SizedBox(
-              height: 10,
             ),
           ],
         ),
@@ -51,14 +90,25 @@ class _BlockTabState extends State<BlockTab> {
     List<Widget> result = [];
 
     for (int index = 1; index <= _enhancedWine.length; index++) {
-      result.add(CarouselItem(enhancedWine: _enhancedWine, index: index));
+      result.add(CarouselItem(
+          enhancedWine: _enhancedWine,
+          hide: () => _enhancedWine.add({}),
+          index: index,
+          coor: _selectedCoor,
+          blockId: _originBlock.blockId,
+          resetSelected: () => setState(() {
+                _selectedCoor = null;
+              })));
     }
 
     return result;
   }
 
   Widget _drawBlock(
-      DrawBlock _originBlock, int _sizeCell, BuildContext context) {
+      {required DrawBlock originBlock,
+      required int sizeCell,
+      required BuildContext context,
+      Wine? searchedWine}) {
     return Card(
       margin: const EdgeInsets.all(0),
       elevation: 2,
@@ -79,20 +129,24 @@ class _BlockTabState extends State<BlockTab> {
                   padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
                   child: Hero(
                     transitionOnUserGestures: true,
-                    tag: "block${_originBlock.blockId}",
+                    tag: "block${originBlock.blockId}",
                     child: Container(
-                      width: _originBlock.nbColumn.toDouble() * _sizeCell,
-                      height: _originBlock.nbLine.toDouble() * _sizeCell,
+                      width: originBlock.nbColumn.toDouble() * sizeCell,
+                      height: originBlock.nbLine.toDouble() * sizeCell,
                       child: DrawBlock(
-                        blockId: _originBlock.blockId,
-                        nbColumn: _originBlock.nbColumn,
-                        nbLine: _originBlock.nbLine,
-                        onPress: (String id) {
+                        blockId: originBlock.blockId,
+                        nbColumn: originBlock.nbColumn,
+                        nbLine: originBlock.nbLine,
+                        selectedCoor: _selectedCoor,
+                        searchedWine: searchedWine,
+                        onPress: (Map<String, dynamic> coorPressed) {
+                          _selectedCoor = coorPressed["coor"];
                           setState(() {
                             _enhancedWine.add(
                               MyDatabase.getEnhancedWineById(
                                 context: context,
-                                wineId: id,
+                                listen: false,
+                                wineId: coorPressed["id"],
                               ),
                             );
                           });
@@ -111,100 +165,157 @@ class _BlockTabState extends State<BlockTab> {
 }
 
 class CarouselItem extends StatefulWidget {
-  const CarouselItem({
-    Key? key,
-    required List<Map<String, dynamic>?> enhancedWine,
-    required this.index,
-  })  : _enhancedWine = enhancedWine,
-        super(key: key);
+  const CarouselItem(
+      {Key? key,
+      required this.enhancedWine,
+      required this.index,
+      required this.coor,
+      required this.blockId,
+      required this.resetSelected,
+      required this.hide})
+      : super(key: key);
 
-  final List<Map<String, dynamic>?> _enhancedWine;
+  final List<Map<String, dynamic>?> enhancedWine;
   final int index;
+  final Map<String, int>? coor;
+  final String blockId;
+  final Function resetSelected;
+  final Function hide;
 
   @override
   State<CarouselItem> createState() => _CarouselItemState();
 }
 
 class _CarouselItemState extends State<CarouselItem> {
-  bool isBuild = false;
+  bool _isBuild = false;
+  Map? _wine;
 
   @override
   void initState() {
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       setState(() {
-        isBuild = true;
+        _isBuild = true;
       });
     });
+    _wine = widget.enhancedWine[widget.index - 1];
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    Map? wine = widget._enhancedWine[widget.index - 1];
-
     return AnimatedPositioned(
       duration: Duration(milliseconds: 250),
-      left: widget.index == widget._enhancedWine.length
-          ? isBuild
+      left: widget.index == widget.enhancedWine.length
+          ? _isBuild
               ? 0
               : -MediaQuery.of(context).size.width
           : MediaQuery.of(context).size.width,
       top: 0,
       bottom: 0,
       width: MediaQuery.of(context).size.width,
-      child: wine != null
+      child: _wine != null && _wine!["id"] != null
           ? Container(
               margin: const EdgeInsets.all(10),
               child: CustomCard(
-                child: ListView(
-                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  shrinkWrap: true,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 5, 20, 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "${wine["domain"].name.toUpperCase()} ${wine["millesime"]}",
-                            style: Theme.of(context).textTheme.headline4,
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            wine["appellation"]["name"],
-                            style: Theme.of(context).textTheme.headline3,
-                          ),
-                        ],
+                child: Align(
+                  alignment: Alignment.center,
+                  child: ListView(
+                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                    shrinkWrap: true,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 5, 20, 10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "${_wine!["domain"].name.toUpperCase()} ${_wine!["millesime"]}",
+                              style: Theme.of(context).textTheme.headline4,
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              _wine!["appellation"]["name"],
+                              style: Theme.of(context).textTheme.headline3,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    CustomElevatedButton(
-                      title: "Voir la fiche de ce vin",
-                      icon: Icon(Icons.info_outline),
-                      onPress: () {
-                        Navigator.of(context, rootNavigator: true).pushNamed(
-                          "/wine",
-                          arguments: WineDetailsArguments(wineId: wine["id"]),
-                        );
-                      },
-                      backgroundColor: Theme.of(context).hintColor,
-                    ),
-                    CustomFlatButton(
-                      title: "Trouver mes bouteilles",
-                      icon: Icon(Icons.search_outlined),
-                      onPress: () {},
-                      backgroundColor: Color.fromRGBO(26, 143, 52, 1),
-                    ),
-                    CustomFlatButton(
-                      title: "Boire cette bouteille",
-                      icon: Icon(Icons.wine_bar_outlined),
-                      backgroundColor: Theme.of(context).colorScheme.secondary,
-                    ),
-                    CustomFlatButton(
-                      title: "Mettre cette bouteille en vrac",
-                      icon: Icon(Icons.logout_outlined),
-                      backgroundColor: Colors.orange,
-                    ),
-                  ],
+                      CustomElevatedButton(
+                        title: "Voir la fiche de ce vin",
+                        icon: Icon(Icons.info_outline),
+                        onPress: () {
+                          Navigator.of(context, rootNavigator: true).pushNamed(
+                            "/wine",
+                            arguments:
+                                WineDetailsArguments(wineId: _wine!["id"]),
+                          );
+                        },
+                        backgroundColor: Theme.of(context).hintColor,
+                      ),
+                      CustomFlatButton(
+                        title: "Trouver mes bouteilles",
+                        icon: Icon(Icons.search_outlined),
+                        onPress: () =>
+                            Navigator.of(context, rootNavigator: true)
+                                .pushNamedAndRemoveUntil(
+                          "/cellar",
+                          (_) => false,
+                          arguments: CellarTabArguments(
+                            searchedWine: MyDatabase.getWineById(
+                              context: context,
+                              wineId: _wine!["id"],
+                            ),
+                          ),
+                        ),
+                        backgroundColor: Color.fromRGBO(26, 143, 52, 1),
+                      ),
+                      CustomFlatButton(
+                        title: "Boire cette bouteille",
+                        icon: Icon(Icons.wine_bar_outlined),
+                        backgroundColor:
+                            Theme.of(context).colorScheme.secondary,
+                        onPress: () {
+                          widget.hide();
+                          widget.resetSelected();
+                          MyActions.drinkWine(
+                            context: context,
+                            wine: MyDatabase.getWineById(
+                                context: context,
+                                listen: false,
+                                wineId: _wine!["id"]),
+                            position: widget.coor != null
+                                ? MyDatabase.getPositionByBlockIdAndCoor(
+                                    context: context,
+                                    listen: false,
+                                    blockId: widget.blockId,
+                                    coor: widget.coor!,
+                                  )
+                                : null,
+                          );
+                        },
+                      ),
+                      CustomFlatButton(
+                        title: "Mettre cette bouteille en vrac",
+                        icon: Icon(Icons.logout_outlined),
+                        backgroundColor: Colors.orange,
+                        onPress: () {
+                          widget.hide();
+                          widget.resetSelected();
+                          MyActions.deletePosition(
+                            context: context,
+                            position: widget.coor != null
+                                ? MyDatabase.getPositionByBlockIdAndCoor(
+                                    context: context,
+                                    listen: false,
+                                    blockId: widget.blockId,
+                                    coor: widget.coor!,
+                                  )
+                                : null,
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
             )

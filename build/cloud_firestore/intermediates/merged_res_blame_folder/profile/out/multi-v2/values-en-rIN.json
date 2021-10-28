@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\Users\\Simon\\Documents\\Github\\MyWineFlutter\\build\\cloud_firestore\\intermediates\\incremental\\mergeProfileResources\\merged.dir\\values-en-rIN\\values-en-rIN.xml",
+            "outputFile": "/Users/simonwegrzyn/Documents sur mon Mac/development/MyWineFlutter/build/cloud_firestore/intermediates/res/merged/profile/values-en-rIN/values-en-rIN.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\Simon\\.gradle\\caches\\transforms-2\\files-2.1\\f4a15a5606c9a028857d8a3e89eefa0f\\core-1.1.0\\res\\values-en-rIN\\values-en-rIN.xml",
+                    "source": "/Users/simonwegrzyn/.gradle/caches/transforms-2/files-2.1/f4a15a5606c9a028857d8a3e89eefa0f/core-1.1.0/res/values-en-rIN/values-en-rIN.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
@@ -16,10 +16,10 @@
             ]
         },
         {
-            "outputFile": "C:\\Users\\Simon\\Documents\\Github\\MyWineFlutter\\build\\cloud_firestore\\intermediates\\res\\merged\\profile\\values-en-rIN\\values-en-rIN.xml",
+            "outputFile": "/Users/simonwegrzyn/Documents sur mon Mac/development/MyWineFlutter/build/cloud_firestore/intermediates/incremental/mergeProfileResources/merged.dir/values-en-rIN/values-en-rIN.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\Simon\\.gradle\\caches\\transforms-2\\files-2.1\\f4a15a5606c9a028857d8a3e89eefa0f\\core-1.1.0\\res\\values-en-rIN\\values-en-rIN.xml",
+                    "source": "/Users/simonwegrzyn/.gradle/caches/transforms-2/files-2.1/f4a15a5606c9a028857d8a3e89eefa0f/core-1.1.0/res/values-en-rIN/values-en-rIN.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",

@@ -7,17 +7,21 @@ class DrawCellar extends StatelessWidget {
   const DrawCellar({
     Key? key,
     required this.cellarId,
+    required this.resetSearch,
     this.sizeCell = 22.0,
     this.horizontalPadding = 15,
     this.verticalPadding = 15,
     this.marginBlock = 5.0,
+    this.searchedWine,
   }) : super(key: key);
 
   final String cellarId;
+  final Function resetSearch;
   final double sizeCell;
   final double horizontalPadding;
   final double verticalPadding;
   final double marginBlock;
+  final Wine? searchedWine;
 
   @override
   Widget build(BuildContext context) {
@@ -68,6 +72,7 @@ class DrawCellar extends StatelessWidget {
             blockId: cell.id,
             nbLine: cell.nbLine,
             nbColumn: cell.nbColumn,
+            searchedWine: searchedWine,
           );
           cells.add(
             Container(
@@ -78,8 +83,16 @@ class DrawCellar extends StatelessWidget {
               child: Material(
                 type: MaterialType.transparency,
                 child: InkWell(
-                  onTap: () => Navigator.pushNamed(context, "/block",
-                      arguments: BlockTabArguments(_drawBlock)),
+                  onTap: () => Navigator.pushNamed(
+                    context,
+                    "/block",
+                    arguments: BlockTabArguments(
+                      drawBlock: _drawBlock,
+                      cellarId: cellarId,
+                      searchedWine: searchedWine,
+                      resetSearch: resetSearch,
+                    ),
+                  ),
                   child: Padding(
                     padding: EdgeInsets.all(marginBlock),
                     child: Container(

@@ -28,6 +28,7 @@ export 'navigators/right_navigator.dart';
 
 // Database
 export 'mydatabase.dart';
+export 'models/myactions.dart';
 export 'models/provider.dart';
 export 'models/cellar/cellar.dart';
 export 'models/block/block.dart';
@@ -37,6 +38,7 @@ export 'models/appellation/appellation.dart';
 export 'models/domain/domain.dart';
 export 'models/region/region.dart';
 export 'models/country/country.dart';
+export 'models/bottle/age.dart';
 export 'models/bottle/color.dart';
 export 'models/bottle/size.dart';
 

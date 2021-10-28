@@ -3,76 +3,102 @@ import 'package:mywine/shelf.dart';
 
 class WineListArguments {
   const WineListArguments({
+    this.selectedCountries,
     this.selectedRegions,
     this.selectedAppellations,
     this.selectedColors,
     this.selectedDomains,
     this.selectedSizes,
+    this.selectedAges,
   });
 
-  final List<String>? selectedRegions;
-  final List<String>? selectedAppellations;
-  final List<String>? selectedColors;
-  final List<String>? selectedDomains;
-  final List<String>? selectedSizes;
+  final List<Country>? selectedCountries;
+  final List<Region>? selectedRegions;
+  final List<Appellation>? selectedAppellations;
+  final List<ColorBottle>? selectedColors;
+  final List<Domain>? selectedDomains;
+  final List<SizeBottle>? selectedSizes;
+  final List<AgeBottle>? selectedAges;
 }
 
 class WineList extends StatefulWidget {
   const WineList({
     Key? key,
-    this.selectedRegions,
-    this.selectedAppellations,
-    this.selectedColors,
-    this.selectedDomains,
-    this.selectedSizes,
+    this.selectedFilters,
   }) : super(key: key);
 
-  final List<String>? selectedRegions;
-  final List<String>? selectedAppellations;
-  final List<String>? selectedColors;
-  final List<String>? selectedDomains;
-  final List<String>? selectedSizes;
+  final WineListArguments? selectedFilters;
 
   @override
   State<WineList> createState() => _WineListState();
 }
 
 class _WineListState extends State<WineList> {
-  late List<String> _selectedRegions;
-  late List<String> _selectedAppellations;
-  late List<String> _selectedColors;
-  late List<String> _selectedDomains;
-  late List<String> _selectedSizes;
+  late List<Country> _selectedCountries;
+  late List<Region> _selectedRegions;
+  late List<Appellation> _selectedAppellations;
+  late List<ColorBottle> _selectedColors;
+  late List<Domain> _selectedDomains;
+  late List<SizeBottle> _selectedSizes;
+  late List<AgeBottle> _selectedAges;
 
   @override
   void initState() {
-    _selectedRegions = widget.selectedRegions ?? [];
-    _selectedAppellations = widget.selectedAppellations ?? [];
-    _selectedColors = widget.selectedColors ?? [];
-    _selectedDomains = widget.selectedDomains ?? [];
-    _selectedSizes = widget.selectedSizes ?? [];
+    _selectedCountries = widget.selectedFilters?.selectedCountries ?? [];
+    _selectedRegions = widget.selectedFilters?.selectedRegions ?? [];
+    _selectedAppellations = widget.selectedFilters?.selectedAppellations ?? [];
+    _selectedColors = widget.selectedFilters?.selectedColors ?? [];
+    _selectedDomains = widget.selectedFilters?.selectedDomains ?? [];
+    _selectedSizes = widget.selectedFilters?.selectedSizes ?? [];
+    _selectedAges = widget.selectedFilters?.selectedAges ?? [];
     super.initState();
   }
 
-  _goToFilters() async {
-    Map<String, List<String>>? filters =
-        await Navigator.of(context, rootNavigator: true).pushNamed("/filters")
-            as Map<String, List<String>>?;
+  AgeBottle? _getAgeOfWine({required Map<String, dynamic> wine}) {
+    int year = (DateTime.now().year - wine["millesime"]).toInt();
+
+    if (wine["yearmin"] == null && wine["yearmax"] == null) return null;
+
+    if (wine["yearmin"] == null || year >= wine["yearmin"]) {
+      if (wine["yearmax"] == null || year <= wine["yearmax"]) {
+        return AgeBottle(name: "Apogée", value: 1);
+      } else {
+        return AgeBottle(name: "Âgé", value: 2);
+      }
+    } else {
+      return AgeBottle(name: "Jeun", value: 0);
+    }
+  }
+
+  void _goToFilters() async {
+    Map<String, List<dynamic>>? filters =
+        await Navigator.of(context, rootNavigator: true).pushNamed("/filters",
+            arguments: WineListArguments(
+              selectedCountries: _selectedCountries,
+              selectedRegions: _selectedRegions,
+              selectedAppellations: _selectedAppellations,
+              selectedColors: _selectedColors,
+              selectedDomains: _selectedDomains,
+              selectedSizes: _selectedSizes,
+              selectedAges: _selectedAges,
+            )) as Map<String, List<dynamic>>?;
     if (filters == null) return;
 
     setState(() {
-      _selectedRegions = filters["regions"]!;
-      _selectedAppellations = filters["appellations"]!;
-      _selectedColors = filters["colors"]!;
-      _selectedDomains = filters["domains"]!;
-      _selectedSizes = filters["sizes"]!;
+      _selectedCountries = filters["countries"]! as List<Country>;
+      _selectedRegions = filters["regions"]! as List<Region>;
+      _selectedAppellations = filters["appellations"]! as List<Appellation>;
+      _selectedColors = filters["colors"]! as List<ColorBottle>;
+      _selectedDomains = filters["domains"]! as List<Domain>;
+      _selectedSizes = filters["sizes"]! as List<SizeBottle>;
+      _selectedAges = filters["ages"]! as List<AgeBottle>;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return MainContainer(
-      title: "Mes vins",
+      title: Text("Mes vins"),
       action: InkWell(
         onTap: () => _goToFilters(),
         child: Center(
@@ -91,55 +117,87 @@ class _WineListState extends State<WineList> {
           Wrap(
             spacing: 5,
             children: [
-              ..._selectedRegions.map((e) => DeleteChip(
-                    label: e,
+              ..._selectedCountries.map((Country e) => DeleteChip(
+                    label: e.name,
+                    deleteAction: () => setState(() {
+                      _selectedCountries.remove(e);
+                    }),
+                  )),
+              ..._selectedRegions.map((Region e) => DeleteChip(
+                    label: e.name,
                     deleteAction: () => setState(() {
                       _selectedRegions.remove(e);
                     }),
                   )),
               ..._selectedAppellations.map((e) => DeleteChip(
-                    label: e,
+                    label: e.name,
                     deleteAction: () => setState(() {
                       _selectedAppellations.remove(e);
                     }),
                   )),
-              ..._selectedColors.map((e) => DeleteChip(
-                    label: CustomMethods.getColorByIndex(e)["name"],
-                    deleteAction: () => setState(() {
-                      _selectedColors.remove(e);
-                    }),
-                  )),
-              ..._selectedDomains.map((e) => DeleteChip(
-                    label: e,
+              ..._selectedColors.map((ColorBottle e) {
+                Map<String, dynamic> coloredSchema =
+                    CustomMethods.getColorByIndex(e.value);
+                return DeleteChip(
+                  label: coloredSchema["name"].toUpperCase(),
+                  color: coloredSchema["color"],
+                  textColor: coloredSchema["contrasted"],
+                  deleteAction: () => setState(() {
+                    _selectedColors.remove(e);
+                  }),
+                );
+              }),
+              ..._selectedDomains.map((Domain e) => DeleteChip(
+                    label: e.name,
                     deleteAction: () => setState(() {
                       _selectedDomains.remove(e);
                     }),
                   )),
               ..._selectedSizes.map((e) => DeleteChip(
-                    label: "${(double.parse(e) / 1000).toString()}L",
+                    label: "${(e.value / 1000).toString()}L",
                     deleteAction: () => setState(() {
                       _selectedSizes.remove(e);
+                    }),
+                  )),
+              ..._selectedAges.map((e) => DeleteChip(
+                    label: e.name,
+                    deleteAction: () => setState(() {
+                      _selectedAges.remove(e);
                     }),
                   )),
             ],
           ),
           ...MyDatabase.getEnhancedWines(context: context)
               .where((wine) => wine["quantity"] > 0)
+              .where((wine) => _selectedCountries.length > 0
+                  ? _selectedCountries.indexWhere((e) => e.id == wine["appellation"]["region"]["country"].id) >
+                      -1
+                  : true)
               .where((wine) => _selectedRegions.length > 0
-                  ? _selectedRegions
-                      .contains(wine["appellation"]["region"]["name"])
+                  ? _selectedRegions.indexWhere(
+                          (e) => e.id == wine["appellation"]["region"]["id"]) >
+                      -1
                   : true)
               .where((wine) => _selectedAppellations.length > 0
-                  ? _selectedAppellations.contains(wine["appellation"]["name"])
+                  ? _selectedAppellations.indexWhere(
+                          (e) => e.id == wine["appellation"]["id"]) >
+                      -1
                   : true)
               .where((wine) => _selectedColors.length > 0
-                  ? _selectedColors.contains(wine["appellation"]["color"])
+                  ? _selectedColors.indexWhere(
+                          (e) => e.value == wine["appellation"]["color"]) >
+                      -1
                   : true)
               .where((wine) => _selectedDomains.length > 0
-                  ? _selectedDomains.contains(wine["domain"].name)
+                  ? _selectedDomains.indexWhere((e) => e.id == wine["domain"].id) > -1
                   : true)
-              .where((wine) => _selectedSizes.length > 0
-                  ? _selectedSizes.contains(wine["size"].toString())
+              .where((wine) => _selectedSizes.length > 0 ? _selectedSizes.indexWhere((e) => e.value == wine["size"]) > -1 : true)
+              .where((wine) => _selectedAges.length > 0
+                  ? _selectedAges.indexWhere((e) {
+                        AgeBottle? age = _getAgeOfWine(wine: wine);
+                        return age != null && age.value == e.value;
+                      }) >
+                      -1
                   : true)
               .map((wine) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),

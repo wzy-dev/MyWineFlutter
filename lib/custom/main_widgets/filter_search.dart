@@ -55,7 +55,7 @@ class _FilterSearchState extends State<FilterSearch> {
   ];
   List<String> _usedLetter = [];
   Map<String, int> _alphabetPosition = {};
-  String _activeLetter = "a";
+  late String _activeLetter;
   late List<String> _selectedList;
 
   @override
@@ -64,6 +64,7 @@ class _FilterSearchState extends State<FilterSearch> {
     // Evite que le state du filter_search.dart influence filters.dart
     _selectedList = List<String>.from(widget.initialSelection);
     _drawChildrenList(_data);
+    _activeLetter = _usedLetter[0];
 
     super.initState();
   }
@@ -131,7 +132,6 @@ class _FilterSearchState extends State<FilterSearch> {
                 child: NotificationListener<ScrollUpdateNotification>(
                   onNotification: (notification) {
                     double position = notification.metrics.pixels;
-
                     for (int i = 0; i < _usedLetter.length; i++) {
                       String letter = _usedLetter[i];
                       String? nextLetter;
@@ -141,12 +141,11 @@ class _FilterSearchState extends State<FilterSearch> {
                       if (position >
                               _alphabetPosition[letter]! * _childHeight &&
                           nextLetter != null &&
-                          _alphabetPosition[nextLetter] != null &&
-                          position <
-                              _alphabetPosition[nextLetter]! * _childHeight)
+                          _alphabetPosition[nextLetter] != null) {
                         setState(() {
                           _activeLetter = letter;
                         });
+                      }
                     }
 
                     return true;
@@ -191,24 +190,22 @@ class _FilterSearchState extends State<FilterSearch> {
                                     controlAffinity:
                                         ListTileControlAffinity.leading,
                                     title: Text(_scrollListChildren[i]["name"]),
-                                    value: _selectedList.indexWhere((name) =>
-                                                name ==
-                                                _scrollListChildren[i]
-                                                    ["name"]) >
+                                    value: _selectedList.indexWhere((id) =>
+                                                id ==
+                                                _scrollListChildren[i]["id"]) >
                                             -1
                                         ? true
                                         : false,
                                     onChanged: (bool? enabled) {
                                       int indexWhere = _selectedList.indexWhere(
-                                          (name) =>
-                                              name ==
-                                              _scrollListChildren[i]["name"]);
+                                          (id) =>
+                                              id ==
+                                              _scrollListChildren[i]["id"]);
                                       setState(
                                         () {
                                           indexWhere == -1
                                               ? _selectedList.add(
-                                                  _scrollListChildren[i]
-                                                      ["name"])
+                                                  _scrollListChildren[i]["id"])
                                               : _selectedList
                                                   .removeAt(indexWhere);
                                         },
@@ -244,7 +241,7 @@ class _FilterSearchState extends State<FilterSearch> {
               icon: Icon(Icons.save_outlined),
               title: "Appliquer",
               dense: true,
-              backgroundColor: Theme.of(context).colorScheme.primary,
+              backgroundColor: Theme.of(context).colorScheme.secondary,
               onPress: () => Navigator.of(context).pop(_selectedList),
             ),
           ),

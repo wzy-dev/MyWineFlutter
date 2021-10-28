@@ -8,20 +8,23 @@ class DrawBlock extends StatefulWidget {
     required this.blockId,
     required this.nbLine,
     required this.nbColumn,
+    this.selectedCoor,
     this.onPress,
+    this.searchedWine,
   }) : super(key: key);
 
   final String blockId;
   final int nbLine;
   final int nbColumn;
+  final Map<String, int>? selectedCoor;
   final Function? onPress;
+  final Wine? searchedWine;
 
   @override
   State<DrawBlock> createState() => _DrawBlockState();
 }
 
 class _DrawBlockState extends State<DrawBlock> {
-  Map<String, int>? _selectedCoor;
   Map<String, int>? _focusCoor;
 
   Widget _drawCircle({
@@ -42,9 +45,9 @@ class _DrawBlockState extends State<DrawBlock> {
     bool isSelected = false;
     bool isFocus = false;
 
-    _selectedCoor != null &&
-            _selectedCoor!["x"] == coor["x"] &&
-            _selectedCoor!["y"] == coor["y"] &&
+    widget.selectedCoor != null &&
+            widget.selectedCoor!["x"] == coor["x"] &&
+            widget.selectedCoor!["y"] == coor["y"] &&
             widget.onPress != null
         ? isSelected = true
         : isSelected = false;
@@ -69,10 +72,9 @@ class _DrawBlockState extends State<DrawBlock> {
         onTapUp: widget.onPress != null && wineId != null
             ? (up) {
                 setState(() {
-                  _selectedCoor = coor;
                   _focusCoor = null;
                 });
-                return widget.onPress!(wineId);
+                return widget.onPress!({"id": wineId, "coor": coor});
               }
             : null,
         onTapCancel: widget.onPress != null && wineId != null
@@ -83,10 +85,10 @@ class _DrawBlockState extends State<DrawBlock> {
               }
             : null,
         child: AnimatedContainer(
-          duration: Duration(milliseconds: 400),
           clipBehavior: Clip.hardEdge,
           height: double.infinity,
           width: double.infinity,
+          duration: Duration(milliseconds: 400),
           decoration: BoxDecoration(
             border: Border.all(),
             shape: BoxShape.circle,
@@ -94,10 +96,17 @@ class _DrawBlockState extends State<DrawBlock> {
                 ? Theme.of(context).hintColor
                 : (isSelected ? Theme.of(context).primaryColor : _circleColor),
           ),
-          child: AnimatedOpacity(
-            duration: Duration(milliseconds: 300),
-            opacity: isSelected ? 1 : 0,
-            child: Icon(Icons.check, color: Colors.white),
+          child: Container(
+            color: widget.searchedWine == null
+                ? null
+                : widget.searchedWine!.id == wineId
+                    ? null
+                    : Color.fromRGBO(0, 0, 0, 0.4),
+            child: AnimatedOpacity(
+              duration: Duration(milliseconds: 300),
+              opacity: isSelected ? 1 : 0,
+              child: Icon(Icons.check, color: Colors.white),
+            ),
           ),
         ),
       ),

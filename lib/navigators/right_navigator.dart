@@ -6,18 +6,23 @@ class RightNavigator extends StatelessWidget {
     required this.navigatorKey,
     required this.tabIndex,
     required this.onItemTapped,
+    this.searchedWine,
   });
   final GlobalKey<NavigatorState>? navigatorKey;
   final int tabIndex;
   final Function onItemTapped;
+  final Wine? searchedWine;
 
   Widget _routeBuilders(
-      {required BuildContext context, required String route}) {
-    switch (route) {
+      {required BuildContext context, required RouteSettings settings}) {
+    switch (settings.name) {
       case "/":
-        return CellarTab();
+        return CellarTab(searchedWine: searchedWine);
       case "/block":
-        return BlockTab();
+        BlockTabArguments args = settings.arguments as BlockTabArguments;
+        return BlockTab(
+          arguments: args,
+        );
       default:
         return CellarTab();
     }
@@ -30,11 +35,11 @@ class RightNavigator extends StatelessWidget {
       child: Navigator(
         observers: [HeroController()],
         key: navigatorKey,
-        initialRoute: '/',
+        initialRoute: "/",
         onGenerateRoute: (routeSettings) {
           return MaterialPageRoute(
             builder: (context) =>
-                _routeBuilders(context: context, route: routeSettings.name!),
+                _routeBuilders(context: context, settings: routeSettings),
             settings: routeSettings,
           );
         },

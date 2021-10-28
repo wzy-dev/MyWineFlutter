@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mywine/shelf.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class SearchTab extends StatefulWidget {
   const SearchTab({Key? key, required this.focusNode}) : super(key: key);
@@ -12,43 +13,44 @@ class SearchTab extends StatefulWidget {
 }
 
 class _SearchTabState extends State<SearchTab> {
-  int? selected;
-
-  late List<Appellation> appellations;
-  late List<Domain> domains;
-  late List<Region> regions;
-  late List<Country> countries;
-
-  List results = [];
+  late List<Appellation> _appellations;
+  late List<Domain> _domains;
+  late List<Region> _regions;
+  late List<Country> _countries;
+  List _results = [];
 
   void _onSearch(String query) {
     if (query.length < 2) {
       setState(() {
-        results = [];
+        _results = [];
       });
       return;
     }
     setState(() {
-      results = SearchMethods.getResults(
+      _results = SearchMethods.getResults(
         query: query,
-        appellations: appellations,
-        domains: domains,
-        regions: regions,
-        countries: countries,
+        appellations: _appellations,
+        domains: _domains,
+        regions: _regions,
+        countries: _countries,
       );
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    appellations = MyDatabase.getAppellations(context: context);
-    domains = MyDatabase.getDomainsWithStock(context: context);
-    regions = MyDatabase.getRegionsWithStock(context: context);
-    countries = MyDatabase.getCountriesWithStock(context: context);
+    _appellations = MyDatabase.getAppellations(context: context, listen: false);
+    _domains = MyDatabase.getDomainsWithStock(context: context, listen: false);
+    _regions = MyDatabase.getRegionsWithStock(context: context, listen: false);
+    _countries =
+        MyDatabase.getCountriesWithStock(context: context, listen: false);
     return GestureDetector(
       onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
       child: MainContainer(
-        title: "MyWine",
+        title: SvgPicture.asset(
+          "assets/svg/logo.svg",
+          width: 110,
+        ),
         child: Column(
           children: [
             Padding(
@@ -93,7 +95,7 @@ class _SearchTabState extends State<SearchTab> {
   List<Widget> _drawResults(BuildContext context) {
     List<Widget> _listResults = [];
 
-    results.map(
+    _results.map(
       (r) {
         Map<String, int> _quantity = {};
         int _totalQuantity = 0;
@@ -179,14 +181,25 @@ class _SearchTabState extends State<SearchTab> {
                                       .pushNamed(
                                 "/winelist",
                                 arguments: WineListArguments(
-                                  selectedAppellations: [r.item["name"]],
-                                  selectedColors: [a.color],
+                                  selectedAppellations: [a],
+                                  selectedColors: [
+                                    ColorBottle(
+                                        value: a.color,
+                                        name: CustomMethods.getColorByIndex(
+                                            a.color)["name"])
+                                  ],
                                 ),
                               ),
                               style: ButtonStyle(
                                 backgroundColor:
                                     MaterialStateProperty.all<Color>(
                                         _colorScheme["color"]!),
+                                shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
                               ),
                               child: Row(
                                 children: [
@@ -215,13 +228,13 @@ class _SearchTabState extends State<SearchTab> {
                         "/winelist",
                         arguments: WineListArguments(
                           selectedRegions: r.item["cat"] == "region"
-                              ? [r.item["name"]]
+                              ? r.item["entity"]
                               : null,
                           selectedAppellations: r.item["cat"] == "appellation"
-                              ? [r.item["name"]]
+                              ? r.item["entity"]
                               : null,
                           selectedDomains: r.item["cat"] == "domain"
-                              ? [r.item["name"]]
+                              ? r.item["entity"]
                               : null,
                         ),
                       ),

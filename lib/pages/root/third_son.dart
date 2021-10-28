@@ -7,7 +7,7 @@ class ThirdSon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MainContainer(
-      title: "ThirdSon",
+      title: Text("ThirdSon"),
       child: Text("I'm the third"),
     );
   }

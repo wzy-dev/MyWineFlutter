@@ -2,29 +2,67 @@ import 'package:flutter/material.dart';
 import 'package:mywine/shelf.dart';
 
 class Filters extends StatefulWidget {
-  const Filters({Key? key}) : super(key: key);
+  const Filters({Key? key, this.selectedFilters}) : super(key: key);
+
+  final WineListArguments? selectedFilters;
 
   @override
   State<Filters> createState() => _FiltersState();
 }
 
 class _FiltersState extends State<Filters> {
-  List<String> _selectedAppellations = [];
-  List<ColorBottle> _selectedColors = [];
-  List<String> _selectedDomains = [];
+  List<Country> _selectedCountries = [];
   List<Region> _selectedRegions = [];
+  List<Appellation> _selectedAppellations = [];
+  List<ColorBottle> _selectedColors = [];
+  List<Domain> _selectedDomains = [];
   List<SizeBottle> _selectedSizes = [];
-  bool _regionIsExpanded = true;
-  bool _colorIsExpanded = true;
-  bool _sizeIsExpanded = true;
+  List<AgeBottle> _selectedAges = [];
   late List<Map<String, dynamic>> _listWines;
 
   @override
   void initState() {
-    _listWines = MyDatabase.getEnhancedWines(context: context)
+    _selectedCountries = widget.selectedFilters?.selectedCountries ?? [];
+    _selectedRegions = widget.selectedFilters?.selectedRegions ?? [];
+    _selectedAppellations = widget.selectedFilters?.selectedAppellations ?? [];
+    _selectedColors = widget.selectedFilters?.selectedColors ?? [];
+    _selectedDomains = widget.selectedFilters?.selectedDomains ?? [];
+    _selectedSizes = widget.selectedFilters?.selectedSizes ?? [];
+    _selectedAges = widget.selectedFilters?.selectedAges ?? [];
+    _listWines = MyDatabase.getEnhancedWines(context: context, listen: false)
         .where((wine) => wine["quantity"] > 0)
         .toList();
     super.initState();
+  }
+
+  List<Country> _setFilteredCountries() {
+    List<Map<String, dynamic>> listWines = _getWineList("country");
+    List<Country> filteredCountriesList = [];
+
+    listWines.forEach((wine) {
+      Country? country = MyDatabase.getCountryById(
+          context: context,
+          countryId: wine["appellation"]["region"]["country"].id);
+
+      if (country != null) {
+        filteredCountriesList.add(country);
+      }
+    });
+
+    if (filteredCountriesList.length > 0) {
+      List toRemove = [];
+      _selectedCountries.forEach((selectedCountry) {
+        int index = filteredCountriesList.indexWhere(
+            (filteredCountry) => filteredCountry.name == selectedCountry.name);
+        if (index == -1) toRemove.add(selectedCountry);
+      });
+      _selectedCountries.removeWhere((element) => toRemove.contains(element));
+      return filteredCountriesList;
+    }
+
+    if (filteredCountriesList.length == 0) return [];
+
+    return MyDatabase.getCountriesWithStock(context: context, listen: false);
   }
 
   List<Region> _setFilteredRegions() {
@@ -53,7 +91,7 @@ class _FiltersState extends State<Filters> {
 
     if (filteredRegionsList.length == 0) return [];
 
-    return MyDatabase.getUsedRegions(context: context, listen: false);
+    return MyDatabase.getRegionsWithStock(context: context, listen: false);
   }
 
   List<Appellation> _setFilteredAppellations() {
@@ -73,16 +111,17 @@ class _FiltersState extends State<Filters> {
       List toRemove = [];
       _selectedAppellations.forEach((selectedAppellation) {
         int index = filteredAppellationsList.indexWhere((filteredAppellation) =>
-            filteredAppellation.name == selectedAppellation);
+            filteredAppellation.name == selectedAppellation.name);
         if (index == -1) toRemove.add(selectedAppellation);
       });
+
       _selectedAppellations
           .removeWhere((element) => toRemove.contains(element));
       return filteredAppellationsList;
     }
 
     if (filteredAppellationsList.length == 0) return [];
-    return MyDatabase.getUsedAppellations(context: context, listen: false);
+    return MyDatabase.getAppellationsWithStock(context: context, listen: false);
   }
 
   List<ColorBottle> _setFilteredColors() {
@@ -101,7 +140,7 @@ class _FiltersState extends State<Filters> {
         -1)
       filteredColorsList.add(ColorBottle(
           name: CustomMethods.getColorByIndex("p")["name"], value: "p"));
-    print(listWines.where((wine) => wine["appellation"]["color"] == "p"));
+
     if (filteredColorsList.length > 0) {
       List toRemove = [];
       _selectedColors.forEach((selectedColor) {
@@ -109,12 +148,13 @@ class _FiltersState extends State<Filters> {
             (filteredColor) => filteredColor.name == selectedColor.name);
         if (index == -1) toRemove.add(selectedColor);
       });
+
       _selectedColors.removeWhere((element) => toRemove.contains(element));
       return filteredColorsList;
     }
 
     if (filteredColorsList.length == 0) return [];
-    return MyDatabase.getUsedColors(context: context);
+    return MyDatabase.getColorsWithStock(context: context);
   }
 
   List<Domain> _setFilteredDomains() {
@@ -133,7 +173,7 @@ class _FiltersState extends State<Filters> {
       List toRemove = [];
       _selectedDomains.forEach((selectedDomain) {
         int index = filteredDomainsList.indexWhere(
-            (filteredDomain) => filteredDomain.name == selectedDomain);
+            (filteredDomain) => filteredDomain.name == selectedDomain.name);
         if (index == -1) toRemove.add(selectedDomain);
       });
       _selectedDomains.removeWhere((element) => toRemove.contains(element));
@@ -141,7 +181,7 @@ class _FiltersState extends State<Filters> {
     }
 
     if (filteredDomainsList.length == 0) return [];
-    return MyDatabase.getUsedDomains(context: context, listen: false);
+    return MyDatabase.getDomainsWithStock(context: context, listen: false);
   }
 
   List<SizeBottle> _setFilteredSizes() {
@@ -171,19 +211,78 @@ class _FiltersState extends State<Filters> {
     ];
   }
 
+  AgeBottle? _getAgeOfWine({required Map<String, dynamic> wine}) {
+    int year = (DateTime.now().year - wine["millesime"]).toInt();
+
+    if (wine["yearmin"] == null && wine["yearmax"] == null) return null;
+
+    if (wine["yearmin"] == null || year >= wine["yearmin"]) {
+      if (wine["yearmax"] == null || year <= wine["yearmax"]) {
+        return AgeBottle(name: "Apogée", value: 1);
+      } else {
+        return AgeBottle(name: "Âgé", value: 2);
+      }
+    } else {
+      return AgeBottle(name: "Jeune", value: 0);
+    }
+  }
+
+  List<AgeBottle> _setFilteredAges() {
+    List<Map<String, dynamic>> listWines = _getWineList("age");
+    List<AgeBottle> filteredAgesList = [];
+
+    if (listWines.indexWhere((wine) {
+          AgeBottle? age = _getAgeOfWine(wine: wine);
+          return age != null && age.value == 0;
+        }) >
+        -1) filteredAgesList.add(AgeBottle(name: "Jeune", value: 0));
+    if (listWines.indexWhere((wine) {
+          AgeBottle? age = _getAgeOfWine(wine: wine);
+          return age != null && age.value == 1;
+        }) >
+        -1) filteredAgesList.add(AgeBottle(name: "Apogée", value: 1));
+    if (listWines.indexWhere((wine) {
+          AgeBottle? age = _getAgeOfWine(wine: wine);
+          return age != null && age.value == 2;
+        }) >
+        -1) filteredAgesList.add(AgeBottle(name: "Âgé", value: 2));
+
+    if (filteredAgesList.length > 0) {
+      List toRemove = [];
+      _selectedAges.forEach((selectedAge) {
+        int index = filteredAgesList
+            .indexWhere((filteredAge) => filteredAge.name == selectedAge.name);
+        if (index == -1) toRemove.add(selectedAge);
+      });
+      _selectedSizes.removeWhere((element) => toRemove.contains(element));
+      return filteredAgesList;
+    }
+
+    if (filteredAgesList.length == 0) return [];
+    return [
+      AgeBottle(name: "Apogée", value: 1),
+      AgeBottle(name: "Âgé", value: 2),
+      AgeBottle(name: "Jeun", value: 0),
+    ];
+  }
+
   List<Map<String, dynamic>> _getWineList(String className) {
     return _listWines
         .where((wine) =>
+            (className == "country" ||
+                (_selectedCountries.length == 0 ||
+                    _selectedCountries.indexWhere((country) =>
+                            wine["appellation"]["region"]["country"].name ==
+                            country.name) >
+                        -1)) &&
             (className == "region" ||
                 (_selectedRegions.length == 0 ||
-                    _selectedRegions.indexWhere((region) =>
-                            wine["appellation"]["region"]["name"] ==
-                            region.name) >
+                    _selectedRegions.indexWhere((region) => wine["appellation"]["region"]["name"] == region.name) >
                         -1)) &&
             (className == "appellation" ||
                 (_selectedAppellations.length == 0 ||
                     _selectedAppellations.indexWhere((appellation) =>
-                            wine["appellation"]["name"] == appellation) >
+                            wine["appellation"]["name"] == appellation.name) >
                         -1)) &&
             (className == "color" ||
                 (_selectedColors.length == 0 ||
@@ -192,233 +291,309 @@ class _FiltersState extends State<Filters> {
                         -1)) &&
             (className == "domain" ||
                 (_selectedDomains.length == 0 ||
-                    _selectedDomains.indexWhere((domain) => wine["domain"].name == domain) >
+                    _selectedDomains.indexWhere((domain) => wine["domain"].name == domain.name) >
                         -1)) &&
             (className == "size" ||
                 (_selectedSizes.length == 0 ||
-                    _selectedSizes.indexWhere((size) => wine["size"] == size.value) > -1)))
+                    _selectedSizes.indexWhere((size) => wine["size"] == size.value) >
+                        -1)) &&
+            (className == "age" ||
+                (_selectedAges.length == 0 ||
+                    _selectedAges.indexWhere((age) {
+                          AgeBottle? ageBottle = _getAgeOfWine(wine: wine);
+                          return ageBottle != null &&
+                              ageBottle.value == age.value;
+                        }) >
+                        -1)))
         .toList();
   }
 
   @override
   Widget build(BuildContext context) {
     return MainContainer(
-      title: "Filtrer mes vins",
-      child: ListView(
-        padding: const EdgeInsets.all(8),
+      title: Text("Filtrer mes vins"),
+      child: SafeArea(
+        top: false,
+        child: Stack(
+          children: [
+            ListView(
+              padding: const EdgeInsets.all(0),
+              children: [
+                // Filtre de la région
+                _drawChipFilter(
+                  context: context,
+                  name: "Pays",
+                  data: MyDatabase.getOnce(
+                    context: context,
+                    dataList: _setFilteredCountries(),
+                  ),
+                  selectedData: _selectedCountries,
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                // Filtre de la région
+                _drawChipFilter(
+                  context: context,
+                  name: "Région",
+                  data: MyDatabase.getOnce(
+                    context: context,
+                    dataList: _setFilteredRegions(),
+                  ),
+                  selectedData: _selectedRegions,
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                // Filtre de l'appellation
+                _drawComplexFilter(
+                  context: context,
+                  selectedList: _selectedAppellations,
+                  refreshSelected: () => _setFilteredAppellations(),
+                  name: "Appellation",
+                  titleButton: "Chercher une appellation",
+                  onOpenFilter: () async {
+                    List<String>? selectedAppellations =
+                        await Navigator.of(context, rootNavigator: true)
+                                .pushNamed("/filter/appellation",
+                                    arguments: FilterAppellationArguments(
+                                        initialSelection: _selectedAppellations
+                                            .map((e) => e.id)
+                                            .toList(),
+                                        filteredAppellationsList:
+                                            _setFilteredAppellations()))
+                            as List<String>?;
+
+                    if (selectedAppellations == null) return;
+
+                    setState(() {
+                      _selectedAppellations = selectedAppellations
+                          .map((id) => MyDatabase.getAppellationById(
+                              context: context, appellationId: id)!)
+                          .toList();
+                    });
+                  },
+                  deleteAction: (int index) => setState(() {
+                    _selectedAppellations.removeAt(index);
+                  }),
+                  deleteAllAction: () => setState(() {
+                    _selectedAppellations = [];
+                  }),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                // Filtre de la couleur
+                _drawChipFilter(
+                  context: context,
+                  name: "Couleur",
+                  data: _setFilteredColors(),
+                  selectedData: _selectedColors,
+                  colored: true,
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                // Filtre du domaine
+                _drawComplexFilter(
+                  context: context,
+                  selectedList: _selectedDomains,
+                  refreshSelected: () => _setFilteredDomains(),
+                  name: "Domaine",
+                  titleButton: "Chercher un domaine",
+                  onOpenFilter: () async {
+                    List<String>? selectedDomains = await Navigator.of(context,
+                                rootNavigator: true)
+                            .pushNamed("/filter/domain",
+                                arguments: FilterDomainArguments(
+                                    initialSelection: _selectedDomains
+                                        .map((e) => e.name)
+                                        .toList(),
+                                    filteredDomainsList: _setFilteredDomains()))
+                        as List<String>?;
+
+                    if (selectedDomains == null) return;
+
+                    setState(() {
+                      _selectedDomains = selectedDomains
+                          .map((e) => MyDatabase.getDomainById(
+                              context: context, domainId: e)!)
+                          .toList();
+                    });
+                  },
+                  deleteAction: (int index) => setState(() {
+                    _selectedDomains.removeAt(index);
+                  }),
+                  deleteAllAction: () => setState(() {
+                    _selectedDomains = [];
+                  }),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                // Filtre de la contenance
+                _drawChipFilter(
+                  context: context,
+                  name: "Contenance",
+                  data: _setFilteredSizes(),
+                  selectedData: _selectedSizes,
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                // Filtre de l'âge
+                _drawChipFilter(
+                  context: context,
+                  name: "Maturité",
+                  data: _setFilteredAges(),
+                  selectedData: _selectedAges,
+                ),
+                // Espacer pour le FAB
+                SizedBox(
+                  height: 80,
+                ),
+              ],
+            ),
+            Positioned(
+              bottom: 30,
+              right: 30,
+              child: CustomElevatedButton(
+                icon: Icon(Icons.save_alt_outlined),
+                title: "Appliquer",
+                dense: true,
+                backgroundColor: Theme.of(context).colorScheme.secondary,
+                onPress: () => Navigator.of(context).pop({
+                  "countries": _selectedCountries,
+                  "regions": _selectedRegions,
+                  "appellations": _selectedAppellations,
+                  "colors": _selectedColors,
+                  "domains": _selectedDomains,
+                  "sizes": _selectedSizes,
+                  "ages": _selectedAges,
+                }),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _drawChipFilter(
+      {required BuildContext context,
+      required String name,
+      required List<dynamic> data,
+      required List<dynamic> selectedData,
+      bool colored = false}) {
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Filtre de la région
-          _drawChipFilter(
-            context: context,
-            isExpanded: _regionIsExpanded,
-            className: "region",
-            onPress: () => setState(
-              () {
-                _regionIsExpanded = !_regionIsExpanded;
-              },
-            ),
-            titleButton: "Chercher une région",
-            data: MyDatabase.getOnce(
-              context: context,
-              dataList: _setFilteredRegions(),
-            ),
-            selectedData: _selectedRegions,
+          Text(
+            name,
+            style: Theme.of(context).textTheme.headline2,
           ),
-          // Filtre de l'appellation
-          _drawComplexFilter(
-            context: context,
-            selectedList: _selectedAppellations,
-            className: "appellation",
-            titleButton: "Chercher une appellation",
-            onOpenFilter: () async {
-              List<String>? selectedAppellations =
-                  await Navigator.of(context, rootNavigator: true).pushNamed(
-                      "/filter/appellation",
-                      arguments: FilterAppellationArguments(
-                          initialSelection: _selectedAppellations,
-                          filteredAppellationsList:
-                              _setFilteredAppellations())) as List<String>?;
+          Container(
+            margin: const EdgeInsets.only(top: 10),
+            child: AnimatedSize(
+              duration: const Duration(milliseconds: 200),
+              child: Wrap(
+                spacing: 5,
+                children: data.map((e) {
+                  int index = selectedData
+                      .indexWhere((element) => element.name == e.name);
+                  Map<String, dynamic>? coloredSchema =
+                      colored ? CustomMethods.getColorByIndex(e.value) : null;
 
-              if (selectedAppellations == null) return;
-
-              setState(() {
-                _selectedAppellations = selectedAppellations;
-              });
-            },
-            deleteAction: (int index) => setState(() {
-              _selectedAppellations.removeAt(index);
-            }),
-            deleteAllAction: () => setState(() {
-              _selectedAppellations = [];
-            }),
-          ),
-          // Filtre de la couleur
-          _drawChipFilter(
-            context: context,
-            isExpanded: _colorIsExpanded,
-            onPress: () => setState(
-              () {
-                _colorIsExpanded = !_colorIsExpanded;
-              },
+                  return InputChip(
+                    label: Text(colored ? e.name.toUpperCase() : e.name,
+                        style: TextStyle(
+                            color:
+                                colored ? coloredSchema!["contrasted"] : null)),
+                    selected: index > -1 ? true : false,
+                    pressElevation: 2,
+                    padding: const EdgeInsets.all(5),
+                    side: BorderSide(),
+                    checkmarkColor:
+                        colored ? coloredSchema!["contrasted"] : null,
+                    backgroundColor:
+                        colored ? coloredSchema!["color"] : Colors.transparent,
+                    selectedColor: colored
+                        ? coloredSchema!["color"]
+                        : Color.fromRGBO(47, 111, 143, 0.18),
+                    onPressed: () {
+                      setState(() {
+                        index > -1
+                            ? selectedData.removeAt(index)
+                            : selectedData.add(e);
+                      });
+                    },
+                    tooltip: index > -1 ? "Supprimer" : "Ajouter",
+                  );
+                }).toList(),
+              ),
             ),
-            className: "color",
-            titleButton: "Chercher une couleur",
-            data: _setFilteredColors(),
-            selectedData: _selectedColors,
-          ),
-          // Filtre du domaine
-          _drawComplexFilter(
-            context: context,
-            selectedList: _selectedDomains,
-            className: "appellation",
-            titleButton: "Chercher un domaine",
-            onOpenFilter: () async {
-              List<String>? selectedDomains =
-                  await Navigator.of(context, rootNavigator: true).pushNamed(
-                          "/filter/domain",
-                          arguments: FilterDomainArguments(
-                              initialSelection: _selectedDomains,
-                              filteredDomainsList: _setFilteredDomains()))
-                      as List<String>?;
-
-              if (selectedDomains == null) return;
-
-              setState(() {
-                _selectedDomains = selectedDomains;
-              });
-            },
-            deleteAction: (int index) => setState(() {
-              _selectedDomains.removeAt(index);
-            }),
-            deleteAllAction: () => setState(() {
-              _selectedDomains = [];
-            }),
-          ),
-          // Filtre de la contenance
-          _drawChipFilter(
-            context: context,
-            isExpanded: _sizeIsExpanded,
-            onPress: () => setState(
-              () {
-                _sizeIsExpanded = !_sizeIsExpanded;
-              },
-            ),
-            className: "size",
-            titleButton: "Chercher une contenance",
-            data: _setFilteredSizes(),
-            selectedData: _selectedSizes,
-          ),
-          // Appliquer les filtres
-          CustomElevatedButton(
-            title: "Appliquer",
-            icon: Icon(Icons.save_alt_outlined),
-            backgroundColor: Theme.of(context).colorScheme.secondary,
-            onPress: () => Navigator.of(context).pop({
-              "regions": _selectedRegions.map((region) => region.name).toList(),
-              "appellations": _selectedAppellations,
-              "colors": _selectedColors.map((color) => color.value).toList(),
-              "domains": _selectedDomains,
-              "sizes":
-                  _selectedSizes.map((size) => size.value.toString()).toList(),
-            }),
           ),
         ],
       ),
     );
   }
 
-  Column _drawChipFilter(
-      {required BuildContext context,
-      required bool isExpanded,
-      required Function onPress,
-      required String className,
-      required String titleButton,
-      required List<dynamic> data,
-      required List<dynamic> selectedData}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        CustomElevatedButton(
-          backgroundColor: Theme.of(context).primaryColor,
-          icon: Icon(isExpanded
-              ? Icons.keyboard_arrow_up_outlined
-              : Icons.keyboard_arrow_down_outlined),
-          title: titleButton,
-          onPress: () => onPress(),
-        ),
-        Container(
-          child: AnimatedSize(
-            duration: const Duration(milliseconds: 150),
-            child: isExpanded
-                ? Wrap(
-                    spacing: 5,
-                    children: data.map((e) {
-                      int index = selectedData
-                          .indexWhere((element) => element.name == e.name);
-
-                      return InputChip(
-                        label: Text(e.name),
-                        selected: index > -1 ? true : false,
-                        pressElevation: 2,
-                        padding: const EdgeInsets.all(5),
-                        side: BorderSide(),
-                        backgroundColor: Colors.transparent,
-                        selectedColor: Color.fromRGBO(47, 111, 143, 0.18),
-                        onPressed: () {
-                          setState(() {
-                            index > -1
-                                ? selectedData.removeAt(index)
-                                : selectedData.add(e);
-                          });
-                        },
-                        tooltip: "Supprimer",
-                      );
-                    }).toList(),
-                  )
-                : Container(),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Column _drawComplexFilter({
+  Widget _drawComplexFilter({
     required BuildContext context,
     required Function onOpenFilter,
-    required List<String> selectedList,
+    required List<dynamic> selectedList,
+    required Function refreshSelected,
     required Function(int) deleteAction,
     required Function deleteAllAction,
-    required String className,
+    required String name,
     required String titleButton,
   }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        CustomElevatedButton(
-          backgroundColor: Theme.of(context).primaryColor,
-          icon: Icon(Icons.keyboard_arrow_down),
-          title: titleButton,
-          onPress: onOpenFilter,
-        ),
-        Wrap(
-          spacing: 5,
-          children: [
-            selectedList.length >= 2
-                ? DeleteChip(
-                    label: "Tout supprimer",
-                    deleteAction: () => deleteAllAction(),
-                  )
-                : Container(),
-            ...selectedList.map((e) {
-              int index = selectedList.indexWhere((element) => element == e);
-              return DeleteChip(
-                label: e,
-                deleteAction: () => deleteAction(index),
-              );
-            }).toList()
-          ],
-        ),
-      ],
+    refreshSelected();
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            name,
+            style: Theme.of(context).textTheme.headline2,
+          ),
+          SizedBox(height: 10),
+          CustomElevatedButton(
+            backgroundColor: Theme.of(context).hintColor,
+            icon: Icon(Icons.playlist_add_check_outlined),
+            title: titleButton,
+            onPress: onOpenFilter,
+          ),
+          AnimatedSize(
+            duration: const Duration(milliseconds: 200),
+            child: Wrap(
+              spacing: 5,
+              children: [
+                selectedList.length >= 2
+                    ? DeleteChip(
+                        label: "Tout supprimer",
+                        deleteAction: () => deleteAllAction(),
+                      )
+                    : Container(),
+                ...selectedList.map((e) {
+                  int index = selectedList
+                      .indexWhere((element) => element.name == e.name);
+                  return DeleteChip(
+                    label: e.name,
+                    color: Color.fromRGBO(47, 111, 143, 0.18),
+                    deleteAction: () => deleteAction(index),
+                  );
+                }).toList()
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

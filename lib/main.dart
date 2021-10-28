@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
           providers: CustomProvider.generateProvidersList(briteDb: briteDb),
           child: MaterialApp(
             title: 'MyWine',
-            initialRoute: '/',
+            initialRoute: '/search',
             onGenerateRoute: (routeSettings) => RootNavigator.onGenerateRoute(
                 context: context, settings: routeSettings),
             theme: ThemeData(

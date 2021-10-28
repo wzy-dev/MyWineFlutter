@@ -5,27 +5,51 @@ import 'package:collection/collection.dart';
 import 'package:sqlbrite/sqlbrite.dart';
 
 class MyDatabase {
-  static BriteDatabase getBriteDatabase({required BuildContext context}) {
-    return Provider.of<BriteDatabase>(context);
+  static BriteDatabase getBriteDatabase(
+      {required BuildContext context, bool listen = true}) {
+    return Provider.of<BriteDatabase>(context, listen: listen);
   }
 
   static List<Cellar> getCellars({required BuildContext context}) {
     return Provider.of<List<Cellar>>(context);
   }
 
+  static Cellar? getCellarById(
+      {required BuildContext context,
+      bool listen = true,
+      required String cellarId}) {
+    return Provider.of<List<Cellar>>(context, listen: listen)
+        .firstWhereOrNull((cellar) => cellar.id == cellarId);
+  }
+
   static List<Block> getBlocks({required BuildContext context}) {
     return Provider.of<List<Block>>(context);
   }
 
-  static List<Position> getPositions({required BuildContext context}) {
-    return Provider.of<List<Position>>(context);
+  static List<Position> getPositions(
+      {required BuildContext context, bool listen = true}) {
+    return Provider.of<List<Position>>(context, listen: listen);
   }
 
   static List<Position> getPositionsByBlockId(
-      {required BuildContext context, required String blockId}) {
-    return getPositions(context: context)
+      {required BuildContext context,
+      bool listen = true,
+      required String blockId}) {
+    return getPositions(context: context, listen: listen)
         .where((position) => position.block == blockId)
         .toList();
+  }
+
+  static Position? getPositionByBlockIdAndCoor(
+      {required BuildContext context,
+      bool listen = true,
+      required String blockId,
+      required Map<String, int> coor}) {
+    return getPositions(context: context, listen: listen).firstWhere(
+        (position) =>
+            position.block == blockId &&
+            position.x == coor["x"] &&
+            position.y == coor["y"]);
   }
 
   static List<Wine> getWines(
@@ -34,13 +58,13 @@ class MyDatabase {
   }
 
   static List<Map<String, dynamic>> getEnhancedWines(
-      {required BuildContext context}) {
+      {required BuildContext context, bool listen = true}) {
     List<Map<String, dynamic>> wines = [];
 
-    Provider.of<List<Wine>>(context, listen: false).forEach(
+    getWines(context: context, listen: listen).forEach(
       (wine) {
-        Map<String, dynamic>? enhancedWine =
-            getEnhancedWineById(context: context, wineId: wine.id);
+        Map<String, dynamic>? enhancedWine = getEnhancedWineById(
+            context: context, listen: listen, wineId: wine.id);
         if (enhancedWine != null) wines.add(enhancedWine);
       },
     );
@@ -49,14 +73,18 @@ class MyDatabase {
   }
 
   static Wine? getWineById(
-      {required BuildContext context, required String wineId}) {
-    return Provider.of<List<Wine>>(context, listen: false)
+      {required BuildContext context,
+      bool listen = true,
+      required String wineId}) {
+    return Provider.of<List<Wine>>(context, listen: listen)
         .firstWhereOrNull((wine) => wine.id == wineId);
   }
 
   static Map<String, dynamic>? getEnhancedWineById(
-      {required BuildContext context, required String wineId}) {
-    Wine? wine = getWineById(context: context, wineId: wineId);
+      {required BuildContext context,
+      bool listen = true,
+      required String wineId}) {
+    Wine? wine = getWineById(context: context, listen: listen, wineId: wineId);
 
     if (wine == null) return null;
 
@@ -100,26 +128,26 @@ class MyDatabase {
     return Provider.of<List<Appellation>>(context, listen: listen);
   }
 
-  static List<Appellation> getUsedAppellations(
-      {required BuildContext context, bool listen = true}) {
-    List<Appellation> listUsedAppellations = [];
-    List<Wine> listWines = MyDatabase.getWines(context: context, listen: false)
-        .where((element) => element.size > 0)
-        .toList();
+  // static List<Appellation> getUsedAppellations(
+  //     {required BuildContext context, bool listen = true}) {
+  //   List<Appellation> listUsedAppellations = [];
+  //   List<Wine> listWines = MyDatabase.getWines(context: context, listen: false)
+  //       .where((element) => element.size > 0)
+  //       .toList();
 
-    listWines.forEach((wine) {
-      Appellation? appellation = MyDatabase.getAppellationById(
-          context: context, appellationId: wine.appellation);
-      if (appellation == null) return;
-      listUsedAppellations.add(appellation);
-    });
-    return List<Appellation>.from(
-        MyDatabase.getOnce(context: context, dataList: listUsedAppellations));
-  }
+  //   listWines.forEach((wine) {
+  //     Appellation? appellation = MyDatabase.getAppellationById(
+  //         context: context, appellationId: wine.appellation);
+  //     if (appellation == null) return;
+  //     listUsedAppellations.add(appellation);
+  //   });
+  //   return List<Appellation>.from(
+  //       MyDatabase.getOnce(context: context, dataList: listUsedAppellations));
+  // }
 
   static List<Appellation> getAppellationsWithStock(
-      {required BuildContext context}) {
-    return getAppellations(context: context, listen: false)
+      {required BuildContext context, bool listen = true}) {
+    return getAppellations(context: context, listen: listen)
         .where((a) =>
             getQuantityOfAppellation(context: context, appellationId: a.id) > 0)
         .toList();
@@ -157,28 +185,29 @@ class MyDatabase {
     return Provider.of<List<Region>>(context, listen: listen);
   }
 
-  static List<Region> getUsedRegions(
+  // static List<Region> getUsedRegions(
+  //     {required BuildContext context, bool listen = true}) {
+  //   List<Region> listUsedRegions = [];
+  //   List<Wine> listWines = MyDatabase.getWines(context: context, listen: false)
+  //       .where((element) => element.size > 0)
+  //       .toList();
+
+  //   listWines.forEach((wine) {
+  //     Appellation? appellation = MyDatabase.getAppellationById(
+  //         context: context, appellationId: wine.appellation);
+  //     if (appellation == null) return;
+  //     Region? region = MyDatabase.getRegionById(
+  //         context: context, regionId: appellation.region);
+  //     if (region == null) return;
+  //     listUsedRegions.add(region);
+  //   });
+  //   return List<Region>.from(
+  //       MyDatabase.getOnce(context: context, dataList: listUsedRegions));
+  // }
+
+  static List<Region> getRegionsWithStock(
       {required BuildContext context, bool listen = true}) {
-    List<Region> listUsedRegions = [];
-    List<Wine> listWines = MyDatabase.getWines(context: context, listen: false)
-        .where((element) => element.size > 0)
-        .toList();
-
-    listWines.forEach((wine) {
-      Appellation? appellation = MyDatabase.getAppellationById(
-          context: context, appellationId: wine.appellation);
-      if (appellation == null) return;
-      Region? region = MyDatabase.getRegionById(
-          context: context, regionId: appellation.region);
-      if (region == null) return;
-      listUsedRegions.add(region);
-    });
-    return List<Region>.from(
-        MyDatabase.getOnce(context: context, dataList: listUsedRegions));
-  }
-
-  static List<Region> getRegionsWithStock({required BuildContext context}) {
-    return Provider.of<List<Region>>(context, listen: false)
+    return Provider.of<List<Region>>(context, listen: listen)
         .where((r) => getQuantityOfRegion(context: context, regionId: r.id) > 0)
         .toList();
   }
@@ -213,8 +242,9 @@ class MyDatabase {
     return Provider.of<List<Country>>(context);
   }
 
-  static List<Country> getCountriesWithStock({required BuildContext context}) {
-    return Provider.of<List<Country>>(context, listen: false)
+  static List<Country> getCountriesWithStock(
+      {required BuildContext context, bool listen = true}) {
+    return Provider.of<List<Country>>(context, listen: listen)
         .where(
             (c) => getQuantityOfCountry(context: context, countryId: c.id) > 0)
         .toList();
@@ -231,25 +261,26 @@ class MyDatabase {
     return Provider.of<List<Domain>>(context, listen: listen);
   }
 
-  static List<Domain> getUsedDomains(
+  // static List<Domain> getUsedDomains(
+  //     {required BuildContext context, bool listen = true}) {
+  //   List<Domain> listUsedDomains = [];
+  //   List<Wine> listWines = MyDatabase.getWines(context: context, listen: false)
+  //       .where((element) => element.size > 0)
+  //       .toList();
+
+  //   listWines.forEach((wine) {
+  //     Domain? domain =
+  //         MyDatabase.getDomainById(context: context, domainId: wine.domain);
+  //     if (domain == null) return;
+  //     listUsedDomains.add(domain);
+  //   });
+  //   return List<Domain>.from(
+  //       MyDatabase.getOnce(context: context, dataList: listUsedDomains));
+  // }
+
+  static List<Domain> getDomainsWithStock(
       {required BuildContext context, bool listen = true}) {
-    List<Domain> listUsedDomains = [];
-    List<Wine> listWines = MyDatabase.getWines(context: context, listen: false)
-        .where((element) => element.size > 0)
-        .toList();
-
-    listWines.forEach((wine) {
-      Domain? domain =
-          MyDatabase.getDomainById(context: context, domainId: wine.domain);
-      if (domain == null) return;
-      listUsedDomains.add(domain);
-    });
-    return List<Domain>.from(
-        MyDatabase.getOnce(context: context, dataList: listUsedDomains));
-  }
-
-  static List<Domain> getDomainsWithStock({required BuildContext context}) {
-    return Provider.of<List<Domain>>(context, listen: false)
+    return Provider.of<List<Domain>>(context, listen: listen)
         .where((d) => getQuantityOfDomain(context: context, domainId: d.id) > 0)
         .toList();
   }
@@ -275,10 +306,11 @@ class MyDatabase {
     return listOfFreeWines;
   }
 
-  static int countFreeWines({required BuildContext context}) {
+  static int countWines(
+      {required BuildContext context,
+      required List<Map<String, Object>> listWines}) {
     int totalFreeWines = 0;
-    getFreeWines(context: context)
-        .forEach((map) => totalFreeWines += map["freeQuantity"] as int);
+    listWines.forEach((map) => totalFreeWines += map["freeQuantity"] as int);
     return totalFreeWines;
   }
 
@@ -417,7 +449,7 @@ class MyDatabase {
     return quantity;
   }
 
-  static List<ColorBottle> getUsedColors({
+  static List<ColorBottle> getColorsWithStock({
     required BuildContext context,
   }) {
     List<ColorBottle> listUsedColors = [];
@@ -439,7 +471,7 @@ class MyDatabase {
         MyDatabase.getOnce(context: context, dataList: listUsedColors));
   }
 
-  static List<SizeBottle> getUsedSizes({
+  static List<SizeBottle> getSizesWithStock({
     required BuildContext context,
   }) {
     List<SizeBottle> listUsedSizes = [];

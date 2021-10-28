@@ -15,6 +15,10 @@ class WineItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Wine wine = MyDatabase.getWineById(
+      context: context,
+      wineId: enhancedWine["id"],
+    )!;
     return Card(
       clipBehavior: Clip.hardEdge,
       margin: const EdgeInsets.all(0),
@@ -72,7 +76,15 @@ class WineItem extends StatelessWidget {
                             child: CustomFlatButton(
                               title: "Trouver mes bouteilles",
                               icon: Icon(Icons.search_outlined),
-                              onPress: () {},
+                              onPress: () =>
+                                  Navigator.of(context, rootNavigator: true)
+                                      .pushNamedAndRemoveUntil(
+                                "/cellar",
+                                (_) => false,
+                                arguments: CellarTabArguments(
+                                  searchedWine: wine,
+                                ),
+                              ),
                               backgroundColor: Color.fromRGBO(26, 143, 52, 1),
                             ),
                           ),
@@ -84,6 +96,8 @@ class WineItem extends StatelessWidget {
                               icon: Icon(Icons.wine_bar_outlined),
                               backgroundColor:
                                   Theme.of(context).colorScheme.secondary,
+                              onPress: () => MyActions.drinkWine(
+                                  context: context, wine: wine),
                             ),
                           ),
                         ],

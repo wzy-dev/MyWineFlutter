@@ -5,10 +5,14 @@ class DeleteChip extends StatelessWidget {
     Key? key,
     required this.label,
     required this.deleteAction,
+    this.textColor,
+    this.color,
   }) : super(key: key);
 
   final String label;
   final Function deleteAction;
+  final Color? textColor;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -16,11 +20,12 @@ class DeleteChip extends StatelessWidget {
       pressElevation: 2,
       padding: const EdgeInsets.all(5),
       side: BorderSide(),
-      backgroundColor: Colors.transparent,
-      label: Text(label),
+      backgroundColor: color ?? Colors.transparent,
+      label: Text(label, style: TextStyle(color: textColor)),
       deleteIcon: Icon(
         Icons.clear_outlined,
         size: 20,
+        color: textColor,
       ),
       onDeleted: () => deleteAction(),
       onPressed: () => deleteAction(),

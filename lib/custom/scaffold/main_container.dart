@@ -11,7 +11,7 @@ class MainContainer extends StatelessWidget {
       : super(key: key);
 
   final Widget child;
-  final String? title;
+  final Widget? title;
   final Color? backgroundColor;
   final Widget? action;
 
@@ -19,7 +19,7 @@ class MainContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     final AppBar _appBar = AppBar(
       iconTheme: IconThemeData(color: Colors.white),
-      title: Text(title ?? ""),
+      title: title ?? Text(""),
       actions: [action ?? Container()],
     );
     final double _heightAppBar = _appBar.preferredSize.height;

@@ -33,7 +33,7 @@ class LeftNavigator extends StatelessWidget {
       child: Navigator(
         observers: [HeroController()],
         key: navigatorKey,
-        initialRoute: '/',
+        initialRoute: "/",
         onGenerateRoute: (routeSettings) {
           return MaterialPageRoute(
             builder: (context) =>

@@ -2,18 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:mywine/shelf.dart';
 
 class Homepage extends StatefulWidget {
-  const Homepage({Key? key}) : super(key: key);
+  const Homepage({Key? key, this.initialIndex = 0, this.searchedWine})
+      : super(key: key);
+
+  final int initialIndex;
+  final Wine? searchedWine;
 
   @override
   _HomepageState createState() => _HomepageState();
 }
 
 class _HomepageState extends State<Homepage> {
-  List<int> _tabHistory = [0];
+  late List<int> _tabHistory;
   late FocusNode searchFieldFocusNode;
+
+  late int _selectedIndex;
 
   @override
   void initState() {
+    _tabHistory = [0];
+    if (widget.initialIndex != 0) _tabHistory.insert(0, widget.initialIndex);
+    _selectedIndex = widget.initialIndex;
     searchFieldFocusNode = FocusNode();
     super.initState();
   }
@@ -23,8 +32,6 @@ class _HomepageState extends State<Homepage> {
     1: GlobalKey<NavigatorState>(),
     2: GlobalKey<NavigatorState>(),
   };
-
-  int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
     if (index == _selectedIndex) {
@@ -93,6 +100,7 @@ class _HomepageState extends State<Homepage> {
         navigatorKey: navigatorKey,
         tabIndex: index,
         onItemTapped: _onItemTapped,
+        searchedWine: widget.searchedWine,
       ),
     ];
 

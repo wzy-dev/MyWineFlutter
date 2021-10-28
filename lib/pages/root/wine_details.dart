@@ -10,7 +10,9 @@ class WineDetailsArguments {
 }
 
 class WineDetails extends StatelessWidget {
-  const WineDetails({Key? key}) : super(key: key);
+  const WineDetails({Key? key, required this.wineDetails}) : super(key: key);
+
+  final WineDetailsArguments wineDetails;
 
   Widget _wineInfoItem(
       {required BuildContext context,
@@ -85,6 +87,18 @@ class WineDetails extends StatelessWidget {
             Container(
               width: double.infinity,
               child: CustomElevatedButton(
+                onPress: () => Navigator.of(context, rootNavigator: true)
+                    .pushNamedAndRemoveUntil(
+                  "/cellar",
+                  (_) => false,
+                  arguments: CellarTabArguments(
+                    searchedWine: MyDatabase.getWineById(
+                      context: context,
+                      listen: false,
+                      wineId: wine["id"],
+                    ),
+                  ),
+                ),
                 title: "Trouver mes bouteilles",
                 backgroundColor: Color.fromRGBO(26, 143, 52, 1),
                 icon: Icon(Icons.search),
@@ -96,6 +110,14 @@ class WineDetails extends StatelessWidget {
                 title: "Ajouter une bouteilles",
                 backgroundColor: Theme.of(context).hintColor,
                 icon: Icon(Icons.add),
+                onPress: () {
+                  Wine? addedWine = MyDatabase.getWineById(
+                      context: context, listen: false, wineId: wine["id"]);
+                  if (addedWine == null) return;
+
+                  addedWine.quantity++;
+                  MyActions.updateWine(context: context, wine: addedWine);
+                },
               ),
             ),
           ],
@@ -299,9 +321,7 @@ class WineDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final args =
-        ModalRoute.of(context)!.settings.arguments as WineDetailsArguments;
-    String wineId = args.wineId;
+    String wineId = wineDetails.wineId;
     Map<String, dynamic>? _wine =
         MyDatabase.getEnhancedWineById(context: context, wineId: wineId);
     int _nbFreeWine =
@@ -310,7 +330,7 @@ class WineDetails extends StatelessWidget {
     if (_wine == null) Navigator.of(context).pop();
 
     return MainContainer(
-      title: "Détails du vin",
+      title: Text("Détails du vin"),
       backgroundColor: Color.fromRGBO(250, 250, 250, 1),
       child: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 25),

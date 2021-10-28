@@ -30,7 +30,7 @@ class MiddleNavigator extends StatelessWidget {
       fabIcon: Icons.camera_rounded,
       child: Navigator(
         key: navigatorKey,
-        initialRoute: '/',
+        initialRoute: "/",
         onGenerateRoute: (routeSettings) {
           return MaterialPageRoute(
             builder: (context) =>

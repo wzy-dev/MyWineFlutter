@@ -1,10 +1,10 @@
-#Sun Oct 24 18:57:02 CEST 2021
+#Thu Oct 28 13:05:53 CEST 2021
 path.2=classes3.dex
 path.1=classes2.dex
 path.0=classes.dex
 renamed.2=classes3.dex
 renamed.1=classes2.dex
 renamed.0=classes.dex
-base.2=C\:\\Users\\Simon\\Documents\\Github\\MyWineFlutter\\build\\app\\intermediates\\dex\\profile\\mergeDexProfile\\classes3.dex
-base.1=C\:\\Users\\Simon\\Documents\\Github\\MyWineFlutter\\build\\app\\intermediates\\dex\\profile\\mergeDexProfile\\classes2.dex
-base.0=C\:\\Users\\Simon\\Documents\\Github\\MyWineFlutter\\build\\app\\intermediates\\dex\\profile\\mergeDexProfile\\classes.dex
+base.2=/Users/simonwegrzyn/Documents sur mon Mac/development/MyWineFlutter/build/app/intermediates/dex/profile/mergeDexProfile/classes3.dex
+base.1=/Users/simonwegrzyn/Documents sur mon Mac/development/MyWineFlutter/build/app/intermediates/dex/profile/mergeDexProfile/classes2.dex
+base.0=/Users/simonwegrzyn/Documents sur mon Mac/development/MyWineFlutter/build/app/intermediates/dex/profile/mergeDexProfile/classes.dex

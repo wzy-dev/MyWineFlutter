@@ -12,24 +12,25 @@ class FilterAppellationArguments {
 }
 
 class FilterAppellation extends StatelessWidget {
-  late final List<Appellation> _appellationsList;
+  const FilterAppellation({required this.filterAppellationArguments});
+
+  final FilterAppellationArguments filterAppellationArguments;
 
   @override
   Widget build(BuildContext context) {
-    final FilterAppellationArguments args = ModalRoute.of(context)!
-        .settings
-        .arguments as FilterAppellationArguments;
-
-    _appellationsList = List<Appellation>.from(MyDatabase.getOnce(
-        context: context,
-        dataList: args.filteredAppellationsList != null
-            ? args.filteredAppellationsList!
-            : MyDatabase.getUsedAppellations(context: context, listen: false)));
+    final List<Appellation> _appellationsList = List<Appellation>.from(
+        MyDatabase.getOnce(
+            context: context,
+            dataList:
+                filterAppellationArguments.filteredAppellationsList != null
+                    ? filterAppellationArguments.filteredAppellationsList!
+                    : MyDatabase.getAppellationsWithStock(
+                        context: context, listen: false)));
     return MainContainer(
-      title: "Filtrer par l'appellation",
+      title: Text("Filtrer par l'appellation"),
       child: FilterSearch(
         placeholder: "chercher une appellation...",
-        initialSelection: args.initialSelection,
+        initialSelection: filterAppellationArguments.initialSelection,
         appellationsData: _appellationsList,
       ),
     );

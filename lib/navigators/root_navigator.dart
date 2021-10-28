@@ -1,58 +1,68 @@
 import 'package:flutter/material.dart';
-import '../shelf.dart';
+import 'package:mywine/shelf.dart';
 
 class RootNavigator {
   static MaterialPageRoute onGenerateRoute(
       {required BuildContext context, required RouteSettings settings}) {
     switch (settings.name ?? null) {
-      case "/":
+      case "/search":
         return MaterialPageRoute(
-            builder: (context) => Scaffold(
-                  body: Homepage(),
-                ));
+          builder: (context) => Homepage(),
+        );
+      case "/cellar":
+        CellarTabArguments? arguments =
+            settings.arguments as CellarTabArguments;
+
+        return MaterialPageRoute(
+          builder: (context) =>
+              Homepage(initialIndex: 2, searchedWine: arguments.searchedWine),
+        );
       case "/wine":
         final WineDetailsArguments arguments =
             settings.arguments as WineDetailsArguments;
 
         return MaterialPageRoute(
           builder: (context) => Scaffold(
-            body: WineDetails(),
+            body: WineDetails(wineDetails: arguments),
           ),
           fullscreenDialog: arguments.fullScreenDialog,
           settings: settings,
         );
       case "/winelist":
-        final WineListArguments? arguments =
+        final WineListArguments? selectedFilters =
             settings.arguments as WineListArguments?;
 
         return MaterialPageRoute(
           builder: (context) => Scaffold(
-            body: WineList(
-              selectedRegions: arguments?.selectedRegions ?? null,
-              selectedAppellations: arguments?.selectedAppellations ?? null,
-              selectedColors: arguments?.selectedColors ?? null,
-              selectedDomains: arguments?.selectedDomains ?? null,
-              selectedSizes: arguments?.selectedSizes ?? null,
-            ),
+            body: WineList(selectedFilters: selectedFilters),
           ),
           fullscreenDialog: true,
         );
       case "/filters":
+        final WineListArguments? selectedFilters =
+            settings.arguments as WineListArguments?;
+
         return MaterialPageRoute(
             builder: (context) => Scaffold(
-                  body: Filters(),
+                  body: Filters(selectedFilters: selectedFilters),
                 ));
       case "/filter/appellation":
+        final FilterAppellationArguments filterAppellationArguments =
+            settings.arguments as FilterAppellationArguments;
+
         return MaterialPageRoute(
           builder: (context) => Scaffold(
-            body: FilterAppellation(),
+            body: FilterAppellation(
+                filterAppellationArguments: filterAppellationArguments),
           ),
-          settings: settings,
         );
       case "/filter/domain":
+        final FilterDomainArguments filterDomainArguments =
+            settings.arguments as FilterDomainArguments;
+
         return MaterialPageRoute(
           builder: (context) => Scaffold(
-            body: FilterDomain(),
+            body: FilterDomain(filterDomainArguments: filterDomainArguments),
           ),
           settings: settings,
         );

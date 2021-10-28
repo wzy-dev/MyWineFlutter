@@ -12,24 +12,23 @@ class FilterDomainArguments {
 }
 
 class FilterDomain extends StatelessWidget {
-  late final List<Domain> _domainsList;
+  const FilterDomain({required this.filterDomainArguments});
+
+  final FilterDomainArguments filterDomainArguments;
 
   @override
   Widget build(BuildContext context) {
-    final FilterDomainArguments args =
-        ModalRoute.of(context)!.settings.arguments as FilterDomainArguments;
-
-    _domainsList = List<Domain>.from(MyDatabase.getOnce(
+    final List<Domain> _domainsList = List<Domain>.from(MyDatabase.getOnce(
         context: context,
-        dataList: args.filteredDomainsList != null
-            ? args.filteredDomainsList!
-            : MyDatabase.getUsedDomains(context: context, listen: false)));
+        dataList: filterDomainArguments.filteredDomainsList != null
+            ? filterDomainArguments.filteredDomainsList!
+            : MyDatabase.getDomainsWithStock(context: context, listen: false)));
 
     return MainContainer(
-      title: "Filtrer par un domaine",
+      title: Text("Filtrer par un domaine"),
       child: FilterSearch(
         placeholder: "chercher un domaine...",
-        initialSelection: args.initialSelection,
+        initialSelection: filterDomainArguments.initialSelection,
         domainsData: _domainsList,
       ),
     );

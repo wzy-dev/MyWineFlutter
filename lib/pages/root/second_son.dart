@@ -7,7 +7,7 @@ class SecondSon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MainContainer(
-      title: "SecondSon",
+      title: Text("SecondSon"),
       child: InkWell(
         child: Text("Go to third"),
         onTap: () =>

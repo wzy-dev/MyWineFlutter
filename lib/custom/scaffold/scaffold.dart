@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mywine/shelf.dart';
 
 class CustomScaffold extends StatelessWidget {
   const CustomScaffold({
@@ -11,7 +10,6 @@ class CustomScaffold extends StatelessWidget {
     this.fabIcon,
   }) : super(key: key);
 
-  static const double heightNavBar = 50;
   static const double iconSize = 27;
 
   final Widget child;
@@ -26,159 +24,157 @@ class CustomScaffold extends StatelessWidget {
       // Pour que la navigation surchappe la page
       extendBody: true,
 
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton:
-          // Cacher quand clavier ouvert
-          (true == true
-              ? Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 22, 0, 0),
-                  child: Material(
-                    elevation: 3,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(15.0))),
-                    clipBehavior: Clip.hardEdge,
-                    child: AnimatedContainer(
-                      duration:
-                          ((MediaQuery.of(context).viewInsets.bottom == 0.0)
-                              ? Duration(milliseconds: 50)
-                              : Duration(milliseconds: 0)),
-                      width: (MediaQuery.of(context).viewInsets.bottom == 0.0)
-                          ? 48
-                          : 0,
-                      height: (MediaQuery.of(context).viewInsets.bottom == 0.0)
-                          ? 48
-                          : 0,
-                      child: AnimatedGradient(
-                        child: FloatingActionButton(
-                          shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(15.0))),
-                          heroTag: heroTag,
-                          mini: true,
-                          splashColor: Color.fromRGBO(219, 84, 97, 0.26),
-                          focusElevation: 0,
-                          hoverElevation: 0,
-                          highlightElevation: 0,
-                          elevation: 0,
-                          backgroundColor: Colors.transparent,
-                          child: Icon(
-                            fabIcon != null ? fabIcon : Icons.add_rounded,
-                            color: Colors.white,
-                            size: 40,
-                          ),
-                          onPressed: () => onItemTapped(1),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      // floatingActionButton:
+      //     // Cacher quand clavier ouvert
+      //     (true == true
+      //         ? Padding(
+      //             padding: const EdgeInsets.fromLTRB(0, 22, 0, 0),
+      //             child: Material(
+      //               elevation: 3,
+      //               shape: RoundedRectangleBorder(
+      //                   borderRadius: BorderRadius.all(Radius.circular(15.0))),
+      //               clipBehavior: Clip.hardEdge,
+      //               child: AnimatedContainer(
+      //                 duration:
+      //                     ((MediaQuery.of(context).viewInsets.bottom == 0.0)
+      //                         ? Duration(milliseconds: 50)
+      //                         : Duration(milliseconds: 0)),
+      //                 width: (MediaQuery.of(context).viewInsets.bottom == 0.0)
+      //                     ? 48
+      //                     : 0,
+      //                 height: (MediaQuery.of(context).viewInsets.bottom == 0.0)
+      //                     ? 48
+      //                     : 0,
+      //                 child: AnimatedGradient(
+      //                   child: FloatingActionButton(
+      //                     shape: RoundedRectangleBorder(
+      //                         borderRadius:
+      //                             BorderRadius.all(Radius.circular(15.0))),
+      //                     heroTag: heroTag,
+      //                     mini: true,
+      //                     splashColor: Color.fromRGBO(219, 84, 97, 0.26),
+      //                     focusElevation: 0,
+      //                     hoverElevation: 0,
+      //                     highlightElevation: 0,
+      //                     elevation: 0,
+      //                     backgroundColor: Colors.transparent,
+      //                     child: Icon(
+      //                       fabIcon != null ? fabIcon : Icons.add_rounded,
+      //                       color: Colors.white,
+      //                       size: 40,
+      //                     ),
+      //                     onPressed: () => onItemTapped(1),
+      //                   ),
+      //                 ),
+      //               ),
+      //             ),
+      //           )
+      //         : Container()),
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.white,
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Material(
+              color: Colors.transparent,
+              child: Stack(
+                alignment: Alignment.topCenter,
+                children: [
+                  CurrentTabIndicator(
+                    isActive: selectedIndex == 0,
+                    key: UniqueKey(),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(top: 9),
+                    child: IconButton(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 30, vertical: 0),
+                      splashColor: Color.fromRGBO(219, 84, 97, 0.26),
+                      highlightColor: Color.fromRGBO(219, 84, 97, 0.1),
+                      icon: Padding(
+                        padding: const EdgeInsets.only(left: 3),
+                        child: Icon(
+                          Icons.search_outlined,
                         ),
                       ),
+                      color: (selectedIndex == 0
+                          ? Theme.of(context).primaryColor
+                          : Theme.of(context).colorScheme.primaryVariant),
+                      iconSize: iconSize,
+                      onPressed: () => onItemTapped(0),
                     ),
                   ),
-                )
-              : Container()),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.vertical(
-            top: Radius.elliptical(30, 30),
-          ),
-          boxShadow: [
-            BoxShadow(color: Colors.black12, spreadRadius: 0, blurRadius: 10),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.vertical(
-            top: Radius.elliptical(30, 30),
-          ),
-          child: Stack(
-            children: [
-              BottomAppBar(
-                color: Colors.white,
-                elevation: 2,
-                shape: AutomaticNotchedShape(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.elliptical(30, 30),
-                    ),
-                  ),
-                  RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(20.0))),
-                ),
-                notchMargin: 8,
-                child: Container(
-                  height: heightNavBar,
-                ),
+                ],
               ),
-              Container(
-                height: heightNavBar,
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Material(
-                      color: Colors.transparent,
-                      child: Stack(
-                        alignment: Alignment.topCenter,
-                        children: [
-                          CurrentTabIndicator(
-                            isActive: selectedIndex == 0,
-                            key: UniqueKey(),
-                          ),
-                          Container(
-                            height: heightNavBar,
-                            child: IconButton(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 30, vertical: 0),
-                              splashColor: Color.fromRGBO(219, 84, 97, 0.26),
-                              highlightColor: Color.fromRGBO(219, 84, 97, 0.1),
-                              icon: Padding(
-                                padding: const EdgeInsets.only(left: 3),
-                                child: Icon(
-                                  Icons.search_outlined,
-                                ),
-                              ),
-                              color: (selectedIndex == 0
-                                  ? Theme.of(context).primaryColor
-                                  : Theme.of(context)
-                                      .colorScheme
-                                      .primaryVariant),
-                              iconSize: iconSize,
-                              onPressed: () => onItemTapped(0),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Material(
-                      color: Colors.transparent,
-                      child: Stack(alignment: Alignment.topCenter, children: [
-                        CurrentTabIndicator(
-                          isActive: selectedIndex == 2,
-                          key: UniqueKey(),
-                        ),
-                        Container(
-                          height: heightNavBar,
-                          child: IconButton(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 30, vertical: 0),
-                            splashColor: Color.fromRGBO(219, 84, 97, 0.26),
-                            highlightColor: Color.fromRGBO(219, 84, 97, 0.1),
-                            icon: Container(
-                              child: Icon(
-                                Icons.wine_bar_outlined,
-                              ),
-                            ),
-                            color: (selectedIndex == 2
-                                ? Theme.of(context).primaryColor
-                                : Theme.of(context).colorScheme.primaryVariant),
-                            iconSize: iconSize,
-                            onPressed: () => onItemTapped(2),
-                          ),
-                        ),
-                      ]),
-                    ),
+            ),
+            ShaderMask(
+              shaderCallback: (Rect bounds) {
+                return LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: <Color>[
+                    Color.fromRGBO(219, 84, 97, 1),
+                    Color.fromRGBO(9, 118, 181, 1)
                   ],
+                  tileMode: TileMode.mirror,
+                ).createShader(bounds);
+              },
+              child: Container(
+                margin: const EdgeInsets.only(top: 10),
+                decoration: BoxDecoration(
+                  color: selectedIndex == 1
+                      ? Color.fromRGBO(219, 84, 97, 0.15)
+                      : null,
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  border: Border.all(width: 3, color: Colors.white),
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  shape: RoundedRectangleBorder(),
+                  child: InkWell(
+                    onTap: () => onItemTapped(1),
+                    splashColor: Color.fromRGBO(219, 84, 97, 0.26),
+                    highlightColor: Color.fromRGBO(219, 84, 97, 0.1),
+                    child: Icon(
+                      Icons.add_rounded,
+                      size: 35,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
-            ],
-          ),
+            ),
+            Material(
+              color: Colors.transparent,
+              child: Stack(alignment: Alignment.topCenter, children: [
+                CurrentTabIndicator(
+                  isActive: selectedIndex == 2,
+                  key: UniqueKey(),
+                ),
+                Container(
+                  margin: const EdgeInsets.only(top: 9),
+                  child: IconButton(
+                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 0),
+                    splashColor: Color.fromRGBO(219, 84, 97, 0.26),
+                    highlightColor: Color.fromRGBO(219, 84, 97, 0.1),
+                    icon: Container(
+                      child: Icon(
+                        Icons.wine_bar_outlined,
+                      ),
+                    ),
+                    color: (selectedIndex == 2
+                        ? Theme.of(context).primaryColor
+                        : Theme.of(context).colorScheme.primaryVariant),
+                    iconSize: iconSize,
+                    onPressed: () => onItemTapped(2),
+                  ),
+                ),
+              ]),
+            ),
+          ],
         ),
       ),
       body: child,
