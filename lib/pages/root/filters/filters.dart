@@ -11,17 +11,23 @@ class Filters extends StatefulWidget {
 }
 
 class _FiltersState extends State<Filters> {
-  List<Country> _selectedCountries = [];
-  List<Region> _selectedRegions = [];
-  List<Appellation> _selectedAppellations = [];
-  List<ColorBottle> _selectedColors = [];
-  List<Domain> _selectedDomains = [];
-  List<SizeBottle> _selectedSizes = [];
-  List<AgeBottle> _selectedAges = [];
+  late SortBottle _sortBy;
+  late List<Country> _selectedCountries;
+  late List<Region> _selectedRegions;
+  late List<Appellation> _selectedAppellations;
+  late List<ColorBottle> _selectedColors;
+  late List<Domain> _selectedDomains;
+  late List<SizeBottle> _selectedSizes;
+  late List<AgeBottle> _selectedAges;
   late List<Map<String, dynamic>> _listWines;
 
   @override
   void initState() {
+    _sortBy = widget.selectedFilters?.sortBy ??
+        SortBottle(
+            name: "Millésime",
+            icon: Icons.north_east_outlined,
+            value: "millesimeasc");
     _selectedCountries = widget.selectedFilters?.selectedCountries ?? [];
     _selectedRegions = widget.selectedFilters?.selectedRegions ?? [];
     _selectedAppellations = widget.selectedFilters?.selectedAppellations ?? [];
@@ -319,6 +325,30 @@ class _FiltersState extends State<Filters> {
             ListView(
               padding: const EdgeInsets.all(0),
               children: [
+                // Trier
+                _drawRadioChipFilter(
+                  context: context,
+                  name: "Trier",
+                  selectedData: _sortBy,
+                  onPressed: (dynamic e) => setState(() {
+                    _sortBy = e;
+                  }),
+                  data: [
+                    SortBottle(
+                        name: "Millésime",
+                        icon: Icons.north_east_outlined,
+                        value: "millesimeasc"),
+                    SortBottle(
+                        name: "Millésime",
+                        icon: Icons.south_east_outlined,
+                        value: "millesimedesc"),
+                    SortBottle(name: "Appellation", value: "appellation"),
+                    SortBottle(name: "Domaine", value: "domain"),
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
                 // Filtre de la région
                 _drawChipFilter(
                   context: context,
@@ -463,6 +493,7 @@ class _FiltersState extends State<Filters> {
                 dense: true,
                 backgroundColor: Theme.of(context).colorScheme.secondary,
                 onPress: () => Navigator.of(context).pop({
+                  "sortby": _sortBy,
                   "countries": _selectedCountries,
                   "regions": _selectedRegions,
                   "appellations": _selectedAppellations,
@@ -475,6 +506,78 @@ class _FiltersState extends State<Filters> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _drawRadioChipFilter(
+      {required BuildContext context,
+      required String name,
+      required List<dynamic> data,
+      required dynamic selectedData,
+      required Function onPressed,
+      bool colored = false}) {
+    return Container(
+      color: Colors.white,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+            child: Text(
+              name,
+              style: Theme.of(context).textTheme.headline2,
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.only(top: 10, bottom: 20),
+            height: 40,
+            child: ScrollConfiguration(
+              behavior: ScrollBehavior(),
+              child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: data.length,
+                  separatorBuilder: (BuildContext context, int index) =>
+                      SizedBox(width: 5),
+                  itemBuilder: (BuildContext context, int i) {
+                    dynamic e = data[i];
+
+                    return Row(
+                      children: [
+                        SizedBox(width: i == 0 ? 20 : 0),
+                        InputChip(
+                          label: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(colored ? e.name.toUpperCase() : e.name,
+                                  style: TextStyle(color: null)),
+                              e.icon != null
+                                  ? Padding(
+                                      padding: const EdgeInsets.only(left: 2),
+                                      child: Icon(e.icon, size: 12))
+                                  : SizedBox(),
+                            ],
+                          ),
+                          selected:
+                              selectedData.value == e.value ? true : false,
+                          pressElevation: 2,
+                          padding: const EdgeInsets.all(5),
+                          side: BorderSide(),
+                          checkmarkColor: null,
+                          backgroundColor: Colors.transparent,
+                          selectedColor: Color.fromRGBO(47, 111, 143, 0.18),
+                          onPressed: () => onPressed(e),
+                          tooltip: selectedData.value == e.value
+                              ? "Supprimer"
+                              : "Ajouter",
+                        ),
+                        SizedBox(width: i == data.length - 1 ? 20 : 0),
+                      ],
+                    );
+                  }),
+            ),
+          ),
+        ],
       ),
     );
   }

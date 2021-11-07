@@ -1,12 +1,14 @@
+import 'dart:convert';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:sqflite/utils/utils.dart';
 import 'package:sqlbrite/sqlbrite.dart';
 
 class FirebaseInitializer extends StatefulWidget {
-  final Widget Function(
-          BuildContext context, AsyncSnapshot snapshots, BriteDatabase briteDb)
-      onDidInitilize;
+  final Widget Function(BuildContext context, AsyncSnapshot snapshots,
+      BriteDatabase briteDb, Map<String, dynamic> log) onDidInitilize;
   final Widget Function(BuildContext) onLoading;
 
   const FirebaseInitializer({
@@ -157,28 +159,37 @@ class _FirebaseInitializerState extends State<FirebaseInitializer> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Database>(
-        future: _db,
-        builder: (context, snapshotDatabase) {
-          // Once complete, show your application
-          if (snapshotDatabase.connectionState == ConnectionState.done &&
-              snapshotDatabase.data != null) {
-            return FutureBuilder<FirebaseApp>(
-              future: _initialization,
-              builder: (context, snapshotFirebaseApp) {
+    return FutureBuilder<String>(
+        future: rootBundle.loadString('assets/credentials/login_debug.json'),
+        builder: (context, logString) {
+          if (logString.connectionState != ConnectionState.done)
+            return widget.onLoading(context);
+          return FutureBuilder<Database>(
+              future: _db,
+              builder: (context, snapshotDatabase) {
                 // Once complete, show your application
-                if (snapshotFirebaseApp.connectionState ==
-                    ConnectionState.done) {
-                  return widget.onDidInitilize(context, snapshotFirebaseApp,
-                      BriteDatabase(snapshotDatabase.data!, logger: null));
+                if (snapshotDatabase.connectionState == ConnectionState.done &&
+                    snapshotDatabase.data != null) {
+                  return FutureBuilder<FirebaseApp>(
+                    future: _initialization,
+                    builder: (context, snapshotFirebaseApp) {
+                      // Once complete, show your application
+                      if (snapshotFirebaseApp.connectionState ==
+                          ConnectionState.done) {
+                        return widget.onDidInitilize(
+                            context,
+                            snapshotFirebaseApp,
+                            BriteDatabase(snapshotDatabase.data!, logger: null),
+                            json.decode(logString.data!));
+                      }
+                      // Otherwise, show something whilst waiting for initialization to complete
+                      return widget.onLoading(context);
+                    },
+                  );
                 }
                 // Otherwise, show something whilst waiting for initialization to complete
                 return widget.onLoading(context);
-              },
-            );
-          }
-          // Otherwise, show something whilst waiting for initialization to complete
-          return widget.onLoading(context);
+              });
         });
   }
 }

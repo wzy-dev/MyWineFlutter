@@ -4,9 +4,12 @@ import 'package:mywine/shelf.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class SearchTab extends StatefulWidget {
-  const SearchTab({Key? key, required this.focusNode}) : super(key: key);
+  const SearchTab({
+    Key? key,
+    // required this.focusNode,
+  }) : super(key: key);
 
-  final FocusNode focusNode;
+  // final FocusNode focusNode;
 
   @override
   State<SearchTab> createState() => _SearchTabState();
@@ -75,7 +78,7 @@ class _SearchTabState extends State<SearchTab> {
                   CustomSearchBar(
                     context: context,
                     onChange: _onSearch,
-                    focusNode: widget.focusNode,
+                    // focusNode: widget.focusNode,
                   ),
                 ],
               ),
@@ -171,7 +174,8 @@ class _SearchTabState extends State<SearchTab> {
                       children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: r.item["entity"].map<Widget>((a) {
+                          children:
+                              r.item["entity"].map<Widget>((Appellation a) {
                             Map<String, dynamic> _colorScheme =
                                 CustomMethods.getColorByIndex(a.color);
 
@@ -179,7 +183,7 @@ class _SearchTabState extends State<SearchTab> {
                               onPressed: () =>
                                   Navigator.of(context, rootNavigator: true)
                                       .pushNamed(
-                                "/winelist",
+                                "/wine/list",
                                 arguments: WineListArguments(
                                   selectedAppellations: [a],
                                   selectedColors: [
@@ -225,7 +229,7 @@ class _SearchTabState extends State<SearchTab> {
                   : InkWell(
                       onTap: () =>
                           Navigator.of(context, rootNavigator: true).pushNamed(
-                        "/winelist",
+                        "/wine/list",
                         arguments: WineListArguments(
                           selectedRegions: r.item["cat"] == "region"
                               ? r.item["entity"]

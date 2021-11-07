@@ -52,4 +52,26 @@ class MyActions {
     await db.update("positions", position.toJson(),
         where: 'id = ?', whereArgs: [position.id]);
   }
+
+  static void addPosition({
+    required BuildContext context,
+    required Position? position,
+  }) async {
+    BriteDatabase db =
+        MyDatabase.getBriteDatabase(context: context, listen: false);
+
+    if (position == null) return;
+
+    await db.insert("positions", position.toJson());
+  }
+
+  static void addWine({
+    required BuildContext context,
+    required Wine wine,
+  }) async {
+    BriteDatabase db =
+        MyDatabase.getBriteDatabase(context: context, listen: false);
+
+    await db.insert("wines", wine.toJson());
+  }
 }

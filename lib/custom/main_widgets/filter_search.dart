@@ -6,12 +6,16 @@ class FilterSearch extends StatefulWidget {
   const FilterSearch({
     Key? key,
     required this.placeholder,
+    this.submitLabel = "Appliquer",
+    this.multiple = true,
     this.initialSelection = const [],
     this.appellationsData = const [],
     this.domainsData = const [],
   }) : super(key: key);
 
   final String placeholder;
+  final String submitLabel;
+  final bool multiple;
   final List<String> initialSelection;
   final List<Appellation> appellationsData;
   final List<Domain> domainsData;
@@ -56,15 +60,21 @@ class _FilterSearchState extends State<FilterSearch> {
   List<String> _usedLetter = [];
   Map<String, int> _alphabetPosition = {};
   late String _activeLetter;
+
+  // If multiple
   late List<String> _selectedList;
+
+  // If not multiple;
+  dynamic _selectedRadio;
 
   @override
   void initState() {
     _data = [...widget.appellationsData, ...widget.domainsData];
     // Evite que le state du filter_search.dart influence filters.dart
     _selectedList = List<String>.from(widget.initialSelection);
+    _selectedRadio =
+        widget.initialSelection.length > 0 ? widget.initialSelection[0] : null;
     _drawChildrenList(_data);
-    _activeLetter = _usedLetter[0];
 
     super.initState();
   }
@@ -85,9 +95,17 @@ class _FilterSearchState extends State<FilterSearch> {
       }
     });
 
+    // Si un symbole ou un chiffre en premier
+    if (scrollListChildren.length > 0 && scrollListChildren[0]["id"] != null) {
+      alphabetPosition["#"] = 0;
+      usedLetter.insert(0, "#");
+      scrollListChildren.insert(0, {"name": "#"});
+    }
+
     setState(() {
       _alphabetPosition = alphabetPosition;
       _usedLetter = usedLetter;
+      _activeLetter = usedLetter[0];
       _scrollListChildren = scrollListChildren;
     });
   }
@@ -107,6 +125,7 @@ class _FilterSearchState extends State<FilterSearch> {
                 ),
                 child: CustomSearchBar(
                   context: context,
+                  autofocus: true,
                   onChange: (query) {
                     if (query == "") {
                       _drawChildrenList(_data);
@@ -135,8 +154,8 @@ class _FilterSearchState extends State<FilterSearch> {
                     for (int i = 0; i < _usedLetter.length; i++) {
                       String letter = _usedLetter[i];
                       String? nextLetter;
-                      if (i + 1 < _alphabet.length)
-                        nextLetter = _alphabet[i + 1];
+                      if (i + 1 < _usedLetter.length)
+                        nextLetter = _usedLetter[i + 1];
 
                       if (position >
                               _alphabetPosition[letter]! * _childHeight &&
@@ -172,7 +191,7 @@ class _FilterSearchState extends State<FilterSearch> {
                             Divider(
                           height: 1,
                         ),
-                        padding: const EdgeInsets.all(0),
+                        padding: const EdgeInsets.only(bottom: 100),
                         controller: _scrollController,
                         itemCount: _scrollListChildren.length,
                         itemBuilder: (BuildContext context, int i) => Container(
@@ -183,35 +202,57 @@ class _FilterSearchState extends State<FilterSearch> {
                           child: Align(
                             alignment: Alignment.centerLeft,
                             child: _scrollListChildren[i]["id"] != null
-                                ? CheckboxListTile(
-                                    dense: true,
-                                    activeColor:
-                                        Theme.of(context).colorScheme.primary,
-                                    controlAffinity:
-                                        ListTileControlAffinity.leading,
-                                    title: Text(_scrollListChildren[i]["name"]),
-                                    value: _selectedList.indexWhere((id) =>
-                                                id ==
-                                                _scrollListChildren[i]["id"]) >
-                                            -1
-                                        ? true
-                                        : false,
-                                    onChanged: (bool? enabled) {
-                                      int indexWhere = _selectedList.indexWhere(
-                                          (id) =>
-                                              id ==
-                                              _scrollListChildren[i]["id"]);
-                                      setState(
-                                        () {
-                                          indexWhere == -1
-                                              ? _selectedList.add(
-                                                  _scrollListChildren[i]["id"])
-                                              : _selectedList
-                                                  .removeAt(indexWhere);
+                                ? widget.multiple
+                                    ? CheckboxListTile(
+                                        dense: true,
+                                        activeColor: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                        controlAffinity:
+                                            ListTileControlAffinity.leading,
+                                        title: Text(
+                                            _scrollListChildren[i]["name"]),
+                                        value: _selectedList.indexWhere((id) =>
+                                                    id ==
+                                                    _scrollListChildren[i]
+                                                        ["id"]) >
+                                                -1
+                                            ? true
+                                            : false,
+                                        onChanged: (bool? enabled) {
+                                          int indexWhere =
+                                              _selectedList.indexWhere((id) =>
+                                                  id ==
+                                                  _scrollListChildren[i]["id"]);
+                                          setState(
+                                            () {
+                                              indexWhere == -1
+                                                  ? _selectedList.add(
+                                                      _scrollListChildren[i]
+                                                          ["id"])
+                                                  : _selectedList
+                                                      .removeAt(indexWhere);
+                                            },
+                                          );
                                         },
-                                      );
-                                    },
-                                  )
+                                      )
+                                    : RadioListTile<dynamic>(
+                                        groupValue: _selectedRadio,
+                                        dense: true,
+                                        activeColor: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                        controlAffinity:
+                                            ListTileControlAffinity.leading,
+                                        title: Text(
+                                            _scrollListChildren[i]["name"]),
+                                        value: _scrollListChildren[i]["name"],
+                                        onChanged: (dynamic value) => setState(
+                                          () {
+                                            _selectedRadio = value;
+                                          },
+                                        ),
+                                      )
                                 : Padding(
                                     padding: const EdgeInsets.only(left: 29),
                                     child: Text(
@@ -239,10 +280,11 @@ class _FilterSearchState extends State<FilterSearch> {
             right: 30,
             child: CustomElevatedButton(
               icon: Icon(Icons.save_outlined),
-              title: "Appliquer",
+              title: widget.submitLabel,
               dense: true,
               backgroundColor: Theme.of(context).colorScheme.secondary,
-              onPress: () => Navigator.of(context).pop(_selectedList),
+              onPress: () => Navigator.of(context)
+                  .pop(widget.multiple ? _selectedList : _selectedRadio),
             ),
           ),
         ],

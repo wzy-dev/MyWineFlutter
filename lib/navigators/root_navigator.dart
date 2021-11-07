@@ -11,11 +11,11 @@ class RootNavigator {
         );
       case "/cellar":
         CellarTabArguments? arguments =
-            settings.arguments as CellarTabArguments;
+            settings.arguments as CellarTabArguments?;
 
         return MaterialPageRoute(
-          builder: (context) =>
-              Homepage(initialIndex: 2, searchedWine: arguments.searchedWine),
+          builder: (context) => Homepage(
+              initialIndex: 2, searchedWine: arguments?.searchedWine ?? null),
         );
       case "/wine":
         final WineDetailsArguments arguments =
@@ -28,7 +28,18 @@ class RootNavigator {
           fullscreenDialog: arguments.fullScreenDialog,
           settings: settings,
         );
-      case "/winelist":
+      case "/appellation":
+        final AppellationDetailsArguments arguments =
+            settings.arguments as AppellationDetailsArguments;
+
+        return MaterialPageRoute(
+          builder: (context) => Scaffold(
+            body: AppellationDetails(appellationDetails: arguments),
+          ),
+          fullscreenDialog: arguments.fullScreenDialog,
+          settings: settings,
+        );
+      case "/wine/list":
         final WineListArguments? selectedFilters =
             settings.arguments as WineListArguments?;
 
@@ -65,6 +76,25 @@ class RootNavigator {
             body: FilterDomain(filterDomainArguments: filterDomainArguments),
           ),
           settings: settings,
+        );
+      case "/stock/cellar":
+        StockCellarArguments? arguments =
+            settings.arguments as StockCellarArguments;
+
+        return MaterialPageRoute(
+          builder: (context) => StockCellar(
+            toStockWine: arguments.toStockWine,
+          ),
+        );
+      case "/stock/block":
+        StockBlockArguments? arguments =
+            settings.arguments as StockBlockArguments;
+
+        return MaterialPageRoute(
+          builder: (context) => StockBlock(
+            arguments: arguments,
+            stockAddonForCellar: arguments.stockAddonForCellar,
+          ),
         );
       default:
         return MaterialPageRoute(

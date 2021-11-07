@@ -1,0 +1,64 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+       allow read, write: if false;
+    }  
+    match /cellars/{cellar} {
+      allow read, delete : if request.auth != null && request.auth.token.firebase.sign_in_provider != 'anonymous' && request.auth.uid == resource.data.owner;
+      allow update : if request.auth != null && request.auth.token.firebase.sign_in_provider != 'anonymous' && request.resource.data.editedAt > resource.data.editedAt;
+      allow create : if request.auth != null && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+    
+    match /{path=**}/blocks/{block} {
+    	allow read, delete : if request.auth != null && request.auth.token.firebase.sign_in_provider != 'anonymous' && request.auth.uid == resource.data.owner;
+      allow update : if request.auth != null && request.auth.token.firebase.sign_in_provider != 'anonymous' && request.resource.data.editedAt > resource.data.editedAt;
+      allow create : if request.auth != null && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+    
+    match /{path=**}/positions/{position} {
+    	allow read, delete : if request.auth != null && request.auth.token.firebase.sign_in_provider != 'anonymous' && request.auth.uid == resource.data.owner;
+      allow update : if request.auth != null && request.auth.token.firebase.sign_in_provider != 'anonymous' && request.resource.data.editedAt > resource.data.editedAt;
+    	allow create : if request.auth != null && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+  
+    match /wines/{wine} {
+      allow read, delete : if request.auth != null && request.auth.token.firebase.sign_in_provider != 'anonymous' && request.auth.uid == resource.data.owner;
+      allow update : if request.auth != null && request.auth.token.firebase.sign_in_provider != 'anonymous' && request.resource.data.editedAt > resource.data.editedAt;
+      allow create : if request.auth != null && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+    match /countries/{country} {
+      allow read, delete : 
+      	if request.auth != null && 
+        	 request.auth.token.firebase.sign_in_provider != 'anonymous' && 
+           (resource.data.owner == request.auth.uid || resource.data.owner == "admin");
+      allow update : if request.auth != null && request.auth.token.firebase.sign_in_provider != 'anonymous' && request.resource.data.editedAt > resource.data.editedAt;
+      allow create : if request.auth != null && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+    match /regions/{region} {
+      allow read, delete : 
+      	if request.auth != null && 
+        	 request.auth.token.firebase.sign_in_provider != 'anonymous' && 
+           (resource.data.owner == request.auth.uid || resource.data.owner == "admin");
+      allow update : if request.auth != null && request.auth.token.firebase.sign_in_provider != 'anonymous' && request.resource.data.editedAt > resource.data.editedAt;
+      allow create : if request.auth != null && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+    match /appellations/{appellation} {
+      allow read, delete : 
+      	if request.auth != null && 
+        	 request.auth.token.firebase.sign_in_provider != 'anonymous' &&           
+           (resource.data.owner == request.auth.uid || resource.data.owner == "admin");
+           //&& !("owner" in resource.data)
+      allow update : if request.auth != null && request.auth.token.firebase.sign_in_provider != 'anonymous' && request.resource.data.editedAt > resource.data.editedAt;
+      allow create : if request.auth != null && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+    match /domains/{domain} {
+      allow read, delete : 
+      	if request.auth != null && 
+        	 request.auth.token.firebase.sign_in_provider != 'anonymous' && 
+           (resource.data.owner == request.auth.uid || resource.data.owner == "admin");
+      allow update : if request.auth != null && request.auth.token.firebase.sign_in_provider != 'anonymous' && request.resource.data.editedAt > resource.data.editedAt;
+      allow create : if request.auth != null && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }   
+  } 
+}

@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "/Users/simonwegrzyn/Documents sur mon Mac/development/MyWineFlutter/build/firebase_core/intermediates/res/merged/profile/values-or/values-or.xml",
+            "outputFile": "C:\\Users\\Simon\\Documents\\Github\\MyWineFlutter\\build\\firebase_core\\intermediates\\incremental\\mergeProfileResources\\merged.dir\\values-or\\values-or.xml",
             "map": [
                 {
-                    "source": "/Users/simonwegrzyn/.gradle/caches/transforms-2/files-2.1/f4a15a5606c9a028857d8a3e89eefa0f/core-1.1.0/res/values-or/values-or.xml",
+                    "source": "C:\\Users\\Simon\\.gradle\\caches\\transforms-2\\files-2.1\\f4a15a5606c9a028857d8a3e89eefa0f\\core-1.1.0\\res\\values-or\\values-or.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
@@ -21,7 +21,7 @@
                     }
                 },
                 {
-                    "source": "/Users/simonwegrzyn/.gradle/caches/transforms-2/files-2.1/9d3ebf861ced2bc6fde51a467c749fe4/jetified-play-services-basement-17.0.0/res/values-or/values.xml",
+                    "source": "C:\\Users\\Simon\\.gradle\\caches\\transforms-2\\files-2.1\\9d3ebf861ced2bc6fde51a467c749fe4\\jetified-play-services-basement-17.0.0\\res\\values-or\\values.xml",
                     "from": {
                         "startLines": "4",
                         "startColumns": "0",
@@ -40,10 +40,10 @@
             ]
         },
         {
-            "outputFile": "/Users/simonwegrzyn/Documents sur mon Mac/development/MyWineFlutter/build/firebase_core/intermediates/incremental/mergeProfileResources/merged.dir/values-or/values-or.xml",
+            "outputFile": "C:\\Users\\Simon\\Documents\\Github\\MyWineFlutter\\build\\firebase_core\\intermediates\\res\\merged\\profile\\values-or\\values-or.xml",
             "map": [
                 {
-                    "source": "/Users/simonwegrzyn/.gradle/caches/transforms-2/files-2.1/f4a15a5606c9a028857d8a3e89eefa0f/core-1.1.0/res/values-or/values-or.xml",
+                    "source": "C:\\Users\\Simon\\.gradle\\caches\\transforms-2\\files-2.1\\f4a15a5606c9a028857d8a3e89eefa0f\\core-1.1.0\\res\\values-or\\values-or.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
@@ -60,7 +60,7 @@
                     }
                 },
                 {
-                    "source": "/Users/simonwegrzyn/.gradle/caches/transforms-2/files-2.1/9d3ebf861ced2bc6fde51a467c749fe4/jetified-play-services-basement-17.0.0/res/values-or/values.xml",
+                    "source": "C:\\Users\\Simon\\.gradle\\caches\\transforms-2\\files-2.1\\9d3ebf861ced2bc6fde51a467c749fe4\\jetified-play-services-basement-17.0.0\\res\\values-or\\values.xml",
                     "from": {
                         "startLines": "4",
                         "startColumns": "0",

@@ -7,6 +7,7 @@ class CustomSearchBar extends StatefulWidget {
     Key? key,
     required this.context,
     required this.onChange,
+    this.autofocus = false,
     this.placeholder = "bourgogne, saint-émilion...",
     this.focusNode,
   }) : super(key: key);
@@ -15,6 +16,7 @@ class CustomSearchBar extends StatefulWidget {
   final FocusNode? focusNode;
   final String placeholder;
   final Function onChange;
+  final bool autofocus;
 
   @override
   State<CustomSearchBar> createState() => _CustomSearchBarState();
@@ -42,6 +44,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
             Expanded(
               child: TextField(
                 focusNode: widget.focusNode,
+                autofocus: widget.autofocus,
                 controller: _textController,
                 onChanged: (value) {
                   if (value.length > 0) {

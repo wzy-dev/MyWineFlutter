@@ -4,6 +4,7 @@ class CustomElevatedButton extends StatelessWidget {
   const CustomElevatedButton({
     required this.title,
     required this.icon,
+    this.disabled = false,
     this.onPress,
     this.backgroundColor,
     this.dense = false,
@@ -12,6 +13,7 @@ class CustomElevatedButton extends StatelessWidget {
 
   final String title;
   final Icon icon;
+  final bool disabled;
   final Function? onPress;
   final Color? backgroundColor;
   final bool dense;
@@ -19,7 +21,7 @@ class CustomElevatedButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
-      onPressed: onPress == null ? null : () => onPress!(),
+      onPressed: onPress == null || disabled ? null : () => onPress!(),
       icon: Padding(
         padding: dense
             ? const EdgeInsets.all(0)
@@ -39,7 +41,9 @@ class CustomElevatedButton extends StatelessWidget {
         ),
         alignment: Alignment.centerLeft,
         backgroundColor: MaterialStateProperty.all<Color>(
-          backgroundColor ?? Theme.of(context).colorScheme.primaryVariant,
+          disabled
+              ? Color.fromRGBO(208, 188, 188, 1)
+              : backgroundColor ?? Theme.of(context).colorScheme.primaryVariant,
         ),
         foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
         shape: MaterialStateProperty.all<RoundedRectangleBorder>(

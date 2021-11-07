@@ -18,7 +18,7 @@ class FilterAppellation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Appellation> _appellationsList = List<Appellation>.from(
+    List<Appellation> _appellationsList = List<Appellation>.from(
         MyDatabase.getOnce(
             context: context,
             dataList:
@@ -26,6 +26,9 @@ class FilterAppellation extends StatelessWidget {
                     ? filterAppellationArguments.filteredAppellationsList!
                     : MyDatabase.getAppellationsWithStock(
                         context: context, listen: false)));
+    _appellationsList
+        .sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+
     return MainContainer(
       title: Text("Filtrer par l'appellation"),
       child: FilterSearch(

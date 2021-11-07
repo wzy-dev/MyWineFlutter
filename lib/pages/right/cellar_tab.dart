@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:mywine/pages/right/shelf_right.dart';
+import 'package:mywine/custom/main_widgets/search_card.dart';
 import 'package:mywine/shelf.dart';
 
 class CellarTabArguments {
@@ -22,6 +22,7 @@ class _CellarTabState extends State<CellarTab> {
   late Wine? _searchedWine;
   late List<Map<String, Object>> _listFreeWines = [];
   late List<Cellar> _cellars;
+  bool _visible = true;
   int _countFreeWines = 0;
 
   @override
@@ -47,6 +48,7 @@ class _CellarTabState extends State<CellarTab> {
                         resetSearch: () => setState(() {
                           _searchedWine = null;
                         }),
+                        sizeCell: 16,
                       ),
                     ),
                   ),
@@ -90,9 +92,11 @@ class _CellarTabState extends State<CellarTab> {
               color: Colors.white,
               child: AnimatedSize(
                 duration: Duration(milliseconds: 500),
-                child: _drawCellar(
-                  snapshot: _cellars,
-                ),
+                child: _visible
+                    ? _drawCellar(
+                        snapshot: _cellars,
+                      )
+                    : Container(),
               ),
             ),
             Padding(
@@ -104,37 +108,34 @@ class _CellarTabState extends State<CellarTab> {
                     height: 10,
                   ),
                   _searchedWine != null
-                      ? Container(
+                      ? SearchCard(
+                          context: context,
+                          wineId: _searchedWine!.id,
+                          stopSearchAction: () => setState(() {
+                            _searchedWine = null;
+                          }),
+                        )
+                      : Container(
                           width: double.infinity,
                           child: CustomElevatedButton(
-                            title: "Arrêter la recherche",
-                            icon: Icon(Icons.search_off_outlined),
-                            backgroundColor:
-                                Theme.of(context).colorScheme.secondary,
-                            onPress: () => setState(() {
-                              _searchedWine = null;
-                            }),
+                            title: "Voir tous mes vins",
+                            icon: Icon(Icons.wine_bar_outlined),
+                            backgroundColor: Theme.of(context).primaryColor,
+                            onPress: () =>
+                                Navigator.of(context, rootNavigator: true)
+                                    .pushNamed("/wine/list"),
                           ),
-                        )
-                      : Container(),
-                  Container(
-                    width: double.infinity,
-                    child: CustomElevatedButton(
-                      title: "Voir tous mes vins",
-                      icon: Icon(Icons.wine_bar_outlined),
-                      backgroundColor: Theme.of(context).primaryColor,
-                      onPress: () => Navigator.of(context, rootNavigator: true)
-                          .pushNamed("/winelist"),
-                    ),
-                  ),
+                        ),
                   SizedBox(
                     height: 10,
                   ),
-                  Text(
-                    "$_countFreeWines bouteille${_countFreeWines > 1 ? "s" : ""} en vrac"
-                        .toUpperCase(),
-                    style: Theme.of(context).textTheme.headline1,
-                  ),
+                  _countFreeWines > 0
+                      ? Text(
+                          "$_countFreeWines bouteille${_countFreeWines > 1 ? "s" : ""} en vrac"
+                              .toUpperCase(),
+                          style: Theme.of(context).textTheme.headline1,
+                        )
+                      : Container(),
                   SizedBox(
                     height: 15,
                   ),

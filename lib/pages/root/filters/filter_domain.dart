@@ -18,11 +18,13 @@ class FilterDomain extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Domain> _domainsList = List<Domain>.from(MyDatabase.getOnce(
+    List<Domain> _domainsList = List<Domain>.from(MyDatabase.getOnce(
         context: context,
         dataList: filterDomainArguments.filteredDomainsList != null
             ? filterDomainArguments.filteredDomainsList!
             : MyDatabase.getDomainsWithStock(context: context, listen: false)));
+    _domainsList
+        .sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
 
     return MainContainer(
       title: Text("Filtrer par un domaine"),

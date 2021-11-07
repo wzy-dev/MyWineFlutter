@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:mywine/pages/right/shelf_right.dart';
 import 'package:mywine/shelf.dart';
 
 class BlockTabArguments {
   BlockTabArguments(
       {required this.drawBlock,
-      required this.resetSearch,
+      this.resetSearch,
       required this.cellarId,
       this.searchedWine});
 
   final DrawBlock drawBlock;
-  final Function resetSearch;
+  final Function? resetSearch;
   final String cellarId;
   final Wine? searchedWine;
 }
@@ -29,7 +28,7 @@ class _BlockTabState extends State<BlockTab> {
   Map<String, int>? _selectedCoor;
   late Wine? _searchedWine;
   late final DrawBlock _originBlock;
-  late final Function _resetSearch;
+  late final Function? _resetSearch;
   late final String _cellarId;
   final int _sizeCell = 40;
 
@@ -51,7 +50,9 @@ class _BlockTabState extends State<BlockTab> {
               "ras"),
       child: SafeArea(
         top: false,
-        child: Column(
+        child: ListView(
+          padding: const EdgeInsets.all(0),
+          shrinkWrap: true,
           children: [
             _drawBlock(
                 originBlock: _originBlock,
@@ -70,12 +71,13 @@ class _BlockTabState extends State<BlockTab> {
                         setState(() {
                           _searchedWine = null;
                         });
-                        _resetSearch();
+                        if (_resetSearch != null) _resetSearch!();
                       },
                     ),
                   )
                 : Container(),
-            Expanded(
+            Container(
+              height: 306,
               child: Stack(
                 children: _drawCarousel(),
               ),
@@ -139,9 +141,11 @@ class _BlockTabState extends State<BlockTab> {
                         nbLine: originBlock.nbLine,
                         selectedCoor: _selectedCoor,
                         searchedWine: searchedWine,
-                        onPress: (Map<String, dynamic> coorPressed) {
-                          _selectedCoor = coorPressed["coor"];
+                        onPress: (Map<String, dynamic> coorPressed,
+                            bool isEvenSelected) {
+                          if (isEvenSelected == true) return;
                           setState(() {
+                            _selectedCoor = coorPressed["coor"];
                             _enhancedWine.add(
                               MyDatabase.getEnhancedWineById(
                                 context: context,
@@ -219,102 +223,107 @@ class _CarouselItemState extends State<CarouselItem> {
               child: CustomCard(
                 child: Align(
                   alignment: Alignment.center,
-                  child: ListView(
-                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                    shrinkWrap: true,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 5, 20, 10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "${_wine!["domain"].name.toUpperCase()} ${_wine!["millesime"]}",
-                              style: Theme.of(context).textTheme.headline4,
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              _wine!["appellation"]["name"],
-                              style: Theme.of(context).textTheme.headline3,
-                            ),
-                          ],
-                        ),
-                      ),
-                      CustomElevatedButton(
-                        title: "Voir la fiche de ce vin",
-                        icon: Icon(Icons.info_outline),
-                        onPress: () {
-                          Navigator.of(context, rootNavigator: true).pushNamed(
-                            "/wine",
-                            arguments:
-                                WineDetailsArguments(wineId: _wine!["id"]),
-                          );
-                        },
-                        backgroundColor: Theme.of(context).hintColor,
-                      ),
-                      CustomFlatButton(
-                        title: "Trouver mes bouteilles",
-                        icon: Icon(Icons.search_outlined),
-                        onPress: () =>
-                            Navigator.of(context, rootNavigator: true)
-                                .pushNamedAndRemoveUntil(
-                          "/cellar",
-                          (_) => false,
-                          arguments: CellarTabArguments(
-                            searchedWine: MyDatabase.getWineById(
-                              context: context,
-                              wineId: _wine!["id"],
-                            ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 5, 20, 10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "${_wine!["domain"].name.toUpperCase()} ${_wine!["millesime"]}",
+                                style: Theme.of(context).textTheme.headline4,
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                _wine!["appellation"]["name"],
+                                style: Theme.of(context).textTheme.headline3,
+                              ),
+                            ],
                           ),
                         ),
-                        backgroundColor: Color.fromRGBO(26, 143, 52, 1),
-                      ),
-                      CustomFlatButton(
-                        title: "Boire cette bouteille",
-                        icon: Icon(Icons.wine_bar_outlined),
-                        backgroundColor:
-                            Theme.of(context).colorScheme.secondary,
-                        onPress: () {
-                          widget.hide();
-                          widget.resetSelected();
-                          MyActions.drinkWine(
-                            context: context,
-                            wine: MyDatabase.getWineById(
+                        CustomElevatedButton(
+                          title: "Voir la fiche de ce vin",
+                          icon: Icon(Icons.info_outline),
+                          onPress: () {
+                            Navigator.of(context, rootNavigator: true)
+                                .pushNamed(
+                              "/wine",
+                              arguments:
+                                  WineDetailsArguments(wineId: _wine!["id"]),
+                            );
+                          },
+                          backgroundColor: Theme.of(context).hintColor,
+                        ),
+                        CustomFlatButton(
+                          title: "Trouver mes bouteilles",
+                          icon: Icon(Icons.search_outlined),
+                          onPress: () =>
+                              Navigator.of(context, rootNavigator: true)
+                                  .pushNamedAndRemoveUntil(
+                            "/cellar",
+                            (_) => false,
+                            arguments: CellarTabArguments(
+                              searchedWine: MyDatabase.getWineById(
                                 context: context,
                                 listen: false,
-                                wineId: _wine!["id"]),
-                            position: widget.coor != null
-                                ? MyDatabase.getPositionByBlockIdAndCoor(
-                                    context: context,
-                                    listen: false,
-                                    blockId: widget.blockId,
-                                    coor: widget.coor!,
-                                  )
-                                : null,
-                          );
-                        },
-                      ),
-                      CustomFlatButton(
-                        title: "Mettre cette bouteille en vrac",
-                        icon: Icon(Icons.logout_outlined),
-                        backgroundColor: Colors.orange,
-                        onPress: () {
-                          widget.hide();
-                          widget.resetSelected();
-                          MyActions.deletePosition(
-                            context: context,
-                            position: widget.coor != null
-                                ? MyDatabase.getPositionByBlockIdAndCoor(
-                                    context: context,
-                                    listen: false,
-                                    blockId: widget.blockId,
-                                    coor: widget.coor!,
-                                  )
-                                : null,
-                          );
-                        },
-                      ),
-                    ],
+                                wineId: _wine!["id"],
+                              ),
+                            ),
+                          ),
+                          backgroundColor: Color.fromRGBO(26, 143, 52, 1),
+                        ),
+                        CustomFlatButton(
+                          title: "Boire cette bouteille",
+                          icon: Icon(Icons.wine_bar_outlined),
+                          backgroundColor:
+                              Theme.of(context).colorScheme.secondary,
+                          onPress: () {
+                            widget.hide();
+                            widget.resetSelected();
+                            MyActions.drinkWine(
+                              context: context,
+                              wine: MyDatabase.getWineById(
+                                  context: context,
+                                  listen: false,
+                                  wineId: _wine!["id"]),
+                              position: widget.coor != null
+                                  ? MyDatabase.getPositionByBlockIdAndCoor(
+                                      context: context,
+                                      listen: false,
+                                      blockId: widget.blockId,
+                                      coor: widget.coor!,
+                                    )
+                                  : null,
+                            );
+                          },
+                        ),
+                        CustomFlatButton(
+                          title: "Mettre cette bouteille en vrac",
+                          icon: Icon(Icons.logout_outlined),
+                          backgroundColor: Colors.orange,
+                          onPress: () {
+                            widget.hide();
+                            widget.resetSelected();
+                            MyActions.deletePosition(
+                              context: context,
+                              position: widget.coor != null
+                                  ? MyDatabase.getPositionByBlockIdAndCoor(
+                                      context: context,
+                                      listen: false,
+                                      blockId: widget.blockId,
+                                      coor: widget.coor!,
+                                    )
+                                  : null,
+                            );
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

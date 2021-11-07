@@ -1,8 +1,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.polymathe.mywine">
+
+  <uses-permission android:name="android.permission.CAMERA" />
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+  <uses-permission android:name="android.permission.INTERNET"/>
+  
+    <!-- (android:usesCleartextTraffic) HTTP Request in debug -->
    <application
         android:label="mywine"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true" >
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

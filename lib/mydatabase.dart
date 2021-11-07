@@ -112,13 +112,12 @@ class MyDatabase {
       {required BuildContext context, required List<dynamic> dataList}) {
     List<dynamic> result = [];
 
-    dataList.forEach((data) => result.indexWhere((dataAdded) =>
-                data.name.toLowerCase() == dataAdded.name.toLowerCase()) ==
-            -1
-        ? result.add(data)
-        : null);
+    dataList.forEach((data) =>
+        result.indexWhere((dataAdded) => data.name == dataAdded.name) == -1
+            ? result.add(data)
+            : null);
 
-    result.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+    result.sort((a, b) => a.name.compareTo(b.name));
 
     return result;
   }
@@ -315,9 +314,11 @@ class MyDatabase {
   }
 
   static int countFreeWineById(
-      {required BuildContext context, required String wineId}) {
-    Wine? wine = getWineById(context: context, wineId: wineId);
-    List<Position> positions = getPositions(context: context);
+      {required BuildContext context,
+      bool listen = true,
+      required String wineId}) {
+    Wine? wine = getWineById(context: context, listen: listen, wineId: wineId);
+    List<Position> positions = getPositions(context: context, listen: listen);
 
     if (wine == null) return 0;
 

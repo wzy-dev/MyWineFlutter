@@ -1,18 +1,18 @@
 [
     {
-        "merged": "/Users/simonwegrzyn/Documents sur mon Mac/development/MyWineFlutter/build/sqflite/intermediates/res/merged/profile/drawable/notification_bg_low.xml",
-        "source": "/Users/simonwegrzyn/.gradle/caches/transforms-2/files-2.1/f4a15a5606c9a028857d8a3e89eefa0f/core-1.1.0/res/drawable/notification_bg_low.xml"
+        "merged": "C:\\Users\\Simon\\Documents\\Github\\MyWineFlutter\\build\\sqflite\\intermediates\\res\\merged\\profile\\drawable\\notification_icon_background.xml",
+        "source": "C:\\Users\\Simon\\.gradle\\caches\\transforms-2\\files-2.1\\f4a15a5606c9a028857d8a3e89eefa0f\\core-1.1.0\\res\\drawable\\notification_icon_background.xml"
     },
     {
-        "merged": "/Users/simonwegrzyn/Documents sur mon Mac/development/MyWineFlutter/build/sqflite/intermediates/res/merged/profile/drawable/notification_icon_background.xml",
-        "source": "/Users/simonwegrzyn/.gradle/caches/transforms-2/files-2.1/f4a15a5606c9a028857d8a3e89eefa0f/core-1.1.0/res/drawable/notification_icon_background.xml"
+        "merged": "C:\\Users\\Simon\\Documents\\Github\\MyWineFlutter\\build\\sqflite\\intermediates\\res\\merged\\profile\\drawable\\notification_bg.xml",
+        "source": "C:\\Users\\Simon\\.gradle\\caches\\transforms-2\\files-2.1\\f4a15a5606c9a028857d8a3e89eefa0f\\core-1.1.0\\res\\drawable\\notification_bg.xml"
     },
     {
-        "merged": "/Users/simonwegrzyn/Documents sur mon Mac/development/MyWineFlutter/build/sqflite/intermediates/res/merged/profile/drawable/notification_bg.xml",
-        "source": "/Users/simonwegrzyn/.gradle/caches/transforms-2/files-2.1/f4a15a5606c9a028857d8a3e89eefa0f/core-1.1.0/res/drawable/notification_bg.xml"
+        "merged": "C:\\Users\\Simon\\Documents\\Github\\MyWineFlutter\\build\\sqflite\\intermediates\\res\\merged\\profile\\drawable\\notification_bg_low.xml",
+        "source": "C:\\Users\\Simon\\.gradle\\caches\\transforms-2\\files-2.1\\f4a15a5606c9a028857d8a3e89eefa0f\\core-1.1.0\\res\\drawable\\notification_bg_low.xml"
     },
     {
-        "merged": "/Users/simonwegrzyn/Documents sur mon Mac/development/MyWineFlutter/build/sqflite/intermediates/res/merged/profile/drawable/notification_tile_bg.xml",
-        "source": "/Users/simonwegrzyn/.gradle/caches/transforms-2/files-2.1/f4a15a5606c9a028857d8a3e89eefa0f/core-1.1.0/res/drawable/notification_tile_bg.xml"
+        "merged": "C:\\Users\\Simon\\Documents\\Github\\MyWineFlutter\\build\\sqflite\\intermediates\\res\\merged\\profile\\drawable\\notification_tile_bg.xml",
+        "source": "C:\\Users\\Simon\\.gradle\\caches\\transforms-2\\files-2.1\\f4a15a5606c9a028857d8a3e89eefa0f\\core-1.1.0\\res\\drawable\\notification_tile_bg.xml"
     }
 ]

@@ -1,25 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:mywine/shelf.dart';
 
-class MiddleNavigator extends StatelessWidget {
+class MiddleNavigator extends StatefulWidget {
   MiddleNavigator({
+    Key? key,
     required this.navigatorKey,
     required this.tabIndex,
+    required this.isActive,
     required this.onItemTapped,
   });
   final GlobalKey<NavigatorState>? navigatorKey;
   final int tabIndex;
+  final bool isActive;
   final Function onItemTapped;
 
+  @override
+  State<MiddleNavigator> createState() => _MiddleNavigatorState();
+}
+
+class _MiddleNavigatorState extends State<MiddleNavigator> {
   Widget _routeBuilders(
-      {required BuildContext context, required String route}) {
-    switch (route) {
+      {required BuildContext context, required RouteSettings settings}) {
+    switch (settings.name) {
       case "/":
-        return AddTab();
-      case "/second":
-        return SecondSon();
+        return AddTab(isActive: widget.isActive);
+      case "/add/wine":
+        ResultSearchVision? args = settings.arguments as ResultSearchVision?;
+        return AddWine(resultSearchVision: args);
+      case "/add/wine/appellation":
+        AddWineAppellationArguments? args =
+            settings.arguments as AddWineAppellationArguments?;
+        return AddWineAppellation(
+          selectedRadio: args?.selectedRadio ?? null,
+        );
+      case "/add/wine/domain":
+        AddWineDomainArguments? args =
+            settings.arguments as AddWineDomainArguments?;
+        return AddWineDomain(
+          selectedRadio: args?.selectedRadio ?? null,
+        );
       default:
-        return AddTab();
+        return AddTab(isActive: widget.isActive);
     }
   }
 
@@ -29,17 +50,17 @@ class MiddleNavigator extends StatelessWidget {
       heroTag: "middle",
       fabIcon: Icons.camera_rounded,
       child: Navigator(
-        key: navigatorKey,
+        key: widget.navigatorKey,
         initialRoute: "/",
         onGenerateRoute: (routeSettings) {
           return MaterialPageRoute(
             builder: (context) =>
-                _routeBuilders(context: context, route: routeSettings.name!),
+                _routeBuilders(context: context, settings: routeSettings),
           );
         },
       ),
-      onItemTapped: onItemTapped,
-      selectedIndex: tabIndex,
+      onItemTapped: widget.onItemTapped,
+      selectedIndex: widget.tabIndex,
     );
   }
 }

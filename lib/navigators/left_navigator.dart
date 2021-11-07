@@ -6,23 +6,25 @@ class LeftNavigator extends StatelessWidget {
     required this.navigatorKey,
     required this.tabIndex,
     required this.onItemTapped,
-    required this.focusNode,
+    // required this.focusNode,
   });
 
   final GlobalKey<NavigatorState>? navigatorKey;
   final int tabIndex;
   final Function onItemTapped;
-  final FocusNode focusNode;
+  // final FocusNode focusNode;
 
   Widget _routeBuilders(
       {required BuildContext context, required String route}) {
     switch (route) {
       case "/":
-        return SearchTab(focusNode: focusNode);
-      case "/second":
-        return SecondSon();
+        return SearchTab(
+            // focusNode: focusNode
+            );
       default:
-        return SecondSon();
+        return SearchTab(
+            // focusNode: focusNode
+            );
     }
   }
 

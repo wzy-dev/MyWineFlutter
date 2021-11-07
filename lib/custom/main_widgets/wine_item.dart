@@ -70,6 +70,27 @@ class WineItem extends StatelessWidget {
                               backgroundColor: Theme.of(context).hintColor,
                             ),
                           ),
+                          (freeQuantity != null && freeQuantity! > 0
+                              ? Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 0),
+                                  child: CustomFlatButton(
+                                    title: "Placer mes bouteilles",
+                                    icon: Icon(Icons.inventory_outlined),
+                                    onPress: () => Navigator.of(context,
+                                            rootNavigator: true)
+                                        .pushNamed(
+                                      "/stock/cellar",
+                                      arguments: StockCellarArguments(
+                                        toStockWine: wine,
+                                      ),
+                                    ),
+                                    backgroundColor: Theme.of(context)
+                                        .colorScheme
+                                        .primaryVariant,
+                                  ),
+                                )
+                              : Container()),
                           Padding(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 0),

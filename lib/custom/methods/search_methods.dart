@@ -1,10 +1,9 @@
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:fuzzy/data/fuzzy_options.dart';
 // ignore: import_of_legacy_library_into_null_safe
-import 'package:fuzzy/data/result.dart';
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:fuzzy/fuzzy.dart';
 import 'package:mywine/shelf.dart';
+import 'package:string_similarity/string_similarity.dart';
 
 class SearchMethods {
   static String _removeUselessSpace(String string) {
@@ -39,32 +38,32 @@ class SearchMethods {
   }
 
   // Biais quand appellation contient château
-  // static String _removeWord(
-  //     {required String string, required String wordToRemove}) {
-  //   final FuzzyOptions options = FuzzyOptions(threshold: 0.3);
+  static String _removeWord(
+      {required String string, required String wordToRemove}) {
+    final FuzzyOptions options = FuzzyOptions(threshold: 0.3);
 
-  //   final Fuzzy fuse = Fuzzy([string], options: options);
+    final Fuzzy fuse = Fuzzy([string], options: options);
 
-  //   List<Result<dynamic>> search = fuse.search(wordToRemove);
-  //   Map<String, int> location = {"dif": 0, "l": 0, "m": 0};
+    List<dynamic> search = fuse.search(wordToRemove);
+    Map<String, int> location = {"dif": 0, "l": 0, "m": 0};
 
-  //   if (search.length == 0) return string;
+    if (search.length == 0) return string;
 
-  //   search[0].matches[0].matchedIndices.forEach((i) {
-  //     if (i.end - i.start > location["dif"]!) {
-  //       location["dif"] = i.end - i.start;
-  //       location["l"] = i.start;
-  //       location["m"] = i.end;
-  //     }
-  //   });
+    search[0].matches[0].matchedIndices.forEach((i) {
+      if (i.end - i.start > location["dif"]!) {
+        location["dif"] = i.end - i.start;
+        location["l"] = i.start;
+        location["m"] = i.end;
+      }
+    });
 
-  //   String rectifiedWordToRemove = search[0]
-  //       .matches[0]
-  //       .value
-  //       .substring(location["l"]!, location["m"]! + 1);
+    String rectifiedWordToRemove = search[0]
+        .matches[0]
+        .value
+        .substring(location["l"]!, location["m"]! + 1);
 
-  //   return search[0].matches[0].value.replaceAll(rectifiedWordToRemove, '');
-  // }
+    return search[0].matches[0].value.replaceAll(rectifiedWordToRemove, '');
+  }
 
   static String _genererateSlug(String string) {
     String result;
@@ -72,17 +71,20 @@ class SearchMethods {
     result = string.replaceAll("-", " ");
     result = _removeAccent(result);
     result = _removeUselessSpace(result);
-    result = result.toLowerCase();
+    // result = result.toLowerCase();
 
     return result;
   }
 
-  static List<Result> getResults({
+  static List<dynamic> getResults({
     required String query,
     List<Region> regions = const [],
     List<Country> countries = const [],
     List<Domain> domains = const [],
     List<Appellation> appellations = const [],
+    bool levenshtein = false,
+    String? removeWord,
+    double threshold = 0.2,
   }) {
     if (query.length == 0) return [];
     List searchs = [];
@@ -123,6 +125,11 @@ class SearchMethods {
 
     domains.forEach((d) {
       String slug = _genererateSlug(d.name);
+
+      if (removeWord != null) {
+        slug = _removeWord(string: slug, wordToRemove: removeWord);
+      }
+
       searchs.add({
         "slug": slug,
         "name": d.name,
@@ -171,26 +178,40 @@ class SearchMethods {
     //   ]
     // }
 
-    final FuzzyOptions options =
-        FuzzyOptions(minMatchCharLength: 1, threshold: 0.2, distance: 0, keys: [
-      WeightedKey(
-        name: "slug",
-        getter: (e) {
-          return (e as Map)["slug"];
-        },
-        weight: 1,
-      )
-    ]);
+    final FuzzyOptions options = FuzzyOptions(
+        minMatchCharLength: 1,
+        threshold: threshold,
+        distance: 0,
+        keys: [
+          WeightedKey(
+            name: "slug",
+            getter: (e) {
+              return (e as Map)["slug"];
+            },
+            weight: 1,
+          )
+        ]);
 
-    // if (customOptions && customOptions.levenshtein) {
-    //   let results = []
-    //   searchs.map(s => {
-    //     let maxLength = q.length > s.slug.length ? q.length : s.slug.length,
-    //       score = levenshtein(removeSpace(removeAccent(q.replace(/-/g, ' '))).toLowerCase(), s.slug) / maxLength
-    //     if (score < options.threshold) results.push({ ...s, score: score, searched: q.toLowerCase(), levenshtein: score * maxLength })
-    //   })
-    //   return results
-    // }
+    if (levenshtein) {
+      List results = [];
+
+      searchs.forEach((s) {
+        int score = 1 -
+            _genererateSlug(query)
+                .toLowerCase()
+                .similarityTo(s["slug"].toLowerCase())
+                .toInt();
+
+        if (score < threshold) {
+          results.add({
+            ...s,
+            "score": score,
+            "searched": query.toLowerCase(),
+          });
+        }
+      });
+      return results;
+    }
 
     final Fuzzy fuse = Fuzzy(searchs, options: options);
 

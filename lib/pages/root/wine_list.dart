@@ -3,6 +3,7 @@ import 'package:mywine/shelf.dart';
 
 class WineListArguments {
   const WineListArguments({
+    this.sortBy,
     this.selectedCountries,
     this.selectedRegions,
     this.selectedAppellations,
@@ -12,6 +13,7 @@ class WineListArguments {
     this.selectedAges,
   });
 
+  final SortBottle? sortBy;
   final List<Country>? selectedCountries;
   final List<Region>? selectedRegions;
   final List<Appellation>? selectedAppellations;
@@ -34,6 +36,7 @@ class WineList extends StatefulWidget {
 }
 
 class _WineListState extends State<WineList> {
+  late SortBottle _sortBy;
   late List<Country> _selectedCountries;
   late List<Region> _selectedRegions;
   late List<Appellation> _selectedAppellations;
@@ -44,6 +47,11 @@ class _WineListState extends State<WineList> {
 
   @override
   void initState() {
+    _sortBy = widget.selectedFilters?.sortBy ??
+        SortBottle(
+            name: "Millésime",
+            icon: Icons.north_east_outlined,
+            value: "millesimeasc");
     _selectedCountries = widget.selectedFilters?.selectedCountries ?? [];
     _selectedRegions = widget.selectedFilters?.selectedRegions ?? [];
     _selectedAppellations = widget.selectedFilters?.selectedAppellations ?? [];
@@ -66,14 +74,15 @@ class _WineListState extends State<WineList> {
         return AgeBottle(name: "Âgé", value: 2);
       }
     } else {
-      return AgeBottle(name: "Jeun", value: 0);
+      return AgeBottle(name: "Jeune", value: 0);
     }
   }
 
   void _goToFilters() async {
-    Map<String, List<dynamic>>? filters =
+    Map<String, Object>? filters =
         await Navigator.of(context, rootNavigator: true).pushNamed("/filters",
             arguments: WineListArguments(
+              sortBy: _sortBy,
               selectedCountries: _selectedCountries,
               selectedRegions: _selectedRegions,
               selectedAppellations: _selectedAppellations,
@@ -81,10 +90,11 @@ class _WineListState extends State<WineList> {
               selectedDomains: _selectedDomains,
               selectedSizes: _selectedSizes,
               selectedAges: _selectedAges,
-            )) as Map<String, List<dynamic>>?;
+            )) as Map<String, Object>?;
     if (filters == null) return;
 
     setState(() {
+      _sortBy = filters["sortby"]! as SortBottle;
       _selectedCountries = filters["countries"]! as List<Country>;
       _selectedRegions = filters["regions"]! as List<Region>;
       _selectedAppellations = filters["appellations"]! as List<Appellation>;
@@ -93,6 +103,66 @@ class _WineListState extends State<WineList> {
       _selectedSizes = filters["sizes"]! as List<SizeBottle>;
       _selectedAges = filters["ages"]! as List<AgeBottle>;
     });
+  }
+
+  List<Widget> _drawListWines() {
+    List<Map<String, dynamic>> listWines = MyDatabase.getEnhancedWines(
+            context: context)
+        .where((wine) => wine["quantity"] > 0)
+        .where((wine) => _selectedCountries.length > 0
+            ? _selectedCountries.indexWhere((e) => e.name == wine["appellation"]["region"]["country"].name) >
+                -1
+            : true)
+        .where((wine) => _selectedRegions.length > 0
+            ? _selectedRegions.indexWhere(
+                    (e) => e.name == wine["appellation"]["region"]["name"]) >
+                -1
+            : true)
+        .where((wine) => _selectedAppellations.length > 0
+            ? _selectedAppellations
+                    .indexWhere((e) => e.name == wine["appellation"]["name"]) >
+                -1
+            : true)
+        .where((wine) => _selectedColors.length > 0
+            ? _selectedColors.indexWhere((e) => e.value == wine["appellation"]["color"]) > -1
+            : true)
+        .where((wine) => _selectedDomains.length > 0 ? _selectedDomains.indexWhere((e) => e.name == wine["domain"].name) > -1 : true)
+        .where((wine) => _selectedSizes.length > 0 ? _selectedSizes.indexWhere((e) => e.value == wine["size"]) > -1 : true)
+        .where((wine) => _selectedAges.length > 0
+            ? _selectedAges.indexWhere((e) {
+                  AgeBottle? age = _getAgeOfWine(wine: wine);
+                  return age != null && age.value == e.value;
+                }) >
+                -1
+            : true)
+        .toList();
+
+    switch (_sortBy.value) {
+      case "millesimeasc":
+        listWines.sort((a, b) => a["millesime"].compareTo(b["millesime"]));
+        break;
+      case "millesimedesc":
+        listWines.sort((b, a) => a["millesime"].compareTo(b["millesime"]));
+        break;
+      case "appellation":
+        listWines.sort((a, b) => a["appellation"]["name"]
+            .toLowerCase()
+            .compareTo(b["appellation"]["name"].toLowerCase()));
+        break;
+      case "domain":
+        listWines.sort((a, b) => a["domain"]
+            .name
+            .toLowerCase()
+            .compareTo(b["domain"].name.toLowerCase()));
+        break;
+    }
+
+    return listWines
+        .map((wine) => Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: WineItem(enhancedWine: wine),
+            ))
+        .toList();
   }
 
   @override
@@ -117,6 +187,27 @@ class _WineListState extends State<WineList> {
           Wrap(
             spacing: 5,
             children: [
+              InputChip(
+                pressElevation: 2,
+                padding: const EdgeInsets.all(5),
+                side: BorderSide(),
+                backgroundColor: Colors.white,
+                disabledColor: Colors.white,
+                label: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text("Trier par : ",
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(_sortBy.name),
+                    _sortBy.icon != null
+                        ? Padding(
+                            padding: const EdgeInsets.only(left: 2),
+                            child: Icon(_sortBy.icon, size: 10))
+                        : SizedBox(),
+                  ],
+                ),
+              ),
               ..._selectedCountries.map((Country e) => DeleteChip(
                     label: e.name,
                     deleteAction: () => setState(() {
@@ -167,43 +258,21 @@ class _WineListState extends State<WineList> {
                   )),
             ],
           ),
-          ...MyDatabase.getEnhancedWines(context: context)
-              .where((wine) => wine["quantity"] > 0)
-              .where((wine) => _selectedCountries.length > 0
-                  ? _selectedCountries.indexWhere((e) => e.id == wine["appellation"]["region"]["country"].id) >
-                      -1
-                  : true)
-              .where((wine) => _selectedRegions.length > 0
-                  ? _selectedRegions.indexWhere(
-                          (e) => e.id == wine["appellation"]["region"]["id"]) >
-                      -1
-                  : true)
-              .where((wine) => _selectedAppellations.length > 0
-                  ? _selectedAppellations.indexWhere(
-                          (e) => e.id == wine["appellation"]["id"]) >
-                      -1
-                  : true)
-              .where((wine) => _selectedColors.length > 0
-                  ? _selectedColors.indexWhere(
-                          (e) => e.value == wine["appellation"]["color"]) >
-                      -1
-                  : true)
-              .where((wine) => _selectedDomains.length > 0
-                  ? _selectedDomains.indexWhere((e) => e.id == wine["domain"].id) > -1
-                  : true)
-              .where((wine) => _selectedSizes.length > 0 ? _selectedSizes.indexWhere((e) => e.value == wine["size"]) > -1 : true)
-              .where((wine) => _selectedAges.length > 0
-                  ? _selectedAges.indexWhere((e) {
-                        AgeBottle? age = _getAgeOfWine(wine: wine);
-                        return age != null && age.value == e.value;
-                      }) >
-                      -1
-                  : true)
-              .map((wine) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: WineItem(enhancedWine: wine),
-                  ))
-              .toList()
+          (_selectedAppellations.length == 1
+              ? CustomFlatButton(
+                  title: "Vois les informations sur l'appellation",
+                  icon: Icon(Icons.info_outline),
+                  backgroundColor: Theme.of(context).colorScheme.primaryVariant,
+                  onPress: () => Navigator.of(context).pushNamed(
+                    "/appellation",
+                    arguments: AppellationDetailsArguments(
+                      appellationId: _selectedAppellations[0].id,
+                      fullScreenDialog: false,
+                    ),
+                  ),
+                )
+              : Text("")),
+          ..._drawListWines(),
         ],
       ),
     );
