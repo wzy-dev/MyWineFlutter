@@ -1,5 +1,46 @@
 import 'package:flutter/material.dart';
 
+class CustomIconButton extends StatelessWidget {
+  const CustomIconButton({
+    required this.icon,
+    this.disabled = false,
+    this.onPress,
+    this.backgroundColor,
+    Key? key,
+  }) : super(key: key);
+
+  final Widget icon;
+  final bool disabled;
+  final onPress;
+  final Color? backgroundColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: onPress == null || disabled ? null : () => onPress!(),
+      child: icon,
+      style: ButtonStyle(
+        minimumSize: MaterialStateProperty.all<Size>(Size(0, 0)),
+        padding: MaterialStateProperty.all<EdgeInsets>(
+          EdgeInsets.all(8),
+        ),
+        alignment: Alignment.centerLeft,
+        backgroundColor: MaterialStateProperty.all<Color>(
+          disabled
+              ? Color.fromRGBO(208, 188, 188, 1)
+              : backgroundColor ?? Theme.of(context).colorScheme.primaryVariant,
+        ),
+        foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class CustomElevatedButton extends StatelessWidget {
   const CustomElevatedButton({
     required this.title,
@@ -7,15 +48,17 @@ class CustomElevatedButton extends StatelessWidget {
     this.disabled = false,
     this.onPress,
     this.backgroundColor,
+    this.textColor,
     this.dense = false,
     Key? key,
   }) : super(key: key);
 
   final String title;
-  final Icon icon;
+  final Widget icon;
   final bool disabled;
   final Function? onPress;
   final Color? backgroundColor;
+  final Color? textColor;
   final bool dense;
 
   @override
@@ -33,6 +76,7 @@ class CustomElevatedButton extends StatelessWidget {
             dense ? const EdgeInsets.all(0) : const EdgeInsets.only(left: 4),
         child: Text(
           title.toUpperCase(),
+          style: TextStyle(color: textColor),
         ),
       ),
       style: ButtonStyle(
@@ -67,7 +111,7 @@ class CustomFlatButton extends StatelessWidget {
 
   final String title;
   final Function? onPress;
-  final Icon icon;
+  final Widget icon;
   final Color? backgroundColor;
 
   @override

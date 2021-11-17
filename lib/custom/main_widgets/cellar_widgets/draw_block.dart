@@ -5,7 +5,7 @@ import 'package:collection/collection.dart';
 class DrawBlock extends StatefulWidget {
   const DrawBlock({
     Key? key,
-    required this.blockId,
+    this.blockId,
     required this.nbLine,
     required this.nbColumn,
     this.selectedCoor,
@@ -15,7 +15,7 @@ class DrawBlock extends StatefulWidget {
     this.toStockWine,
   }) : super(key: key);
 
-  final String blockId;
+  final String? blockId;
   final int nbLine;
   final int nbColumn;
   final Map<String, int>? selectedCoor;
@@ -155,8 +155,10 @@ class _DrawBlockState extends State<DrawBlock> {
   @override
   Widget build(BuildContext context) {
     List<Widget> rows = [];
-    List<Position> positions = MyDatabase.getPositionsByBlockId(
-        context: context, blockId: widget.blockId);
+    List<Position> positions = widget.blockId != null
+        ? MyDatabase.getPositionsByBlockId(
+            context: context, blockId: widget.blockId!)
+        : [];
 
     for (var y = widget.nbLine; y >= 1; y--) {
       List<Widget> cells = [];

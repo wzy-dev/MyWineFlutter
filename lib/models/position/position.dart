@@ -48,4 +48,12 @@ class Position {
 
     return _$PositionFromJson(data);
   }
+
+  dynamic get(String propertyName) {
+    var _mapRep = toJson();
+    if (_mapRep.containsKey(propertyName)) {
+      return _mapRep[propertyName];
+    }
+    throw ArgumentError('propery not found');
+  }
 }

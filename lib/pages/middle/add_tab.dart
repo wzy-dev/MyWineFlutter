@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:googleapis/vision/v1.dart' as vision;
 import 'package:mywine/recognize.dart';
 import 'package:mywine/shelf.dart';
@@ -9,6 +10,7 @@ import 'package:camerawesome/camerawesome_plugin.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:loading_indicator/loading_indicator.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class AddTab extends StatefulWidget {
   const AddTab({Key? key, required this.isActive}) : super(key: key);
@@ -20,29 +22,20 @@ class AddTab extends StatefulWidget {
 }
 
 class _AddTabState extends State<AddTab> with WidgetsBindingObserver {
-  bool _cameraIsVisible = true;
-
+  bool _cameraIsVisible = false;
+  bool? _permissionEnabled;
   bool _cameraReloading = false;
-
   bool _searchLoading = false;
-
   Object _cameraKey = Object();
-
   double _viewportHeight = 0;
-
   double _viewportWidth = 0;
-
   double _captureHoleHeight = 0;
-
   double _captureHoleWidth = 0;
-
   final PictureController awesomeController = PictureController();
-
   Directory? cacheDirectory;
-
   Directory? cacheResizedDirectory;
-
   AppLifecycleState? _notification;
+  late bool _isActive;
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -59,6 +52,7 @@ class _AddTabState extends State<AddTab> with WidgetsBindingObserver {
 
   @override
   void initState() {
+    _isActive = true;
     _setDirectory();
     WidgetsBinding.instance!.addObserver(this);
 
@@ -69,6 +63,46 @@ class _AddTabState extends State<AddTab> with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance!.removeObserver(this);
     super.dispose();
+  }
+
+  void _onPermissionsResult() async {
+    PermissionStatus statusCamera = await Permission.camera.status;
+    PermissionStatus statusStorage = await Permission.storage.status;
+    // if (_permissionEnabled == false) return;
+    // await Permission.camera.request();
+
+    if ((statusCamera.isDenied ||
+            statusCamera.isPermanentlyDenied ||
+            statusStorage.isDenied ||
+            statusStorage.isPermanentlyDenied) &&
+        _permissionEnabled != false) {
+      Map<Permission, PermissionStatus> statuses = await [
+        Permission.camera,
+        Permission.storage,
+      ].request();
+
+      statusCamera = statuses[Permission.camera] ?? statusCamera;
+      statusStorage = statuses[Permission.storage] ?? statusCamera;
+
+      if (!statusCamera.isDenied &&
+          !statusCamera.isPermanentlyDenied &&
+          !statusStorage.isDenied &&
+          !statusStorage.isPermanentlyDenied) {
+        return;
+      } else {
+        setState(() {
+          _permissionEnabled = false;
+        });
+      }
+    } else if ((!statusCamera.isDenied &&
+            !statusCamera.isPermanentlyDenied &&
+            !statusStorage.isDenied &&
+            !statusStorage.isPermanentlyDenied) &&
+        _permissionEnabled != true) {
+      setState(() {
+        _permissionEnabled = true;
+      });
+    }
   }
 
   void _toScan() {
@@ -93,16 +127,25 @@ class _AddTabState extends State<AddTab> with WidgetsBindingObserver {
           File(filePath);
       RekognizeProvider.search(base64Encode(fileResized.readAsBytesSync()))
           .then((response) {
-        List<vision.AnnotateImageResponse> test =
-            response.toJson()["responses"];
-        test.forEach((anot) {
-          List<vision.EntityAnnotation>? list = anot.textAnnotations;
+        List<vision.AnnotateImageResponse> ocr = response.toJson()["responses"];
+
+        ocr.forEach((anot) async {
+          // List<vision.EntityAnnotation>? list = anot.textAnnotations;
+          vision.TextAnnotation? list = anot.fullTextAnnotation;
           if (list != null) {
+            // ResultSearchVision? resultSearchVision = Vision.takePicture(context: context, ocr: list);
             ResultSearchVision? resultSearchVision =
                 Vision.takePicture(context: context, ocr: list);
-            if (resultSearchVision != null)
-              Navigator.of(context)
+            if (resultSearchVision != null) {
+              setState(() {
+                _isActive = false;
+              });
+              await Navigator.of(context)
                   .pushNamed("/add/wine", arguments: resultSearchVision);
+              setState(() {
+                _isActive = true;
+              });
+            }
           }
         });
         setState(() {
@@ -121,43 +164,87 @@ class _AddTabState extends State<AddTab> with WidgetsBindingObserver {
 
   Widget _drawCamera() {
     if (_notification == AppLifecycleState.inactive ||
-        _notification == AppLifecycleState.paused ||
-        !widget.isActive) {
+        _notification == AppLifecycleState.paused) {
       setState(() {
         _cameraIsVisible = false;
       });
       return Container();
     } else {
-      return AnimatedOpacity(
+      _onPermissionsResult();
+      return AnimatedSwitcher(
         duration: Duration(milliseconds: 500),
-        opacity: _cameraIsVisible ? 1 : 0,
-        child: Stack(
-          children: [
-            CameraAwesome(
-              onCameraStarted: () {
-                setState(() {
-                  _cameraIsVisible = true;
-                  _cameraReloading = false;
-                });
-              },
-              key: ValueKey(_cameraKey),
-              sensor: ValueNotifier(Sensors.BACK),
-              photoSize: ValueNotifier(Size(0, 0)),
-              captureMode: ValueNotifier(CaptureModes.PHOTO),
-            ),
-            Container(
-              color: _cameraReloading
-                  ? Colors.black54
-                  : Color.fromRGBO(0, 0, 0, 0),
-            )
-          ],
-        ),
+        child: _permissionEnabled == null
+            ? Container()
+            : _permissionEnabled == true
+                ? AnimatedOpacity(
+                    duration: Duration(milliseconds: 500),
+                    opacity: _cameraIsVisible ? 1 : 0,
+                    child: Stack(
+                      children: [
+                        CameraAwesome(
+                          onCameraStarted: () {
+                            setState(() {
+                              _cameraIsVisible = true;
+                              _cameraReloading = false;
+                            });
+                          },
+                          key: ValueKey(_cameraKey),
+                          sensor: ValueNotifier(Sensors.BACK),
+                          photoSize: ValueNotifier(Size(0, 0)),
+                          captureMode: ValueNotifier(CaptureModes.PHOTO),
+                        ),
+                        Container(
+                          color: _cameraReloading
+                              ? Colors.black54
+                              : Color.fromRGBO(0, 0, 0, 0),
+                        )
+                      ],
+                    ),
+                  )
+                : Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        'assets/svg/camera_off.svg',
+                        width: MediaQuery.of(context).size.width,
+                        color: Color.fromRGBO(255, 255, 255, 0.05),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(30),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Vous devez donner la permission à MyWine d'accéder à votre caméra pour utiliser le scanner !",
+                              style: TextStyle(
+                                  color: Color.fromRGBO(255, 255, 255, 0.7)),
+                              textAlign: TextAlign.center,
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              "Appuyez ici pour accéder aux paramétres et donner l'autorisation.",
+                              style: TextStyle(
+                                color: Color.fromRGBO(255, 255, 255, 0.7),
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    // _isActive = widget.isActive;
+
     _viewportHeight = MediaQuery.of(context).size.height;
     _viewportWidth = MediaQuery.of(context).size.width;
 
@@ -170,163 +257,200 @@ class _AddTabState extends State<AddTab> with WidgetsBindingObserver {
       hideAppBar: true,
       child: SafeArea(
         top: false,
-        child: Container(
-          height: _viewportHeight - 190,
-          width: _viewportWidth,
-          child: Stack(
-            children: [
-              Container(
-                child: _drawCamera(),
-                clipBehavior: Clip.hardEdge,
-                decoration: BoxDecoration(),
-              ),
-              AnimatedOpacity(
-                curve: Curves.bounceInOut,
-                opacity: _searchLoading
-                    ? 1
-                    : _cameraIsVisible
-                        ? 0.4
-                        : 0,
-                duration: Duration(milliseconds: _searchLoading ? 200 : 1000),
-                child: ColorFiltered(
-                  colorFilter: ColorFilter.mode(
-                    Color.fromRGBO(0, 0, 0, 0.8),
-                    BlendMode.srcOut,
-                  ),
+        child: _isActive && widget.isActive
+            ? Container(
+                height: _viewportHeight - 190,
+                width: _viewportWidth,
+                child: InkWell(
+                  onTap: _permissionEnabled == true
+                      ? null
+                      : () => openAppSettings(),
                   child: Stack(
                     children: [
                       Container(
+                        child: _drawCamera(),
+                        clipBehavior: Clip.hardEdge,
                         decoration: BoxDecoration(
-                          color: Colors.black,
-                          backgroundBlendMode: BlendMode.dstOut,
-                        ),
-                      ),
-                      Align(
-                        alignment: Alignment.center,
-                        child: AnimatedContainer(
-                          // margin: const EdgeInsets.only(bottom: 50),
-                          curve: Curves.easeOutQuart,
-                          duration: Duration(milliseconds: 500),
-                          height: _searchLoading == false
-                              ? _captureHoleHeight - 30
-                              : 0,
-                          width: _searchLoading == false
-                              ? _captureHoleWidth - 30
-                              : 0,
-                          decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(
-                                _searchLoading == false ? 20 : 100),
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Color.fromRGBO(22, 8, 10, 1),
+                              Color.fromRGBO(22, 8, 10, 0.75),
+                            ],
                           ),
                         ),
                       ),
+                      AnimatedOpacity(
+                        curve: Curves.bounceInOut,
+                        opacity: _searchLoading
+                            ? 1
+                            : _cameraIsVisible
+                                ? 0.4
+                                : 0,
+                        duration:
+                            Duration(milliseconds: _searchLoading ? 200 : 1000),
+                        child: ColorFiltered(
+                          colorFilter: ColorFilter.mode(
+                            Color.fromRGBO(0, 0, 0, 0.8),
+                            BlendMode.srcOut,
+                          ),
+                          child: Stack(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.black,
+                                  backgroundBlendMode: BlendMode.dstOut,
+                                ),
+                              ),
+                              Align(
+                                alignment: Alignment.center,
+                                child: AnimatedContainer(
+                                  // margin: const EdgeInsets.only(bottom: 50),
+                                  curve: Curves.easeOutQuart,
+                                  duration: Duration(milliseconds: 500),
+                                  height: _searchLoading == false
+                                      ? _captureHoleHeight - 30
+                                      : 0,
+                                  width: _searchLoading == false
+                                      ? _captureHoleWidth - 30
+                                      : 0,
+                                  decoration: BoxDecoration(
+                                    color: Colors.red,
+                                    borderRadius: BorderRadius.circular(
+                                        _searchLoading == false ? 20 : 100),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      AnimatedOpacity(
+                        curve: Curves.ease,
+                        opacity: _cameraIsVisible ? 1 : 0,
+                        duration: Duration(milliseconds: 2000),
+                        child: Center(
+                          child: Container(
+                            // margin: const EdgeInsets.only(bottom: 50),
+                            height: _captureHoleHeight,
+                            width: _captureHoleWidth,
+                            child: Stack(
+                              children: [
+                                Align(
+                                  alignment: Alignment.topLeft,
+                                  child: RotatedBox(
+                                    quarterTurns: 0,
+                                    child: Corner(loading: _searchLoading),
+                                  ),
+                                ),
+                                Align(
+                                  alignment: Alignment.topRight,
+                                  child: RotatedBox(
+                                    quarterTurns: 1,
+                                    child: Corner(loading: _searchLoading),
+                                  ),
+                                ),
+                                Align(
+                                  alignment: Alignment.bottomLeft,
+                                  child: RotatedBox(
+                                    quarterTurns: 3,
+                                    child: Corner(loading: _searchLoading),
+                                  ),
+                                ),
+                                Align(
+                                  alignment: Alignment.bottomRight,
+                                  child: RotatedBox(
+                                    quarterTurns: 2,
+                                    child: Corner(loading: _searchLoading),
+                                  ),
+                                ),
+                                AnimatedOpacity(
+                                  duration: Duration(milliseconds: 200),
+                                  opacity: _searchLoading ? 1 : 0,
+                                  child: Center(
+                                    child: LoadingIndicator(
+                                      indicatorType: Indicator.ballScale,
+                                      colors: [
+                                        Theme.of(context).colorScheme.secondary,
+                                      ],
+                                      strokeWidth: 50,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        child: Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 20),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                _cameraIsVisible
+                                    ? Column(
+                                        children: [
+                                          Material(
+                                            color: Colors.transparent,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(20)),
+                                            ),
+                                            child: InkWell(
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary,
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(20)),
+                                                ),
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(
+                                                      12.0),
+                                                  child: Icon(
+                                                      Icons.camera_alt_outlined,
+                                                      size: 35,
+                                                      color: Colors.white),
+                                                ),
+                                              ),
+                                              onTap: () => _toScan(),
+                                            ),
+                                          ),
+                                          SizedBox(height: 10),
+                                        ],
+                                      )
+                                    : Container(),
+                                CustomElevatedButton(
+                                    icon: Icon(Icons.add_outlined),
+                                    backgroundColor:
+                                        Theme.of(context).colorScheme.secondary,
+                                    title: "Ajouter manuellement",
+                                    onPress: () async {
+                                      setState(() {
+                                        _isActive = false;
+                                      });
+                                      await Navigator.of(context)
+                                          .pushNamed("/add/wine");
+                                      setState(() {
+                                        _isActive = true;
+                                      });
+                                    }),
+                              ],
+                            ),
+                          ),
+                        ),
+                      )
                     ],
                   ),
                 ),
-              ),
-              AnimatedOpacity(
-                curve: Curves.ease,
-                opacity: _cameraIsVisible ? 1 : 0,
-                duration: Duration(milliseconds: 2000),
-                child: Center(
-                  child: Container(
-                    // margin: const EdgeInsets.only(bottom: 50),
-                    height: _captureHoleHeight,
-                    width: _captureHoleWidth,
-                    child: Stack(
-                      children: [
-                        Align(
-                          alignment: Alignment.topLeft,
-                          child: RotatedBox(
-                            quarterTurns: 0,
-                            child: Corner(loading: _searchLoading),
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.topRight,
-                          child: RotatedBox(
-                            quarterTurns: 1,
-                            child: Corner(loading: _searchLoading),
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.bottomLeft,
-                          child: RotatedBox(
-                            quarterTurns: 3,
-                            child: Corner(loading: _searchLoading),
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.bottomRight,
-                          child: RotatedBox(
-                            quarterTurns: 2,
-                            child: Corner(loading: _searchLoading),
-                          ),
-                        ),
-                        AnimatedOpacity(
-                          duration: Duration(milliseconds: 200),
-                          opacity: _searchLoading ? 1 : 0,
-                          child: Center(
-                            child: LoadingIndicator(
-                              indicatorType: Indicator.ballScale,
-                              colors: [
-                                Theme.of(context).colorScheme.secondary,
-                              ],
-                              strokeWidth: 50,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 20),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Material(
-                          color: Colors.transparent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(20)),
-                          ),
-                          child: InkWell(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.secondary,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(20)),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(12.0),
-                                child: Icon(Icons.camera_alt_outlined,
-                                    size: 35, color: Colors.white),
-                              ),
-                            ),
-                            onTap: () => _toScan(),
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        CustomElevatedButton(
-                          icon: Icon(Icons.add_outlined),
-                          backgroundColor:
-                              Theme.of(context).colorScheme.secondary,
-                          title: "Ajouter manuellement",
-                          onPress: () =>
-                              Navigator.of(context).pushNamed("/add/wine"),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
               )
-            ],
-          ),
-        ),
+            : Container(),
       ),
     );
   }

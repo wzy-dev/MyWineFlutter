@@ -59,11 +59,7 @@ class _MultiSliderState extends State<MultiSlider> {
     _minimumPossible = widget.minPossible.roundToDouble();
     _maximumPossible = _maxVal + 10;
 
-    if (_minVal > _maxVal && !_maximumIsEnabled) {
-      _maxVal = _maxVal + _maximumPossible / 3 + 3;
-    } else if (_minVal >= _maxVal && !_minimumIsEnabled) {
-      _minVal = _maxVal - _maximumPossible / 3 - 3;
-    } else if (_minVal > _maxVal) {
+    if (_minVal > _maxVal) {
       _minVal = widget.maxVal.roundToDouble();
       _maxVal = widget.minVal.roundToDouble();
     }
@@ -91,6 +87,7 @@ class _MultiSliderState extends State<MultiSlider> {
             : Theme.of(context).colorScheme.secondary),
       ),
       onPressed: () {
+        if (_maxVal < _minVal) _maxVal = _minVal;
         onPressed();
         widget.onChange(
           MultiSliderArguments(
@@ -187,7 +184,7 @@ class _MultiSliderState extends State<MultiSlider> {
                       if (values.start < _maximumPossible - 15 &&
                           values.end < _maximumPossible - 15) {
                         setState(() {
-                          _maximumPossible = _maximumPossible - 14;
+                          _maximumPossible = _maximumPossible - 10;
                         });
                       }
                       if (values.end.round() == _maximumPossible.round() + 1) {
@@ -222,20 +219,19 @@ class _MultiSliderState extends State<MultiSlider> {
                       divisions: _maximumPossible.round() + 1,
                       label: _writeDenseLabel(_minVal),
                       onChanged: (minimum) {
-                        if (_maxVal <= minimum) {
-                          _maxVal = minimum + _maximumPossible / 3 + 3;
-                        }
+                        // if (_maxVal <= minimum) {
+                        //   _maxVal = minimum + _maximumPossible / 3 + 3;
+                        // }
                         setState(() {
                           _minVal = minimum;
                         });
                       },
                       onChangeEnd: (minimum) {
-                        if (_maxVal >= _maximumPossible)
-                          _maximumPossible = _maxVal + 3;
-                        if (minimum < _maximumPossible - 15 &&
-                            _maxVal < _maximumPossible - 15) {
+                        // if (_maxVal >= _maximumPossible)
+                        //   _maximumPossible = _maxVal + 3;
+                        if (minimum < _maximumPossible - 15) {
                           setState(() {
-                            _maximumPossible = _maximumPossible - 14;
+                            _maximumPossible = _maximumPossible - 10;
                           });
                         }
                         if (minimum.round() == _maximumPossible.round() + 1) {
@@ -262,20 +258,19 @@ class _MultiSliderState extends State<MultiSlider> {
                     divisions: _maximumPossible.round() + 1,
                     label: _writeDenseLabel(_maxVal),
                     onChanged: (maximum) {
-                      if (_minVal >= maximum) {
-                        _minVal = maximum - _maximumPossible / 3 + 3;
-                      }
+                      // if (_minVal >= maximum) {
+                      //   _minVal = maximum - _maximumPossible / 3 + 3;
+                      // }
                       setState(() {
                         _maxVal = maximum;
                       });
                     },
                     onChangeEnd: (maximum) {
-                      if (_minVal <= _minimumPossible)
-                        _minVal = _minimumPossible;
-                      if (maximum < _maximumPossible - 15 &&
-                          _minVal < _maximumPossible - 15) {
+                      // if (_minVal <= _minimumPossible)
+                      //   _minVal = _minimumPossible;
+                      if (maximum < _maximumPossible - 15) {
                         setState(() {
-                          _maximumPossible = _maximumPossible - 14;
+                          _maximumPossible = _maximumPossible - 10;
                         });
                       }
                       if (maximum.round() == _maximumPossible.round() + 1) {

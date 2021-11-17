@@ -39,7 +39,20 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>MyWine a besoin d&apos;accéder à votre caméra pour faire fonctionner le scanner</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.698452890369-ljif0ka378ss5i64bbgsg8mt0ilci5bg</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

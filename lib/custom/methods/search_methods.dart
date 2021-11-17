@@ -24,19 +24,6 @@ class SearchMethods {
     return result;
   }
 
-  static String _removeAccent(String string) {
-    var withDia =
-        'ÀÁÂÃÄÅàáâãäåÒÓÔÕÕÖØòóôõöøÈÉÊËèéêëðÇçÐÌÍÎÏìíîïÙÚÛÜùúûüÑñŠšŸÿýŽž';
-    var withoutDia =
-        'AAAAAAaaaaaaOOOOOOOooooooEEEEeeeeeCcDIIIIiiiiUUUUuuuuNnSsYyyZz';
-
-    for (int i = 0; i < withDia.length; i++) {
-      string = string.replaceAll(withDia[i], withoutDia[i]);
-    }
-
-    return string;
-  }
-
   // Biais quand appellation contient château
   static String _removeWord(
       {required String string, required String wordToRemove}) {
@@ -69,7 +56,7 @@ class SearchMethods {
     String result;
 
     result = string.replaceAll("-", " ");
-    result = _removeAccent(result);
+    result = CustomMethods.removeAccent(result);
     result = _removeUselessSpace(result);
     // result = result.toLowerCase();
 
@@ -178,29 +165,25 @@ class SearchMethods {
     //   ]
     // }
 
-    final FuzzyOptions options = FuzzyOptions(
-        minMatchCharLength: 1,
-        threshold: threshold,
-        distance: 0,
-        keys: [
-          WeightedKey(
-            name: "slug",
-            getter: (e) {
-              return (e as Map)["slug"];
-            },
-            weight: 1,
-          )
-        ]);
+    final FuzzyOptions options =
+        FuzzyOptions(minMatchCharLength: 1, threshold: threshold, keys: [
+      WeightedKey(
+        name: "slug",
+        getter: (e) {
+          return (e as Map)["slug"];
+        },
+        weight: 1,
+      )
+    ]);
 
     if (levenshtein) {
       List results = [];
 
       searchs.forEach((s) {
-        int score = 1 -
+        double score = 1 -
             _genererateSlug(query)
                 .toLowerCase()
-                .similarityTo(s["slug"].toLowerCase())
-                .toInt();
+                .similarityTo(s["slug"].toLowerCase());
 
         if (score < threshold) {
           results.add({

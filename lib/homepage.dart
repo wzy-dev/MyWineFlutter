@@ -14,7 +14,7 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> {
   late List<int> _tabHistory;
-  // late FocusNode searchFieldFocusNode;
+  late FocusNode searchFieldFocusNode;
 
   late int _selectedIndex;
 
@@ -23,7 +23,7 @@ class _HomepageState extends State<Homepage> {
     _tabHistory = [0];
     if (widget.initialIndex != 0) _tabHistory.insert(0, widget.initialIndex);
     _selectedIndex = widget.initialIndex;
-    // searchFieldFocusNode = FocusNode();
+    searchFieldFocusNode = FocusNode();
     super.initState();
   }
 
@@ -35,14 +35,15 @@ class _HomepageState extends State<Homepage> {
 
   void _onItemTapped(int index) {
     if (index == _selectedIndex) {
-      // searchFieldFocusNode.unfocus();
+      searchFieldFocusNode.unfocus();
       // Si on touche le tab actif on revient à la route initiale
-      // if (_selectedIndex == 0)
-      // _navigatorKeys[index]!.currentState!.maybePop().then(
-      //     (value) => value ? null : searchFieldFocusNode.requestFocus());
+      if (_selectedIndex == 0)
+        _navigatorKeys[index]!.currentState!.maybePop().then(
+            (value) => value ? null : searchFieldFocusNode.requestFocus());
       _navigatorKeys[index]!.currentState!.popUntil((route) => route.isFirst);
     } else {
       // Changer de tab
+      searchFieldFocusNode.unfocus();
       _tabHistory.removeWhere((pageIndex) => pageIndex == index);
       _tabHistory.insert(0, index);
       if (_tabHistory.length > 3) _tabHistory.removeLast();
@@ -89,7 +90,7 @@ class _HomepageState extends State<Homepage> {
         navigatorKey: navigatorKey,
         tabIndex: index,
         onItemTapped: _onItemTapped,
-        // focusNode: searchFieldFocusNode,
+        focusNode: searchFieldFocusNode,
       ),
       MiddleNavigator(
         navigatorKey: navigatorKey,

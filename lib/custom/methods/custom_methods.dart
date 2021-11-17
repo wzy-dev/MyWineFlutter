@@ -57,24 +57,28 @@ class CustomMethods {
       case "r":
         return {
           "name": "Rouge",
+          "index": "r",
           "color": Color.fromRGBO(219, 61, 77, 1),
           "contrasted": Colors.white70,
         };
       case "w":
         return {
           "name": "Blanc",
+          "index": "w",
           "color": Color.fromRGBO(248, 216, 114, 1),
           "contrasted": Colors.black54,
         };
       case "p":
         return {
           "name": "Rosé",
+          "index": "p",
           "color": Color.fromRGBO(255, 212, 196, 1),
           "contrasted": Colors.black54,
         };
       default:
         return {
           "name": "Inconnu",
+          "index": "u",
           "color": Colors.white,
           "contrasted": Colors.black54,
         };
@@ -101,5 +105,18 @@ class CustomMethods {
       SizeBottle(name: "Nabuchodonosor", value: 15000),
       SizeBottle(name: "Melchior", value: 18000),
     ];
+  }
+
+  static String removeAccent(String string) {
+    var withDia =
+        'ÀÁÂÃÄÅàáâãäåÒÓÔÕÕÖØòóôõöøÈÉÊËèéêëðÇçÐÌÍÎÏìíîïÙÚÛÜùúûüÑñŠšŸÿýŽž';
+    var withoutDia =
+        'AAAAAAaaaaaaOOOOOOOooooooEEEEeeeeeCcDIIIIiiiiUUUUuuuuNnSsYyyZz';
+
+    for (int i = 0; i < withDia.length; i++) {
+      string = string.replaceAll(withDia[i], withoutDia[i]);
+    }
+
+    return string;
   }
 }

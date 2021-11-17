@@ -2,15 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:mywine/shelf.dart';
 
 class AddWineAppellationArguments {
-  const AddWineAppellationArguments({this.selectedRadio});
+  const AddWineAppellationArguments({this.selectedRadio, this.addPath});
 
   final String? selectedRadio;
+  final String? addPath;
 }
 
 class AddWineAppellation extends StatelessWidget {
-  const AddWineAppellation({this.selectedRadio});
+  const AddWineAppellation({this.selectedRadio, this.addPath});
 
   final String? selectedRadio;
+  final String? addPath;
 
   @override
   Widget build(BuildContext context) {
@@ -19,8 +21,6 @@ class AddWineAppellation extends StatelessWidget {
             context: context,
             dataList:
                 MyDatabase.getAppellations(context: context, listen: false)));
-    _appellationsList
-        .sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
 
     return MainContainer(
       title: Text("Choisir une appellation"),
@@ -30,6 +30,7 @@ class AddWineAppellation extends StatelessWidget {
         submitLabel: "Choisir",
         initialSelection: selectedRadio != null ? [selectedRadio!] : [],
         appellationsData: _appellationsList,
+        addPath: addPath,
       ),
     );
   }

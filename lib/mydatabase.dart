@@ -212,14 +212,17 @@ class MyDatabase {
   }
 
   static Region? getRegionById(
-      {required BuildContext context, required String regionId}) {
-    return Provider.of<List<Region>>(context, listen: false)
+      {required BuildContext context,
+      required String regionId,
+      bool listen = true}) {
+    return Provider.of<List<Region>>(context, listen: listen)
         .firstWhereOrNull((region) => region.id == regionId);
   }
 
   static Map<String, dynamic>? getEnhancedRegionById(
       {required BuildContext context, required String regionId}) {
-    Region? region = getRegionById(context: context, regionId: regionId);
+    Region? region =
+        getRegionById(context: context, regionId: regionId, listen: false);
 
     if (region == null) return null;
 
@@ -237,8 +240,9 @@ class MyDatabase {
     return enhancedRegion;
   }
 
-  static List<Country> getCountries({required BuildContext context}) {
-    return Provider.of<List<Country>>(context);
+  static List<Country> getCountries(
+      {required BuildContext context, bool listen = true}) {
+    return Provider.of<List<Country>>(context, listen: listen);
   }
 
   static List<Country> getCountriesWithStock(

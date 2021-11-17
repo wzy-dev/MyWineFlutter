@@ -174,9 +174,9 @@ class _WineListState extends State<WineList> {
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text(
-              "Filtrer",
-              style: TextStyle(color: Colors.white),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              child: Icon(Icons.filter_alt_outlined),
             ),
           ),
         ),

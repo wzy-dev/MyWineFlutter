@@ -2,27 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:mywine/custom/main_widgets/card.dart';
 import 'package:animate_icons/animate_icons.dart';
 
-class CustomSearchBar extends StatefulWidget {
-  const CustomSearchBar({
+class CustomTextField extends StatefulWidget {
+  const CustomTextField({
     Key? key,
     required this.context,
     required this.onChange,
+    this.icon,
     this.autofocus = false,
     this.placeholder = "bourgogne, saint-émilion...",
     this.focusNode,
+    this.hidden = false,
+    this.autofill,
   }) : super(key: key);
 
   final BuildContext context;
   final FocusNode? focusNode;
   final String placeholder;
   final Function onChange;
+  final IconData? icon;
   final bool autofocus;
+  final bool hidden;
+  final List<String>? autofill;
 
   @override
-  State<CustomSearchBar> createState() => _CustomSearchBarState();
+  State<CustomTextField> createState() => _CustomTextFieldState();
 }
 
-class _CustomSearchBarState extends State<CustomSearchBar> {
+class _CustomTextFieldState extends State<CustomTextField> {
   late AnimateIconController _iconController;
   late TextEditingController _textController;
 
@@ -46,6 +52,8 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                 focusNode: widget.focusNode,
                 autofocus: widget.autofocus,
                 controller: _textController,
+                obscureText: widget.hidden,
+                autofillHints: widget.autofill,
                 onChanged: (value) {
                   if (value.length > 0) {
                     _iconController.animateToEnd();
@@ -74,7 +82,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: AnimateIcons(
                     duration: Duration(milliseconds: 200),
-                    startIcon: Icons.search_outlined,
+                    startIcon: widget.icon ?? Icons.search_outlined,
                     endIcon: Icons.close,
                     startIconColor: Colors.white,
                     endIconColor: Colors.white,

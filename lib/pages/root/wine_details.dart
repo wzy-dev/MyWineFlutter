@@ -108,7 +108,9 @@ class WineDetails extends StatelessWidget {
         context: context,
         title: "${_wine!["domain"].name.toUpperCase()} ${_wine["millesime"]}",
         subtitle: _wine["appellation"]["name"],
-        subtitleLabel: "(${_wine["appellation"]["label"]})",
+        subtitleLabel: _wine["appellation"]["label"] != null
+            ? "(${_wine["appellation"]["label"]})"
+            : null,
         infoCardItems: InfoCardItems(
           region: _wine["appellation"]["region"]["name"],
           country: _wine["appellation"]["region"]["country"].name,

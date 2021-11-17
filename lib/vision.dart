@@ -9,10 +9,10 @@ import 'package:googleapis/vision/v1.dart' as vision;
 import 'package:mywine/shelf.dart';
 
 class LocalSearchVision {
-  LocalSearchVision({this.dif = 0, this.l = 0, this.m = 0});
+  LocalSearchVision({this.dif = 0, this.start = 0, this.end = 0});
   int dif;
-  int l;
-  int m;
+  int start;
+  int end;
 }
 
 class ResultSearchVision {
@@ -55,30 +55,25 @@ class Vision {
     if (searchs.length > 0) {
       Result<dynamic> search = searchs[0];
 
-      search.matches[0].matchedIndices.map((i) => {
-            if (i.end - i.start > local.dif)
-              {
-                local.dif = i.end - i.start,
-                local.l = i.start,
-                local.m = i.end,
-              }
-          });
+      search.matches[0].matchedIndices.forEach((i) {
+        if (i.end - i.start > local.dif) {
+          // local.dif = i.end - i.start;
+          local.start = i.start;
+          local.end = i.end;
+        }
+      });
 
       if (direction == 'left') {
         //Left
-        //  result = slice(subject:search.matches[0].value, start:0, end:local.m+1);
-        result = search.matches[0].value.substring(0, local.m + 1);
+        result = search.matches[0].value.substring(local.end + 1);
       } else if (direction == 'right') {
         //Right
-        // result = slice(subject:search.matches[0].value, start:local.l, end:string.length);
-        result = search.matches[0].value.substring(local.l, string.length);
+        result = search.matches[0].value.substring(0, local.start);
       } else {
         //Just the word
-        // result = slice(subject:search.matches[0].value, start:local.l, end:local.m+1);
-        result = search.matches[0].value.substring(local.l, local.m + 1);
+        result = search.matches[0].value.substring(local.start, local.end + 1);
+        result = search.matches[0].value.replaceFirst(result, "");
       }
-
-      result = search.matches[0].value.replaceAll(string, '');
 
       //Suppression des espaces au début et à la fin
       result = _removeUselessSpace(result);
@@ -102,15 +97,12 @@ class Vision {
     return result;
   }
 
-  static _processAppellation(String l) {
+  static String _processAppellation(String l) {
     String result = l;
-    print("1 $result");
     //Suppression des nombres
     result = result.replaceAll(RegExp("\d+"), "");
-    print("2 $result");
     //Mise en minuscule
     result = result.toLowerCase();
-    print("3 $result");
     //Suppression des espaces au début et à la fin
     result = _removeUselessSpace(l);
     result = _removeUselessSpace(l);
@@ -119,27 +111,27 @@ class Vision {
         _removeWord(string: result, word: 'appellation', direction: 'left');
     result = _removeWord(string: result, word: 'controlee', direction: 'right');
     result = _removeWord(string: result, word: 'protegee', direction: 'right');
-    print("4 $result");
-    return result;
+    //Mise en minuscule
+    return result.toLowerCase();
   }
 
-  static _processDomain(String l) {
+  static String _processDomain(String l) {
     String result = l;
 
     result = _removeWord(string: result, word: 'château');
+
     return result;
   }
 
-  static _processMillesime(String l) {
+  static int? _processMillesime(String l) {
     String result = l;
     //Recherche du millesime
-    RegExp re = RegExp("^-?[1-9]\d*");
+    RegExp re = RegExp("^[12][0-9]{3}");
 
-    if (re.hasMatch(result)) {
-      return int.parse(result.replaceAll(RegExp("/\D/g"), ""));
-    } else {
-      return null;
-    }
+    String? date = re.firstMatch(result)?.group(0);
+
+    if (date != null) return int.parse(date);
+    return null;
   }
 
   static ResultSearchVision? _setResultAppellation(
@@ -151,6 +143,7 @@ class Vision {
     } else {
       List<Appellation> appellations;
       Domain? domain;
+
       if ((resultsAppellation[0]["slug"] == 'bordeaux' ||
               resultsAppellation[0]["slug"] == 'alsace') &&
           resultsAppellation[1]["score"] < 0.2) {
@@ -179,18 +172,42 @@ class Vision {
 
   static ResultSearchVision? takePicture({
     required BuildContext context,
-    required List<vision.EntityAnnotation> ocr,
+    required vision.TextAnnotation ocr,
   }) {
     List<String> arrayTextAppellation = [];
     List<String> arrayTextDomain = [];
     int? millesime;
 
-    RegExp re = RegExp("(?:\r\n|\r|\n)");
+    List<String> breakedLineList = [];
+    List<String> notBreakedLineList = [];
 
-    ocr.forEach((block) {
-      String? line = block.description?.replaceAll(re, " ") ?? "";
-      // String line = block.description ?? "";
+    ocr.pages![0].blocks!.forEach((block) {
+      block.paragraphs!.forEach(
+        (paragraph) {
+          List<String> resultParagraph = [];
+          int breaks = 0;
+          paragraph.words!.forEach(
+            (word) {
+              List<String> resultWord = [];
+              word.symbols!.forEach((symbol) {
+                if (symbol.property != null &&
+                    symbol.property!.detectedBreak != null &&
+                    symbol.property!.detectedBreak!.type == "EOL_SURE_SPACE")
+                  breaks++;
 
+                resultWord.add(symbol.text!);
+              });
+              resultParagraph.add(resultWord.join());
+            },
+          );
+          breaks == 0
+              ? notBreakedLineList.add(resultParagraph.join(" "))
+              : breakedLineList.add(resultParagraph.join(" "));
+        },
+      );
+    });
+
+    breakedLineList.forEach((line) {
       millesime = (_processMillesime(line) != null
           ? _processMillesime(line)
           : millesime);
@@ -198,56 +215,68 @@ class Vision {
       arrayTextAppellation.add(_processAppellation(line));
       arrayTextDomain.add(_processDomain(line));
     });
+
+    notBreakedLineList.forEach((line) {
+      millesime = (_processMillesime(line) != null
+          ? _processMillesime(line)
+          : millesime);
+
+      arrayTextAppellation.add(_processAppellation(line));
+      arrayTextDomain.add(_processDomain(line));
+    });
+
     List<Map<dynamic, dynamic>> resultsAppellation = [];
     List<Map<dynamic, dynamic>> resultsDomain = [];
 
+    // Analyse de l'appellation
     arrayTextAppellation.forEach((l) {
       SearchMethods.getResults(
-              query: l,
-              appellations:
-                  MyDatabase.getAppellations(context: context, listen: false),
-              threshold: 0.2,
-              levenshtein: true)
-          .forEach((item) => resultsAppellation.add(item));
+        query: l,
+        appellations:
+            MyDatabase.getAppellations(context: context, listen: false),
+        threshold: 0.2,
+        levenshtein: true,
+      ).forEach((item) => resultsAppellation.add(item));
     });
     resultsAppellation.sort((a, b) => a["score"].compareTo(b["score"]));
 
-    //Analyse du domaine
+    // Analyse du domaine
     arrayTextDomain.forEach((l) {
       SearchMethods.getResults(
-              query: l,
-              domains: MyDatabase.getDomains(context: context, listen: false),
-              threshold: 0.2,
-              levenshtein: true)
-          .forEach((item) => resultsDomain.add(item));
+        query: l,
+        domains: MyDatabase.getDomains(context: context, listen: false),
+        threshold: 0.3,
+        levenshtein: true,
+        removeWord: "château",
+      ).forEach((item) => resultsDomain.add(item));
     });
     resultsDomain.sort((a, b) => a["score"].compareTo(b["score"]));
 
-    //Analyse du domaine
-    if (resultsDomain.length > 0) {
-      // return
-    } else {
-      resultsDomain = [];
-      arrayTextDomain = [];
-      ocr.forEach((block) {
-        List<String> lines = block.description!.split(RegExp("\n"));
+    // //Analyse du domaine
+    // if (resultsDomain.length > 0) {
+    //   // return
+    // } else {
+    //   resultsDomain = [];
+    //   arrayTextDomain = [];
+    //   // ocr.forEach((block) {
+    //   //   List<String> lines = block.description!.split(RegExp("\n"));
 
-        lines.forEach((l) {
-          arrayTextDomain.add(_processDomain(l));
-        });
-      });
+    //   //   lines.forEach((l) {
+    //   //     arrayTextDomain.add(_processDomain(l));
+    //   //   });
+    //   // });
 
-      arrayTextDomain.forEach((l) {
-        SearchMethods.getResults(
-                query: l,
-                domains: MyDatabase.getDomains(context: context, listen: false),
-                levenshtein: true,
-                threshold: 0.3,
-                removeWord: "château")
-            .forEach((item) => resultsDomain.add(item));
-      });
-      resultsDomain.sort((a, b) => a["score"].compareTo(b["score"]));
-    }
+    //   arrayTextDomain.forEach((l) {
+    //     SearchMethods.getResults(
+    //             query: l,
+    //             domains: MyDatabase.getDomains(context: context, listen: false),
+    //             levenshtein: true,
+    //             threshold: 0.3,
+    //             removeWord: "château")
+    //         .forEach((item) => resultsDomain.add(item));
+    //   });
+    //   resultsDomain.sort((a, b) => a["score"].compareTo(b["score"]));
+    // }
 
     // //Analyse de l'appellation
     // if (resultsAppellation.length > 0 &&
@@ -255,22 +284,29 @@ class Vision {
     //         resultsAppellation[0]["slug"] != 'alsace') &&
     //     resultsAppellation[0]["score"] < 0.0001) {
     // } else {
-    //   resultsAppellation=[], arrayTextAppellation=[]
-    //   processed.blocks.forEach(block => {
-    //     let lines = block.text.split("\n")
+    //   // ocr.forEach((block) {
+    //   //   List<String> lines = block.description?.split(re) ?? [""];
 
-    //     lines.map(l => {
-    //       arrayTextAppellation.push(this._processAppellation(l))
-    //     })
-    //   })
+    //   //   if (lines.length > 1) return;
+    //   //   lines.forEach((line) {
+    //   //     millesime = (_processMillesime(line) != null
+    //   //         ? _processMillesime(line)
+    //   //         : millesime);
 
-    //   arrayTextAppellation.map(l => {
-    //     getResults(l, {appellations:this.props.appellations}, {levenshtein:true,threshold:0.3}).map(item => resultsAppellation.push(item))
-    //     // getResults(l, {appellations:this.props.appellations}, {minMatchCharLength:2,threshold:0.1,ignoreLocation:false}).map(item => resultsAppellation.push({...item.item, score:item.score}))
-    //   })
-    //   resultsAppellation = sort(resultsAppellation,'score')
+    //   //     arrayTextAppellation.add(_processAppellation(line));
+    //   //   });
+    //   // });
 
-    //   this._setResultAppellation(resultsAppellation, resultsDomain, millesime)
+    //   arrayTextAppellation.forEach((l) {
+    //     SearchMethods.getResults(
+    //             query: l,
+    //             appellations:
+    //                 MyDatabase.getAppellations(context: context, listen: false),
+    //             threshold: 0.2,
+    //             levenshtein: true)
+    //         .forEach((item) => resultsAppellation.add(item));
+    //   });
+    //   resultsAppellation.sort((a, b) => a["score"].compareTo(b["score"]));
     // }
     return _setResultAppellation(
         resultsAppellation: resultsAppellation,

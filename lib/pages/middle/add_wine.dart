@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:mywine/shelf.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
@@ -27,10 +28,13 @@ class _AddWineState extends State<AddWine> {
   double _millesime = (DateTime.now().year - 1).roundToDouble();
   SizeBottle _size = SizeBottle(name: "Bouteille", value: 750);
   double _quantity = 6;
-  MultiSliderArguments yearRange = MultiSliderArguments(min: null, max: null);
-  MultiSliderArguments tempRange = MultiSliderArguments(min: null, max: null);
+  MultiSliderArguments _yearRange = MultiSliderArguments(min: null, max: null);
+  MultiSliderArguments _tempRange = MultiSliderArguments(min: null, max: null);
   bool _sparkling = false;
   bool _bio = false;
+
+  String? _appellationName;
+  String? _domainName;
 
   @override
   void initState() {
@@ -46,34 +50,15 @@ class _AddWineState extends State<AddWine> {
     String? selectedAppellation = await Navigator.of(context).pushNamed(
       "/add/wine/appellation",
       arguments: AddWineAppellationArguments(
-          selectedRadio:
-              _appellations.length > 0 ? _appellations[0].name : null),
+        selectedRadio: _appellations.length > 0 ? _appellations[0].name : null,
+        addPath: "/add/appellation",
+      ),
     ) as String?;
 
     if (selectedAppellation == null) return;
 
     setState(() {
-      _appellations =
-          MyDatabase.getAppellations(context: context, listen: false)
-              .where((element) => element.name == selectedAppellation)
-              .toList();
-      if (_appellations.length == 1) {
-        setState(() {
-          _appellation = _appellations[0];
-          yearRange = MultiSliderArguments(
-            min: _appellation!.yearmin,
-            max: _appellation!.yearmax,
-            minimumIsEnabled: _appellation!.yearmin == null ? false : true,
-            maximumIsEnabled: _appellation!.yearmax == null ? false : true,
-          );
-          tempRange = MultiSliderArguments(
-            min: _appellation!.tempmin,
-            max: _appellation!.tempmax,
-            minimumIsEnabled: _appellation!.tempmin == null ? false : true,
-            maximumIsEnabled: _appellation!.tempmax == null ? false : true,
-          );
-        });
-      }
+      _appellationName = selectedAppellation;
     });
   }
 
@@ -81,18 +66,18 @@ class _AddWineState extends State<AddWine> {
     String? selectedDomain = await Navigator.of(context).pushNamed(
       "/add/wine/domain",
       arguments: AddWineDomainArguments(
-          selectedRadio: _domain != null ? _domain!.name : null),
+        selectedRadio: _domain != null ? _domain!.name : null,
+        addPath: "/add/domain",
+      ),
     ) as String?;
 
-    if (selectedDomain == null) return;
-
     setState(() {
-      _domain = MyDatabase.getDomains(context: context, listen: false)
-          .firstWhere((element) => element.name == selectedDomain);
+      _domainName = selectedDomain;
     });
   }
 
   Future _drawSizesBottomSheet() {
+    int index = 0;
     return showBarModalBottomSheet(
       context: context,
       builder: (BuildContext context) => SafeArea(
@@ -100,43 +85,45 @@ class _AddWineState extends State<AddWine> {
           controller: ModalScrollController.of(context),
           child: Column(children: [
             SizedBox(height: 30),
-            ...CustomMethods.getSizes()
-                .map((SizeBottle e) => Column(
-                      children: [
-                        Material(
-                          child: InkWell(
-                            onTap: () {
-                              setState(() {
-                                _size = e;
-                              });
-                              Navigator.of(context).pop();
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 8),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    e.name,
-                                    style:
-                                        Theme.of(context).textTheme.headline2,
-                                  ),
-                                  Text(
-                                    "${(e.value / 1000)}L",
-                                    style:
-                                        Theme.of(context).textTheme.headline2,
-                                  ),
-                                ],
-                              ),
+            ...CustomMethods.getSizes().map((SizeBottle e) {
+              index++;
+              return Column(
+                children: [
+                  Material(
+                    child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          _size = e;
+                        });
+                        Navigator.of(context).pop();
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              e.name,
+                              style: Theme.of(context).textTheme.headline2,
                             ),
-                          ),
+                            Text(
+                              "${(e.value / 1000)}L",
+                              style: Theme.of(context).textTheme.headline2,
+                            ),
+                          ],
                         ),
-                        Divider(),
-                      ],
-                    ))
-                .toList(),
+                      ),
+                    ),
+                  ),
+                  (index < CustomMethods.getSizes().length
+                      ? Divider()
+                      : SizedBox(
+                          height: 20,
+                        )),
+                ],
+              );
+            }).toList(),
           ]),
         ),
       ),
@@ -145,6 +132,36 @@ class _AddWineState extends State<AddWine> {
 
   @override
   Widget build(BuildContext context) {
+    if (_domainName != null) {
+      _domain = MyDatabase.getDomains(context: context)
+          .firstWhereOrNull((element) => element.name == _domainName);
+    }
+
+    if (_appellationName != null) {
+      _appellations = MyDatabase.getAppellations(context: context)
+          .where((element) => element.name == _appellationName)
+          .toList();
+
+      if (_appellations.length == 1) {
+        setState(() {
+          _appellation = _appellations[0];
+
+          _yearRange = MultiSliderArguments(
+            min: _appellation!.yearmin,
+            max: _appellation!.yearmax,
+            minimumIsEnabled: _appellation!.yearmin == null ? false : true,
+            maximumIsEnabled: _appellation!.yearmax == null ? false : true,
+          );
+          _tempRange = MultiSliderArguments(
+            min: _appellation!.tempmin,
+            max: _appellation!.tempmax,
+            minimumIsEnabled: _appellation!.tempmin == null ? false : true,
+            maximumIsEnabled: _appellation!.tempmax == null ? false : true,
+          );
+        });
+      }
+    }
+
     return GestureDetector(
       onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
       child: MainContainer(
@@ -311,28 +328,28 @@ class _AddWineState extends State<AddWine> {
                   MultiSlider(
                     key: UniqueKey(),
                     onChange: (MultiSliderArguments values) =>
-                        yearRange = values,
+                        _yearRange = values,
                     suffix: (int value) => value > 1 ? "ans" : "an",
                     minPossible: 1,
-                    minVal: yearRange.min ?? 2,
-                    maxVal: yearRange.max ?? 5,
-                    minimumIsEnabled: yearRange.minimumIsEnabled,
-                    maximumIsEnabled: yearRange.maximumIsEnabled,
+                    minVal: _yearRange.min ?? 2,
+                    maxVal: _yearRange.max ?? 5,
+                    minimumIsEnabled: _yearRange.minimumIsEnabled,
+                    maximumIsEnabled: _yearRange.maximumIsEnabled,
                   ),
                   SizedBox(height: 20),
                   Text("Température de service",
                       style: Theme.of(context).textTheme.headline3),
                   SizedBox(height: 5),
                   MultiSlider(
-                    key: UniqueKey(),
+                    key: Key(_appellation?.id ?? "appellationTempSlider"),
                     onChange: (MultiSliderArguments values) =>
-                        tempRange = values,
+                        _tempRange = values,
                     suffix: (int value) => "°C",
                     minPossible: 1,
-                    minVal: tempRange.min ?? 12,
-                    maxVal: tempRange.max ?? 15,
-                    minimumIsEnabled: tempRange.minimumIsEnabled,
-                    maximumIsEnabled: tempRange.maximumIsEnabled,
+                    minVal: _tempRange.min ?? 12,
+                    maxVal: _tempRange.max ?? 15,
+                    minimumIsEnabled: _tempRange.minimumIsEnabled,
+                    maximumIsEnabled: _tempRange.maximumIsEnabled,
                   ),
                   SizedBox(height: 20),
                   Row(
@@ -383,10 +400,14 @@ class _AddWineState extends State<AddWine> {
                         size: _size.value,
                         sparkling: _sparkling,
                         bio: _bio,
-                        yearmin: yearRange.min,
-                        yearmax: yearRange.max,
-                        tempmin: yearRange.min,
-                        tempmax: yearRange.max,
+                        yearmin:
+                            _yearRange.minimumIsEnabled ? _yearRange.min : null,
+                        yearmax:
+                            _yearRange.maximumIsEnabled ? _yearRange.max : null,
+                        tempmin:
+                            _tempRange.minimumIsEnabled ? _tempRange.min : null,
+                        tempmax:
+                            _tempRange.maximumIsEnabled ? _tempRange.max : null,
                       ),
                     );
                     Navigator.of(context).pop();
@@ -437,21 +458,27 @@ class _AddWineState extends State<AddWine> {
         clipBehavior: Clip.hardEdge,
         color: color["color"],
         child: InkWell(
-          onTap: () => setState(() {
-            yearRange = MultiSliderArguments(
-              min: appellation.yearmin,
-              max: appellation.yearmax,
-              minimumIsEnabled: appellation.yearmin == null ? false : true,
-              maximumIsEnabled: appellation.yearmax == null ? false : true,
-            );
-            tempRange = MultiSliderArguments(
-              min: appellation.tempmin,
-              max: appellation.tempmax,
-              minimumIsEnabled: appellation.tempmin == null ? false : true,
-              maximumIsEnabled: appellation.tempmax == null ? false : true,
-            );
-            _appellation = appellation;
-          }),
+          onTap: _appellation != null && _appellation!.id == appellation.id
+              ? null
+              : () => setState(() {
+                    _appellation = appellation;
+                    _yearRange = MultiSliderArguments(
+                      min: appellation.yearmin,
+                      max: appellation.yearmax,
+                      minimumIsEnabled:
+                          appellation.yearmin == null ? false : true,
+                      maximumIsEnabled:
+                          appellation.yearmax == null ? false : true,
+                    );
+                    _tempRange = MultiSliderArguments(
+                      min: appellation.tempmin,
+                      max: appellation.tempmax,
+                      minimumIsEnabled:
+                          appellation.tempmin == null ? false : true,
+                      maximumIsEnabled:
+                          appellation.tempmax == null ? false : true,
+                    );
+                  }),
           child: Container(
             width: size,
             height: size,

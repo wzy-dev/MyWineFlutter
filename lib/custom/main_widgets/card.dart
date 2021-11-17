@@ -5,19 +5,22 @@ class CustomCard extends StatelessWidget {
     Key? key,
     required this.child,
     this.margin = const EdgeInsets.all(4),
+    this.backgroundColor,
   }) : super(key: key);
 
   final Widget? child;
   final EdgeInsets margin;
+  final Color? backgroundColor;
 
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: backgroundColor,
       clipBehavior: Clip.hardEdge,
       margin: margin,
       elevation: 4,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15.0),
+        borderRadius: BorderRadius.circular(10.0),
       ),
       child: Container(
         clipBehavior: Clip.hardEdge,
@@ -79,6 +82,53 @@ class ActionCard extends StatelessWidget {
               ),
             ),
             ...listActions.map((action) => action).toList(),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class TextInputCard extends StatelessWidget {
+  const TextInputCard(
+      {Key? key, required this.label, required this.onChanged, this.value})
+      : super(key: key);
+
+  final String label;
+  final Function(String) onChanged;
+  final String? value;
+
+  @override
+  Widget build(BuildContext context) {
+    final TextEditingController _controller =
+        TextEditingController(text: value);
+    return CustomCard(
+      margin: const EdgeInsets.all(0),
+      child: Padding(
+        padding: const EdgeInsets.only(left: 20, top: 20, right: 20, bottom: 5),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: Theme.of(context)
+                  .textTheme
+                  .headline3!
+                  .copyWith(fontWeight: FontWeight.bold),
+            ),
+            TextField(
+              controller: _controller,
+              onChanged: (value) => onChanged(value),
+              cursorColor: Theme.of(context).hintColor,
+              style:
+                  Theme.of(context).textTheme.headline4!.copyWith(fontSize: 17),
+              decoration: InputDecoration(
+                hintText: label,
+                hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 12),
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.all(0),
+              ),
+            ),
           ],
         ),
       ),

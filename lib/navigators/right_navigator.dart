@@ -23,6 +23,19 @@ class RightNavigator extends StatelessWidget {
         return BlockTab(
           arguments: args,
         );
+      case "/edit/cellar":
+        EditCellarArguments args = settings.arguments as EditCellarArguments;
+        return EditCellar(cellar: args.cellar);
+      case "/edit/block":
+        EditBlockArguments args = settings.arguments as EditBlockArguments;
+        return EditBlock(
+          cellarId: args.cellarId,
+          blockId: args.blockId,
+          nbColumn: args.nbColumn,
+          nbLine: args.nbLine,
+          horizontalAlignment: args.horizontalAlignment,
+          verticalAlignment: args.verticalAlignment,
+        );
       default:
         return CellarTab();
     }

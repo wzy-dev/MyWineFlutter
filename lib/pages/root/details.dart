@@ -365,7 +365,7 @@ class Details {
         ],
         stops: [0.6, 0.9, 1],
       );
-      desc = "Boire après ${yearmax.toString()} ${yearmax == 1 ? "an" : "ans"}";
+      desc = "Boire avant ${yearmax.toString()} ${yearmax == 1 ? "an" : "ans"}";
     }
 
     return CustomCard(
@@ -384,7 +384,7 @@ class Details {
                 ? Padding(
                     padding: const EdgeInsets.all(5.0),
                     child: Container(
-                      width: 150,
+                      width: 180,
                       child: CupertinoSpinBox(
                         decoration: BoxDecoration(),
                         padding: const EdgeInsets.all(0),
@@ -496,12 +496,13 @@ class Details {
       double sup = (millesime + yearmax).toDouble();
       double ecart = DateTime.now().year - sup;
       double ecartT = (yearmax) / 2;
-      pourcent = ecart * (1 / 3 / 2 * 100) / ecartT + (2 / 3 * 100);
+      pourcent = ecart * (1 / 3 / 2 * 100) / ecartT * 2 + (2 / 3 * 100);
     }
 
     pourcent = pourcent / 100;
     if (pourcent < 0.1) pourcent = 0.1;
     if (pourcent > 0.9) pourcent = 0.9;
+
     return pourcent;
   }
 

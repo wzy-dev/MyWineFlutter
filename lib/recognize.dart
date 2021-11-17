@@ -14,7 +14,9 @@ class RekognizeProvider {
         {
           "image": {"content": image},
           "features": [
-            {"type": "TEXT_DETECTION"}
+            {
+              "type": "DOCUMENT_TEXT_DETECTION",
+            }
           ]
         }
       ]

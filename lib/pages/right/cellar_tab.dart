@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:mywine/custom/main_widgets/search_card.dart';
 import 'package:mywine/shelf.dart';
 
@@ -22,7 +23,7 @@ class _CellarTabState extends State<CellarTab> {
   late Wine? _searchedWine;
   late List<Map<String, Object>> _listFreeWines = [];
   late List<Cellar> _cellars;
-  bool _visible = true;
+  Cellar? _activeCellar;
   int _countFreeWines = 0;
 
   @override
@@ -31,31 +32,95 @@ class _CellarTabState extends State<CellarTab> {
     super.initState();
   }
 
-  Widget _drawCellar({required List<Cellar> snapshot}) {
-    return Container(
-      child: Column(
-        children: snapshot
-            .map(
-              (cellar) => Column(
-                children: [
-                  ScrollConfiguration(
-                    behavior: ScrollBehavior(),
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: DrawCellar(
-                        cellarId: cellar.id,
-                        searchedWine: _searchedWine,
-                        resetSearch: () => setState(() {
-                          _searchedWine = null;
-                        }),
-                        sizeCell: 16,
+  Widget _drawCellar({required Cellar cellar}) {
+    return Column(
+      children: [
+        ScrollConfiguration(
+          behavior: ScrollBehavior(),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: DrawCellar(
+              cellarId: cellar.id,
+              searchedWine: _searchedWine,
+              resetSearch: () => setState(() {
+                _searchedWine = null;
+              }),
+              sizeCell: 16,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future _drawSelectCellarBottomSheet() {
+    return showBarModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) => SafeArea(
+        child: SingleChildScrollView(
+          controller: ModalScrollController.of(context),
+          child: Column(
+            children: [
+              SizedBox(height: 30),
+              ..._cellars.map((Cellar e) {
+                return Column(
+                  children: [
+                    Material(
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            _activeCellar = e;
+                          });
+                          Navigator.of(context).pop();
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                e.name,
+                                style: Theme.of(context).textTheme.headline2,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Divider(),
+                  ],
+                );
+              }).toList(),
+              Container(
+                width: double.infinity,
+                child: Material(
+                  child: InkWell(
+                    onTap: () {
+                      // TODO => Before create cellar
+                      // Navigator.of(context).pushNamed(
+                      //   "/edit/cellar",
+                      //   arguments: EditCellar(cellar: cellar),
+                      // );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 8),
+                      child: CustomFlatButton(
+                        title: "Créer une nouvelle cave",
+                        icon: Icon(Icons.add_outlined),
+                        backgroundColor: Theme.of(context).hintColor,
                       ),
                     ),
                   ),
-                ],
+                ),
               ),
-            )
-            .toList(),
+              SizedBox(
+                height: 20,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -74,9 +139,29 @@ class _CellarTabState extends State<CellarTab> {
         MyDatabase.countWines(context: context, listWines: _listFreeWines);
 
     _cellars = MyDatabase.getCellars(context: context);
+    if (_activeCellar == null && _cellars.length > 0)
+      _activeCellar = _cellars[0];
 
     return MainContainer(
-      title: Text(_cellars.length > 0 ? _cellars[0].name : "ras"),
+      title: InkWell(
+        onTap: () => _drawSelectCellarBottomSheet(),
+        child: Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0, top: 2),
+              child: Icon(Icons.keyboard_arrow_down_outlined),
+            ),
+            Text(_activeCellar != null ? _activeCellar!.name : ""),
+          ],
+        ),
+      ),
+      action: InkWell(
+        child: Text("Modifier"),
+        onTap: _activeCellar != null
+            ? () => Navigator.of(context).pushNamed("/edit/cellar",
+                arguments: EditCellarArguments(cellar: _activeCellar!))
+            : null,
+      ),
       child: SafeArea(
         top: false,
         child: ListView(
@@ -92,9 +177,9 @@ class _CellarTabState extends State<CellarTab> {
               color: Colors.white,
               child: AnimatedSize(
                 duration: Duration(milliseconds: 500),
-                child: _visible
+                child: _activeCellar != null
                     ? _drawCellar(
-                        snapshot: _cellars,
+                        cellar: _activeCellar!,
                       )
                     : Container(),
               ),

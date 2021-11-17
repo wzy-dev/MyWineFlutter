@@ -23,11 +23,27 @@
           }
         },
         {
+          "client_id": "698452890369-7l98m6b6h8akipdfsjiu083idtr5qkl7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.polymathe.mywine",
+            "certificate_hash": "910eafc4ef2212b3dfcbdc71b774e45c0fc946f3"
+          }
+        },
+        {
           "client_id": "698452890369-gjmrf1vsquthnpmjsbn8oqok7dgg6uhq.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.polymathe.mywine",
             "certificate_hash": "0bf8b9295201a6e18d4d96c79fc2964cf45fa4ca"
+          }
+        },
+        {
+          "client_id": "698452890369-tiik1g5bs3r5d282hobfc11clsgrecd2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.polymathe.mywine",
+            "certificate_hash": "a888910a15b12120b0fd8841fc4cf5c85f227f69"
           }
         },
         {

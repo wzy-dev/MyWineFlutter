@@ -1,15 +1,18 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:mywine/models/model_methods.dart';
 import 'package:mywine/shelf.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class SearchTab extends StatefulWidget {
   const SearchTab({
     Key? key,
-    // required this.focusNode,
+    required this.focusNode,
   }) : super(key: key);
 
-  // final FocusNode focusNode;
+  final FocusNode focusNode;
 
   @override
   State<SearchTab> createState() => _SearchTabState();
@@ -54,6 +57,15 @@ class _SearchTabState extends State<SearchTab> {
           "assets/svg/logo.svg",
           width: 110,
         ),
+        action: InkWell(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              child: Icon(Icons.logout_outlined),
+            ),
+            onTap: () => FirebaseAuth.instance.signOut().then((value) {
+                  GoogleSignIn().signOut();
+                  ModelMethods.initDb(drop: true);
+                })),
         child: Column(
           children: [
             Padding(
@@ -75,10 +87,10 @@ class _SearchTabState extends State<SearchTab> {
                   SizedBox(
                     height: 20,
                   ),
-                  CustomSearchBar(
+                  CustomTextField(
                     context: context,
                     onChange: _onSearch,
-                    // focusNode: widget.focusNode,
+                    focusNode: widget.focusNode,
                   ),
                 ],
               ),

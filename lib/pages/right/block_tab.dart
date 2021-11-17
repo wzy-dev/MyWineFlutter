@@ -97,7 +97,7 @@ class _BlockTabState extends State<BlockTab> {
           hide: () => _enhancedWine.add({}),
           index: index,
           coor: _selectedCoor,
-          blockId: _originBlock.blockId,
+          blockId: _originBlock.blockId!,
           resetSelected: () => setState(() {
                 _selectedCoor = null;
               })));

@@ -11,6 +11,9 @@ class FilterSearch extends StatefulWidget {
     this.initialSelection = const [],
     this.appellationsData = const [],
     this.domainsData = const [],
+    this.regionsData = const [],
+    this.countriesData = const [],
+    this.addPath,
   }) : super(key: key);
 
   final String placeholder;
@@ -19,6 +22,9 @@ class FilterSearch extends StatefulWidget {
   final List<String> initialSelection;
   final List<Appellation> appellationsData;
   final List<Domain> domainsData;
+  final List<Region> regionsData;
+  final List<Country> countriesData;
+  final String? addPath;
 
   @override
   _FilterSearchState createState() => _FilterSearchState();
@@ -59,7 +65,12 @@ class _FilterSearchState extends State<FilterSearch> {
   ];
   List<String> _usedLetter = [];
   Map<String, int> _alphabetPosition = {};
-  late String _activeLetter;
+  late String? _activeLetter;
+
+  late List<Appellation> _sortedAppellationsData;
+  late List<Domain> _sortedDomainsData;
+  late List<Region> _sortedRegionsData;
+  late List<Country> _sortedCountriesData;
 
   // If multiple
   late List<String> _selectedList;
@@ -67,9 +78,30 @@ class _FilterSearchState extends State<FilterSearch> {
   // If not multiple;
   dynamic _selectedRadio;
 
+  int _sortFunction(a, b) => CustomMethods.removeAccent(a.name.toLowerCase())
+      .compareTo(CustomMethods.removeAccent(b.name.toLowerCase()));
+
   @override
   void initState() {
-    _data = [...widget.appellationsData, ...widget.domainsData];
+    _sortedAppellationsData = List<Appellation>.from(widget.appellationsData);
+    _sortedAppellationsData.sort((a, b) => _sortFunction(a, b));
+
+    _sortedDomainsData = List<Domain>.from(widget.domainsData);
+    _sortedDomainsData.sort((a, b) => _sortFunction(a, b));
+
+    _sortedRegionsData = List<Region>.from(widget.regionsData);
+    _sortedRegionsData.sort((a, b) => _sortFunction(a, b));
+
+    _sortedCountriesData = List<Country>.from(widget.countriesData);
+    _sortedCountriesData.sort((a, b) => _sortFunction(a, b));
+
+    _data = [
+      ..._sortedAppellationsData,
+      ..._sortedDomainsData,
+      ..._sortedRegionsData,
+      ..._sortedCountriesData,
+    ];
+
     // Evite que le state du filter_search.dart influence filters.dart
     _selectedList = List<String>.from(widget.initialSelection);
     _selectedRadio =
@@ -85,8 +117,9 @@ class _FilterSearchState extends State<FilterSearch> {
     List<dynamic> scrollListChildren = dataList.map((e) => e.toJson()).toList();
 
     _alphabet.forEach((letter) {
-      int index = scrollListChildren
-          .indexWhere((object) => object["name"].toLowerCase()[0] == letter);
+      int index = scrollListChildren.indexWhere((object) =>
+          CustomMethods.removeAccent(object["name"].toLowerCase()[0]) ==
+          letter);
 
       if (index > -1) {
         alphabetPosition[letter] = index;
@@ -105,7 +138,7 @@ class _FilterSearchState extends State<FilterSearch> {
     setState(() {
       _alphabetPosition = alphabetPosition;
       _usedLetter = usedLetter;
-      _activeLetter = usedLetter[0];
+      _activeLetter = usedLetter.length > 0 ? usedLetter[0] : null;
       _scrollListChildren = scrollListChildren;
     });
   }
@@ -123,9 +156,9 @@ class _FilterSearchState extends State<FilterSearch> {
                   horizontal: 15,
                   vertical: 30,
                 ),
-                child: CustomSearchBar(
+                child: CustomTextField(
                   context: context,
-                  autofocus: true,
+                  // autofocus: true,
                   onChange: (query) {
                     if (query == "") {
                       _drawChildrenList(_data);
@@ -137,8 +170,8 @@ class _FilterSearchState extends State<FilterSearch> {
                       query: query,
                       appellations: widget.appellationsData,
                       domains: widget.domainsData,
-                      regions: [],
-                      countries: [],
+                      regions: widget.regionsData,
+                      countries: widget.countriesData,
                     ).forEach(
                         (result) => resultsList.add(result.item["entity"][0]));
 
@@ -177,14 +210,16 @@ class _FilterSearchState extends State<FilterSearch> {
                       alwaysVisibleScrollThumb: true,
                       backgroundColor: Theme.of(context).hintColor,
                       heightScrollThumb: 60,
-                      labelTextBuilder: (double offset) => Text(
-                        _activeLetter.toUpperCase(),
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          color: Colors.white,
-                        ),
-                      ),
+                      labelTextBuilder: _activeLetter != null
+                          ? (double offset) => Text(
+                                _activeLetter!.toUpperCase(),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                  color: Colors.white,
+                                ),
+                              )
+                          : null,
                       controller: _scrollController,
                       child: ListView.separated(
                         separatorBuilder: (BuildContext context, int i) =>
@@ -278,13 +313,53 @@ class _FilterSearchState extends State<FilterSearch> {
           Positioned(
             bottom: 30,
             right: 30,
-            child: CustomElevatedButton(
-              icon: Icon(Icons.save_outlined),
-              title: widget.submitLabel,
-              dense: true,
-              backgroundColor: Theme.of(context).colorScheme.secondary,
-              onPress: () => Navigator.of(context)
-                  .pop(widget.multiple ? _selectedList : _selectedRadio),
+            child: Row(
+              children: [
+                widget.addPath != null
+                    ? ElevatedButton(
+                        onPressed: widget.addPath != null
+                            ? () async {
+                                String? name = await Navigator.of(context)
+                                    .pushNamed(widget.addPath!) as String?;
+
+                                if (name != null)
+                                  Navigator.of(context).pop(name);
+                              }
+                            : null,
+                        child: Icon(Icons.add_outlined),
+                        style: ButtonStyle(
+                          minimumSize:
+                              MaterialStateProperty.all<Size>(Size(0, 0)),
+                          padding: MaterialStateProperty.all<EdgeInsets>(
+                            EdgeInsets.all(8),
+                          ),
+                          alignment: Alignment.centerLeft,
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                            Theme.of(context).hintColor,
+                          ),
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
+                          shape:
+                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        ),
+                      )
+                    : Container(),
+                SizedBox(
+                  width: 5,
+                ),
+                CustomElevatedButton(
+                  icon: Icon(Icons.save_outlined),
+                  title: widget.submitLabel,
+                  dense: true,
+                  backgroundColor: Theme.of(context).colorScheme.secondary,
+                  onPress: () => Navigator.of(context)
+                      .pop(widget.multiple ? _selectedList : _selectedRadio),
+                ),
+              ],
             ),
           ),
         ],

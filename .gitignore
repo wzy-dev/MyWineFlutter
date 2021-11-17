@@ -67,3 +67,6 @@ node_modules/
 
 # credentials
 assets/credentials/
+
+# firebase functions
+functions/node_modules/

@@ -1,4 +1,0 @@
-io/flutter/plugins/GeneratedPluginRegistrant.java
- io.flutter.plugins.GeneratedPluginRegistrant
-com/polymathe/mywine/BuildConfig.java
- com.polymathe.mywine.BuildConfig

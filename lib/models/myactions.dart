@@ -74,4 +74,44 @@ class MyActions {
 
     await db.insert("wines", wine.toJson());
   }
+
+  static Future<void> addDomain({
+    required BuildContext context,
+    required Domain domain,
+  }) async {
+    BriteDatabase db =
+        MyDatabase.getBriteDatabase(context: context, listen: false);
+
+    await db.insert("domains", domain.toJson());
+  }
+
+  static Future<void> addAppellation({
+    required BuildContext context,
+    required Appellation appellation,
+  }) async {
+    BriteDatabase db =
+        MyDatabase.getBriteDatabase(context: context, listen: false);
+
+    await db.insert("appellations", appellation.toJson());
+  }
+
+  static Future<void> addRegion({
+    required BuildContext context,
+    required Region region,
+  }) async {
+    BriteDatabase db =
+        MyDatabase.getBriteDatabase(context: context, listen: false);
+
+    await db.insert("regions", region.toJson());
+  }
+
+  static Future<void> addCountry({
+    required BuildContext context,
+    required Country country,
+  }) async {
+    BriteDatabase db =
+        MyDatabase.getBriteDatabase(context: context, listen: false);
+
+    await db.insert("countries", country.toJson());
+  }
 }

@@ -5,6 +5,13 @@ import 'package:provider/provider.dart';
 import 'package:sqlbrite/sqlbrite.dart';
 
 class CustomProvider {
+  // static User? _currentUser = FirebaseAuth.instance.currentUser;
+
+  // static String? _getUserUid() {
+  //   if (_currentUser == null || _currentUser!.isAnonymous) return null;
+  //   return _currentUser!.uid;
+  // }
+
   static Map<String, dynamic> _mapFromFirestore(
       {required String name, required item}) {
     switch (name) {
@@ -33,6 +40,7 @@ class CustomProvider {
   static void getLastUpdateCollection({
     required String tableName,
     required BriteDatabase briteDb,
+    required User? user,
     List<String>? whereList,
   }) {
     briteDb
@@ -49,7 +57,7 @@ class CustomProvider {
           .collection(tableName)
           .where(
             "owner",
-            whereIn: whereList ?? [FirebaseAuth.instance.currentUser!.uid],
+            whereIn: whereList ?? (user != null ? [user.uid] : null),
           )
           .where("editedAt", isGreaterThan: lastUpdate)
           .get()
@@ -67,6 +75,9 @@ class CustomProvider {
           where: "tableName = ?",
           whereArgs: [tableName],
         );
+      }).onError((error, stackTrace) {
+        print(error);
+        print(tableName);
       });
     });
   }
@@ -74,6 +85,7 @@ class CustomProvider {
   static void getLastUpdateSubCollection({
     required String tableName,
     required BriteDatabase briteDb,
+    required User? user,
     List<String>? whereList,
   }) {
     briteDb
@@ -90,7 +102,7 @@ class CustomProvider {
           .collectionGroup(tableName)
           .where(
             "owner",
-            whereIn: whereList ?? [FirebaseAuth.instance.currentUser!.uid],
+            whereIn: whereList ?? (user != null ? [user.uid] : null),
           )
           .where("editedAt", isGreaterThan: lastUpdate)
           .get()
@@ -112,8 +124,15 @@ class CustomProvider {
     });
   }
 
-  static Stream<List<Wine>> streamOfWines({required BriteDatabase briteDb}) {
-    getLastUpdateCollection(tableName: "wines", briteDb: briteDb);
+  static Stream<List<Wine>> streamOfWines(
+      {required BriteDatabase briteDb, User? user}) {
+    if (user != null)
+      getLastUpdateCollection(
+        tableName: "wines",
+        briteDb: briteDb,
+        user: user,
+      );
+
     return briteDb.createQuery(
       "wines",
       where: 'enabled = ?',
@@ -122,8 +141,28 @@ class CustomProvider {
   }
 
   static Stream<List<Cellar>> streamOfCellars(
-      {required BriteDatabase briteDb}) {
-    getLastUpdateCollection(tableName: "cellars", briteDb: briteDb);
+      {required BriteDatabase briteDb, User? user}) {
+    if (user != null)
+      getLastUpdateCollection(
+        tableName: "cellars",
+        briteDb: briteDb,
+        user: user,
+      );
+    // Snapshot for real-time firestore cloud (TO DO)
+    // FirebaseFirestore.instance
+    //     .collection("cellars")
+    //     .where(
+    //       "owner",
+    //       whereIn: (user != null ? [user.uid] : null),
+    //     )
+    //     .where("enabled", isEqualTo: true)
+    //     .snapshots()
+    //     .forEach((element) {
+    //   element.docs.forEach((doc) {
+    //     print(Cellar.fromFirestore(doc).name);
+    //   });
+    // });
+
     return briteDb.createQuery(
       "cellars",
       where: 'enabled = ?',
@@ -131,8 +170,14 @@ class CustomProvider {
     ).mapToList((row) => Cellar.fromJson(row));
   }
 
-  static Stream<List<Block>> streamOfBlocks({required BriteDatabase briteDb}) {
-    getLastUpdateSubCollection(tableName: "blocks", briteDb: briteDb);
+  static Stream<List<Block>> streamOfBlocks(
+      {required BriteDatabase briteDb, User? user}) {
+    if (user != null)
+      getLastUpdateSubCollection(
+        tableName: "blocks",
+        briteDb: briteDb,
+        user: user,
+      );
     return briteDb.createQuery(
       "blocks",
       where: 'enabled = ?',
@@ -141,8 +186,13 @@ class CustomProvider {
   }
 
   static Stream<List<Position>> streamOfPositions(
-      {required BriteDatabase briteDb}) {
-    getLastUpdateSubCollection(tableName: "positions", briteDb: briteDb);
+      {required BriteDatabase briteDb, User? user}) {
+    if (user != null)
+      getLastUpdateSubCollection(
+        tableName: "positions",
+        briteDb: briteDb,
+        user: user,
+      );
     return briteDb.createQuery(
       "positions",
       where: 'enabled = ?',
@@ -151,14 +201,13 @@ class CustomProvider {
   }
 
   static Stream<List<Appellation>> streamOfAppellations(
-      {required BriteDatabase briteDb}) {
+      {required BriteDatabase briteDb, User? user}) {
     getLastUpdateCollection(
-        tableName: "appellations",
-        briteDb: briteDb,
-        whereList: [
-          "admin",
-          FirebaseAuth.instance.currentUser!.uid,
-        ]);
+      tableName: "appellations",
+      briteDb: briteDb,
+      user: user,
+      whereList: user != null ? ["admin", user.uid] : ["admin"],
+    );
     return briteDb.createQuery(
       "appellations",
       where: 'enabled = ?',
@@ -167,11 +216,13 @@ class CustomProvider {
   }
 
   static Stream<List<Domain>> streamOfDomains(
-      {required BriteDatabase briteDb}) {
-    getLastUpdateCollection(tableName: "domains", briteDb: briteDb, whereList: [
-      "admin",
-      FirebaseAuth.instance.currentUser!.uid,
-    ]);
+      {required BriteDatabase briteDb, User? user}) {
+    getLastUpdateCollection(
+      tableName: "domains",
+      briteDb: briteDb,
+      user: user,
+      whereList: user != null ? ["admin", user.uid] : ["admin"],
+    );
     return briteDb.createQuery(
       "domains",
       where: 'enabled = ?',
@@ -180,11 +231,13 @@ class CustomProvider {
   }
 
   static Stream<List<Region>> streamOfRegions(
-      {required BriteDatabase briteDb}) {
-    getLastUpdateCollection(tableName: "regions", briteDb: briteDb, whereList: [
-      "admin",
-      FirebaseAuth.instance.currentUser!.uid,
-    ]);
+      {required BriteDatabase briteDb, User? user}) {
+    getLastUpdateCollection(
+      tableName: "regions",
+      briteDb: briteDb,
+      user: user,
+      whereList: user != null ? ["admin", user.uid] : ["admin"],
+    );
     return briteDb.createQuery(
       "regions",
       where: 'enabled = ?',
@@ -193,14 +246,13 @@ class CustomProvider {
   }
 
   static Stream<List<Country>> streamOfCountries(
-      {required BriteDatabase briteDb}) {
+      {required BriteDatabase briteDb, User? user}) {
     getLastUpdateCollection(
-        tableName: "countries",
-        briteDb: briteDb,
-        whereList: [
-          "admin",
-          FirebaseAuth.instance.currentUser!.uid,
-        ]);
+      tableName: "countries",
+      briteDb: briteDb,
+      user: user,
+      whereList: user != null ? ["admin", user.uid] : ["admin"],
+    );
     return briteDb.createQuery(
       "countries",
       where: 'enabled = ?',
@@ -208,38 +260,54 @@ class CustomProvider {
     ).mapToList((row) => Country.fromJson(row));
   }
 
-  static generateProvidersList({required BriteDatabase briteDb}) {
+  static generateProvidersList({required BriteDatabase briteDb, User? user}) {
     return [
       StreamProvider<List<Cellar>>(
-        create: (_) => CustomProvider.streamOfCellars(briteDb: briteDb),
+        create: (_) => CustomProvider.streamOfCellars(
+            briteDb: briteDb,
+            user: user == null || user.isAnonymous ? null : user),
         initialData: [],
       ),
       StreamProvider<List<Block>>(
-        create: (_) => CustomProvider.streamOfBlocks(briteDb: briteDb),
+        create: (_) => CustomProvider.streamOfBlocks(
+            briteDb: briteDb,
+            user: user == null || user.isAnonymous ? null : user),
         initialData: [],
       ),
       StreamProvider<List<Position>>(
-        create: (_) => CustomProvider.streamOfPositions(briteDb: briteDb),
+        create: (_) => CustomProvider.streamOfPositions(
+            briteDb: briteDb,
+            user: user == null || user.isAnonymous ? null : user),
         initialData: [],
       ),
       StreamProvider<List<Wine>>(
-        create: (_) => CustomProvider.streamOfWines(briteDb: briteDb),
+        create: (_) => CustomProvider.streamOfWines(
+            briteDb: briteDb,
+            user: user == null || user.isAnonymous ? null : user),
         initialData: [],
       ),
       StreamProvider<List<Appellation>>(
-        create: (_) => CustomProvider.streamOfAppellations(briteDb: briteDb),
+        create: (_) => CustomProvider.streamOfAppellations(
+            briteDb: briteDb,
+            user: user == null || user.isAnonymous ? null : user),
         initialData: [],
       ),
       StreamProvider<List<Domain>>(
-        create: (_) => CustomProvider.streamOfDomains(briteDb: briteDb),
+        create: (_) => CustomProvider.streamOfDomains(
+            briteDb: briteDb,
+            user: user == null || user.isAnonymous ? null : user),
         initialData: [],
       ),
       StreamProvider<List<Region>>(
-        create: (_) => CustomProvider.streamOfRegions(briteDb: briteDb),
+        create: (_) => CustomProvider.streamOfRegions(
+            briteDb: briteDb,
+            user: user == null || user.isAnonymous ? null : user),
         initialData: [],
       ),
       StreamProvider<List<Country>>(
-        create: (_) => CustomProvider.streamOfCountries(briteDb: briteDb),
+        create: (_) => CustomProvider.streamOfCountries(
+            briteDb: briteDb,
+            user: user == null || user.isAnonymous ? null : user),
         initialData: [],
       ),
       Provider<BriteDatabase>(

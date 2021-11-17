@@ -19,6 +19,7 @@ export 'custom/main_widgets/cellar_widgets/draw_cellar.dart';
 export 'custom/main_widgets/cellar_widgets/draw_block.dart';
 export 'custom/main_widgets/corner.dart';
 export 'custom/main_widgets/multislider.dart';
+export 'custom/main_widgets/number_picker.dart';
 
 // Methods
 export 'custom/methods/custom_methods.dart';
@@ -50,15 +51,16 @@ export 'models/bottle/size.dart';
 // Pages //
 
 // Root
+export 'landing.dart';
 export 'homepage.dart';
 export 'pages/root/wine_details.dart';
 export 'pages/root/appellation_details.dart';
 export 'pages/root/details.dart';
 export 'pages/root/third_son.dart';
 export 'pages/root/wine_list.dart';
-export 'pages/root/filters/filters.dart';
-export 'pages/root/filters/filter_appellation.dart';
-export 'pages/root/filters/filter_domain.dart';
+export 'pages/root/filters.dart';
+export 'pages/root/filter_appellation.dart';
+export 'pages/root/filter_domain.dart';
 export 'pages/root/stock_cellar.dart';
 export 'pages/root/stock_block.dart';
 
@@ -70,10 +72,18 @@ export 'pages/middle/add_tab.dart';
 export 'pages/middle/add_wine.dart';
 export 'pages/middle/add_wine_appellation.dart';
 export 'pages/middle/add_wine_domain.dart';
+export 'pages/middle/add_domain.dart';
+export 'pages/middle/add_appellation.dart';
+export 'pages/middle/add_appellation_region.dart';
+export 'pages/middle/add_region.dart';
+export 'pages/middle/add_region_country.dart';
+export 'pages/middle/add_country.dart';
 
 // Right
 export 'pages/right/cellar_tab.dart';
 export 'pages/right/block_tab.dart';
+export 'pages/right/edit_cellar.dart';
+export 'pages/right/edit_block.dart';
 
 export 'credential.dart';
 export 'vision.dart';

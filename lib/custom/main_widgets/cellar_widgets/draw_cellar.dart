@@ -13,6 +13,7 @@ class DrawCellar extends StatelessWidget {
     this.marginBlock = 5.0,
     this.searchedWine,
     this.stockAddonForCellar,
+    this.editable = false,
   }) : super(key: key);
 
   final String cellarId;
@@ -23,6 +24,7 @@ class DrawCellar extends StatelessWidget {
   final double marginBlock;
   final Wine? searchedWine;
   final StockAddonForCellar? stockAddonForCellar;
+  final bool editable;
 
   @override
   Widget build(BuildContext context) {
@@ -43,10 +45,15 @@ class DrawCellar extends StatelessWidget {
 
     List<Row> rows = [];
 
-    for (var y = lineExtremity["max"]; y >= lineExtremity["min"]; y--) {
+    for (int y = (editable ? lineExtremity["max"] + 1 : lineExtremity["max"]);
+        y >= (editable ? lineExtremity["min"] - 1 : lineExtremity["min"]);
+        y--) {
       List<Widget> cells = [];
 
-      for (var x = columnExtremity["min"]; x <= columnExtremity["max"]; x++) {
+      for (int x =
+              (editable ? columnExtremity["min"] - 1 : columnExtremity["min"]);
+          x <= (editable ? columnExtremity["max"] + 1 : columnExtremity["max"]);
+          x++) {
         Block? cell = blocks.firstWhereOrNull(
           (element) => element.y == y && element.x == x,
         );
@@ -59,15 +66,48 @@ class DrawCellar extends StatelessWidget {
             propertyToCompare: "nbLine");
 
         if (cell == null) {
-          cells.add(
-            Padding(
-              padding: EdgeInsets.all(marginBlock),
-              child: Container(
-                width: (nbColumnExtremity["max"] * sizeCell).toDouble(),
-                height: (nbLineExtremity["max"] * sizeCell).toDouble(),
-              ),
-            ),
-          );
+          editable
+              ? cells.add(
+                  Container(
+                    clipBehavior: Clip.hardEdge,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                    ),
+                    child: Material(
+                      type: MaterialType.transparency,
+                      child: InkWell(
+                        onTap: () => Navigator.pushNamed(
+                          context,
+                          "/edit/block",
+                          arguments: EditBlockArguments(
+                            cellarId: cellarId,
+                          ),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(marginBlock),
+                          child: Container(
+                            width: (nbColumnExtremity["max"] > 0
+                                ? nbColumnExtremity["max"] * sizeCell.toDouble()
+                                : 20),
+                            height: (nbLineExtremity["max"] > 0
+                                ? nbLineExtremity["max"] * sizeCell.toDouble()
+                                : 20),
+                            child: Center(child: Text("+")),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              : cells.add(
+                  Padding(
+                    padding: EdgeInsets.all(marginBlock),
+                    child: Container(
+                      width: (nbColumnExtremity["max"] * sizeCell).toDouble(),
+                      height: (nbLineExtremity["max"] * sizeCell).toDouble(),
+                    ),
+                  ),
+                );
         } else {
           DrawBlock _drawBlock = DrawBlock(
             blockId: cell.id,
@@ -87,16 +127,29 @@ class DrawCellar extends StatelessWidget {
                 type: MaterialType.transparency,
                 child: InkWell(
                   onTap: () => (stockAddonForCellar == null
-                      ? Navigator.pushNamed(
-                          context,
-                          "/block",
-                          arguments: BlockTabArguments(
-                            drawBlock: _drawBlock,
-                            cellarId: cellarId,
-                            searchedWine: searchedWine,
-                            resetSearch: resetSearch,
-                          ),
-                        )
+                      ? editable
+                          ? Navigator.pushNamed(
+                              context,
+                              "/edit/block",
+                              arguments: EditBlockArguments(
+                                nbColumn: _drawBlock.nbColumn,
+                                nbLine: _drawBlock.nbLine,
+                                cellarId: cellarId,
+                                blockId: _drawBlock.blockId,
+                                horizontalAlignment: cell.horizontalAlignment,
+                                verticalAlignment: cell.horizontalAlignment,
+                              ),
+                            )
+                          : Navigator.pushNamed(
+                              context,
+                              "/block",
+                              arguments: BlockTabArguments(
+                                drawBlock: _drawBlock,
+                                cellarId: cellarId,
+                                searchedWine: searchedWine,
+                                resetSearch: resetSearch,
+                              ),
+                            )
                       : Navigator.pushNamed(
                           context,
                           "/stock/block",
@@ -137,6 +190,7 @@ class DrawCellar extends StatelessWidget {
           );
         }
       }
+
       rows.add(
         Row(
           children: [
@@ -153,7 +207,7 @@ class DrawCellar extends StatelessWidget {
       );
     }
 
-    return (rows.length > 1
+    return (rows.length > 0
         ? Container(
             child: Column(children: [
               SizedBox(height: verticalPadding),
