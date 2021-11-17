@@ -49,6 +49,7 @@ dependencies:
   string_similarity: ^2.0.0
   google_sign_in: ^5.2.1
   permission_handler: ^8.2.5
+  uuid: ^3.0.5
 
 dev_dependencies:
   flutter_test:

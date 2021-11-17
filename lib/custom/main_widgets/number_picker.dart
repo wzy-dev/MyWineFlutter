@@ -19,7 +19,6 @@ class CustomNumberPicker extends StatefulWidget {
 }
 
 class _CustomNumberPickerState extends State<CustomNumberPicker> {
-  late int _initialPage;
   late PageController _pageController;
 
   @override

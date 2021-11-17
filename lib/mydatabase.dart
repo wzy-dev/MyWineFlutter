@@ -10,8 +10,9 @@ class MyDatabase {
     return Provider.of<BriteDatabase>(context, listen: listen);
   }
 
-  static List<Cellar> getCellars({required BuildContext context}) {
-    return Provider.of<List<Cellar>>(context);
+  static List<Cellar> getCellars(
+      {required BuildContext context, bool listen = true}) {
+    return Provider.of<List<Cellar>>(context, listen: listen);
   }
 
   static Cellar? getCellarById(

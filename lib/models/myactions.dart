@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mywine/shelf.dart';
 import 'package:sqlbrite/sqlbrite.dart';
+import 'package:uuid/uuid.dart';
 
 class MyActions {
   static void drinkWine({
@@ -113,5 +114,41 @@ class MyActions {
         MyDatabase.getBriteDatabase(context: context, listen: false);
 
     await db.insert("countries", country.toJson());
+  }
+
+  static Future<void> addCellar({
+    required BuildContext context,
+    required Cellar cellar,
+  }) async {
+    BriteDatabase db =
+        MyDatabase.getBriteDatabase(context: context, listen: false);
+
+    Cellar editedCellar = cellar;
+
+    if (editedCellar.createdAt == 0) {
+      editedCellar.createdAt = DateTime.now().millisecondsSinceEpoch;
+    }
+    editedCellar.editedAt = DateTime.now().millisecondsSinceEpoch;
+
+    if (editedCellar.id == "unknow") {
+      editedCellar.id = Uuid().v4();
+      await db.insert("cellars", cellar.toJson());
+    } else {
+      await db.update("cellars", cellar.toJson(),
+          where: 'id = ?', whereArgs: [cellar.id]);
+    }
+  }
+
+  static Future<void> deleteCellar({
+    required BuildContext context,
+    required Cellar cellar,
+  }) async {
+    BriteDatabase db =
+        MyDatabase.getBriteDatabase(context: context, listen: false);
+
+    cellar.enabled = false;
+
+    await db.update("cellars", cellar.toJson(),
+        where: 'id = ?', whereArgs: [cellar.id]);
   }
 }

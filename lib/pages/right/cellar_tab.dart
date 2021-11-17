@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -24,6 +25,7 @@ class _CellarTabState extends State<CellarTab> {
   late List<Map<String, Object>> _listFreeWines = [];
   late List<Cellar> _cellars;
   Cellar? _activeCellar;
+  String? _activeCellarId;
   int _countFreeWines = 0;
 
   @override
@@ -69,7 +71,7 @@ class _CellarTabState extends State<CellarTab> {
                       child: InkWell(
                         onTap: () {
                           setState(() {
-                            _activeCellar = e;
+                            _activeCellarId = e.id;
                           });
                           Navigator.of(context).pop();
                         },
@@ -96,12 +98,19 @@ class _CellarTabState extends State<CellarTab> {
                 width: double.infinity,
                 child: Material(
                   child: InkWell(
-                    onTap: () {
-                      // TODO => Before create cellar
-                      // Navigator.of(context).pushNamed(
-                      //   "/edit/cellar",
-                      //   arguments: EditCellar(cellar: cellar),
-                      // );
+                    onTap: () async {
+                      Cellar? newCellar = await Navigator.of(context).pushNamed(
+                        "/edit/cellar",
+                        arguments: EditCellarArguments(),
+                      ) as Cellar?;
+
+                      if (newCellar != null) {
+                        setState(() {
+                          _activeCellar = newCellar;
+                        });
+                      }
+
+                      Navigator.of(context).pop();
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
@@ -139,8 +148,15 @@ class _CellarTabState extends State<CellarTab> {
         MyDatabase.countWines(context: context, listWines: _listFreeWines);
 
     _cellars = MyDatabase.getCellars(context: context);
-    if (_activeCellar == null && _cellars.length > 0)
+
+    if (_activeCellarId != null) {
+      _activeCellar =
+          _cellars.firstWhereOrNull((cellar) => cellar.id == _activeCellarId);
+    }
+
+    if (_activeCellar == null && _cellars.length > 0) {
       _activeCellar = _cellars[0];
+    }
 
     return MainContainer(
       title: InkWell(

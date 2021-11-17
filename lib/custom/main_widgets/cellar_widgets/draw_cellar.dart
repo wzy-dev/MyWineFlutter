@@ -88,11 +88,11 @@ class DrawCellar extends StatelessWidget {
                           child: Container(
                             width: (nbColumnExtremity["max"] > 0
                                 ? nbColumnExtremity["max"] * sizeCell.toDouble()
-                                : 20),
+                                : 50),
                             height: (nbLineExtremity["max"] > 0
                                 ? nbLineExtremity["max"] * sizeCell.toDouble()
-                                : 20),
-                            child: Center(child: Text("+")),
+                                : 50),
+                            child: Icon(Icons.add_outlined),
                           ),
                         ),
                       ),
