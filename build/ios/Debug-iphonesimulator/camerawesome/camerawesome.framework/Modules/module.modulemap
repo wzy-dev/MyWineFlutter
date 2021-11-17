@@ -1,0 +1,6 @@
+framework module camerawesome {
+  umbrella header "camerawesome-umbrella.h"
+
+  export *
+  module * { export * }
+}
