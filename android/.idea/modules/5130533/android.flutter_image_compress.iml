@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module external.linked.project.id=":flutter_image_compress" external.linked.project.path="C:/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_image_compress-1.1.0/android" external.root.project.path="$MODULE_DIR$/../../.." external.system.id="GRADLE" external.system.module.group="com.example.flutterimagecompress" external.system.module.version="1.0-SNAPSHOT" type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="android-gradle" name="Android-Gradle">
+      <configuration>
+        <option name="GRADLE_PROJECT_PATH" value=":flutter_image_compress" />
+        <option name="LAST_SUCCESSFUL_SYNC_AGP_VERSION" />
+        <option name="LAST_KNOWN_AGP_VERSION" value="7.0.3" />
+      </configuration>
+    </facet>
+    <facet type="kotlin-language" name="Kotlin">
+      <configuration version="4" platform="JVM 1.6" allPlatforms="JVM [1.6]" useProjectSettings="false">
+        <compilerSettings>
+          <option name="additionalArguments" value="-Xallow-no-source-files" />
+        </compilerSettings>
+        <compilerArguments>
+          <option name="destination" value="$MODULE_DIR$/../../../../build/flutter_image_compress/tmp/kotlin-classes/debug" />
+          <option name="classpath" value="$USER_HOME$/.gradle/caches/transforms-3/b016536bccca332e0227d0ec226aba25/transformed/jetified-flutter_embedding_debug-1.0.0-6ac856380fa4f66469552ce986edf59f65f7cd68.jar;C:/Users/Simon/.gradle/caches/modules-2/files-2.1/androidx.lifecycle/lifecycle-common-java8/2.2.0/cd3478503da69b1a7e0319bd2d1389943db9b364/lifecycle-common-java8-2.2.0.jar;C:/Users/Simon/.gradle/caches/transforms-3/ba82b03a0913cdf82c23589ecc3fe7c1/transformed/fragment-1.1.0-api.jar;C:/Users/Simon/.gradle/caches/transforms-3/422a0bd9a6204ea24ee19c1d2e5f50df/transformed/jetified-activity-1.0.0-api.jar;C:/Users/Simon/.gradle/caches/transforms-3/16ecc2363676cb07a8ac5490ebc504e5/transformed/viewpager-1.0.0-api.jar;C:/Users/Simon/.gradle/caches/transforms-3/7d02091491a7d6e03890602406bfd8ef/transformed/loader-1.0.0-api.jar;C:/Users/Simon/.gradle/caches/transforms-3/4643d5af12c49b621a689395e4aeea1b/transformed/customview-1.0.0-api.jar;C:/Users/Simon/.gradle/caches/transforms-3/ebdfe2bf8875bd3eabf7238e3cc7d5bf/transformed/core-1.1.0-api.jar;C:/Users/Simon/.gradle/caches/transforms-3/d7e2e766807605a3927d312a5e90c1be/transformed/lifecycle-runtime-2.2.0-api.jar;C:/Users/Simon/.gradle/caches/transforms-3/ee9169005b6cbe925aebd52adb0956d7/transformed/jetified-savedstate-1.0.0-api.jar;C:/Users/Simon/.gradle/caches/transforms-3/ad26f513b91e05de955597e59e3902d4/transformed/lifecycle-livedata-2.0.0-api.jar;C:/Users/Simon/.gradle/caches/transforms-3/4fb36d392f1781a0a79162740a14901f/transformed/lifecycle-livedata-core-2.0.0-api.jar;C:/Users/Simon/.gradle/caches/modules-2/files-2.1/androidx.lifecycle/lifecycle-common/2.2.0/4ef09a745007778eef83b92f8f23987a8ea59496/lifecycle-common-2.2.0.jar;C:/Users/Simon/.gradle/caches/transforms-3/4f230881485a85f4e67630e6c0b117bc/transformed/exifinterface-1.3.0-api.jar;C:/Users/Simon/.gradle/caches/transforms-3/251c8e97214d953bc67a2b75aca176c8/transformed/heifwriter-1.0.0-api.jar;C:/Users/Simon/.gradle/caches/transforms-3/fa7beb030f3d261f516ffbd5c069a7e6/transformed/core-runtime-2.0.0-api.jar;C:/Users/Simon/.gradle/caches/modules-2/files-2.1/androidx.arch.core/core-common/2.1.0/b3152fc64428c9354344bd89848ecddc09b6f07e/core-common-2.1.0.jar;C:/Users/Simon/.gradle/caches/transforms-3/34b84486f7150a23b49ba00bed10e96f/transformed/versionedparcelable-1.1.0-api.jar;C:/Users/Simon/.gradle/caches/modules-2/files-2.1/androidx.collection/collection/1.1.0/1f27220b47669781457de0d600849a5de0e89909/collection-1.1.0.jar;C:/Users/Simon/.gradle/caches/transforms-3/0874bc29bd204632ead30c04b7e38af1/transformed/lifecycle-viewmodel-2.1.0-api.jar;C:/Users/Simon/.gradle/caches/modules-2/files-2.1/androidx.annotation/annotation/1.1.0/e3a6fb2f40e3a3842e6b7472628ba4ce416ea4c8/annotation-1.1.0.jar;C:/Users/Simon/.gradle/caches/transforms-3/2eabe08a143a11affae04f3e3095b936/transformed/jetified-kotlin-stdlib-jdk8-1.3.50.jar;C:/Users/Simon/.gradle/caches/transforms-3/007380d7362f22cc3390eb2f3891d610/transformed/jetified-kotlin-stdlib-jdk7-1.3.50.jar;C:/Users/Simon/.gradle/caches/transforms-3/e030fb921428176f321a4bc48bfe6264/transformed/jetified-kotlin-stdlib-1.3.50.jar;C:/Users/Simon/.gradle/caches/transforms-3/9f8d8bf9b732327dfea3bfa8136c29db/transformed/jetified-kotlin-stdlib-common-1.3.50.jar;C:/Users/Simon/.gradle/caches/transforms-3/1f95e65ef5521e1a8253137ce6461a19/transformed/jetified-annotations-13.0.jar;C:/Users/Simon/.gradle/caches/transforms-3/8a2f956b40a44ba69eea8cfa68f5abdc/transformed/jetified-commons-io-2.6.jar;C:/Users/Simon/AppData/Local/Android/Sdk/platforms/android-29/android.jar;C:/Users/Simon/AppData/Local/Android/Sdk/build-tools/30.0.2/core-lambda-stubs.jar" />
+          <option name="noStdlib" value="true" />
+          <option name="noReflect" value="true" />
+          <option name="moduleName" value="flutter_image_compress_debug" />
+          <option name="jvmTarget" value="1.6" />
+          <option name="languageVersion" value="1.3" />
+          <option name="apiVersion" value="1.3" />
+          <option name="pluginOptions">
+            <array />
+          </option>
+          <option name="pluginClasspaths">
+            <array />
+          </option>
+          <option name="errors">
+            <ArgumentParseErrors />
+          </option>
+        </compilerArguments>
+      </configuration>
+    </facet>
+    <facet type="android" name="Android">
+      <configuration>
+        <option name="SELECTED_BUILD_VARIANT" value="debug" />
+        <option name="ASSEMBLE_TASK_NAME" value="assembleDebug" />
+        <option name="COMPILE_JAVA_TASK_NAME" value="compileDebugSources" />
+        <afterSyncTasks>
+          <task>generateDebugSources</task>
+        </afterSyncTasks>
+        <option name="ALLOW_USER_CONFIGURATION" value="false" />
+        <option name="MANIFEST_FILE_RELATIVE_PATH" value="/src/main/AndroidManifest.xml" />
+        <option name="RES_FOLDER_RELATIVE_PATH" value="/src/main/res" />
+        <option name="RES_FOLDERS_RELATIVE_PATH" value="file://C:/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_image_compress-1.1.0/android/src/main/res;file://C:/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_image_compress-1.1.0/android/src/debug/res;file://$MODULE_DIR$/../../../../build/flutter_image_compress/generated/res/rs/debug;file://$MODULE_DIR$/../../../../build/flutter_image_compress/generated/res/resValues/debug" />
+        <option name="TEST_RES_FOLDERS_RELATIVE_PATH" value="file://C:/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_image_compress-1.1.0/android/src/androidTest/res;file://C:/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_image_compress-1.1.0/android/src/androidTestDebug/res;file://$MODULE_DIR$/../../../../build/flutter_image_compress/generated/res/rs/androidTest/debug;file://$MODULE_DIR$/../../../../build/flutter_image_compress/generated/res/resValues/androidTest/debug" />
+        <option name="ASSETS_FOLDER_RELATIVE_PATH" value="/src/main/assets" />
+        <option name="PROJECT_TYPE" value="1" />
+      </configuration>
+    </facet>
+  </component>
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
+    <output url="file://$MODULE_DIR$/../../../../build/flutter_image_compress/intermediates/javac/debug/classes" />
+    <output-test url="file://$MODULE_DIR$/../../../../build/flutter_image_compress/intermediates/javac/debugUnitTest/classes" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../../../build/flutter_image_compress/generated/aidl_source_output_dir/debug/out" />
+    <content url="file://$MODULE_DIR$/../../../../build/flutter_image_compress/generated/aidl_source_output_dir/debugAndroidTest/out" />
+    <content url="file://$MODULE_DIR$/../../../../build/flutter_image_compress/generated/ap_generated_sources/debug/out" />
+    <content url="file://$MODULE_DIR$/../../../../build/flutter_image_compress/generated/ap_generated_sources/debugAndroidTest/out" />
+    <content url="file://$MODULE_DIR$/../../../../build/flutter_image_compress/generated/ap_generated_sources/debugUnitTest/out" />
+    <content url="file://$MODULE_DIR$/../../../../build/flutter_image_compress/generated/renderscript_source_output_dir/debug/out" />
+    <content url="file://$MODULE_DIR$/../../../../build/flutter_image_compress/generated/renderscript_source_output_dir/debugAndroidTest/out" />
+    <content url="file://$MODULE_DIR$/../../../../build/flutter_image_compress/generated/res/resValues/androidTest/debug" />
+    <content url="file://$MODULE_DIR$/../../../../build/flutter_image_compress/generated/res/resValues/debug" />
+    <content url="file://$MODULE_DIR$/../../../../build/flutter_image_compress/generated/res/rs/androidTest/debug" />
+    <content url="file://$MODULE_DIR$/../../../../build/flutter_image_compress/generated/res/rs/debug" />
+    <content url="file://$MODULE_DIR$/../../../../build/flutter_image_compress/generated/source/buildConfig/androidTest/debug" />
+    <content url="file://$MODULE_DIR$/../../../../build/flutter_image_compress/generated/source/buildConfig/debug" />
+    <content url="file://C:/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_image_compress-1.1.0/android">
+      <sourceFolder url="file://C:/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_image_compress-1.1.0/android/src/main/kotlin" isTestSource="false" />
+      <excludeFolder url="file://C:/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_image_compress-1.1.0/android/.gradle" />
+    </content>
+    <orderEntry type="jdk" jdkName="Android API 29 Platform" jdkType="Android SDK" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Gradle: io.flutter:flutter_embedding_debug:1.0.0-6ac856380fa4f66469552ce986edf59f65f7cd68" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-common-java8:2.2.0" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-common:2.2.0" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.arch.core:core-common:2.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.collection:collection:1.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.annotation:annotation:1.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.50" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.50" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:1.3.50" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-common:1.3.50" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains:annotations:13.0" level="project" />
+    <orderEntry type="library" name="Gradle: commons-io:commons-io:2.6" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.fragment:fragment:1.1.0@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.activity:activity:1.0.0@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.viewpager:viewpager:1.0.0@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.loader:loader:1.0.0@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.customview:customview:1.0.0@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.core:core:1.1.0@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-runtime:2.2.0@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.savedstate:savedstate:1.0.0@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-livedata:2.0.0@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-livedata-core:2.0.0@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.exifinterface:exifinterface:1.3.0@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.heifwriter:heifwriter:1.0.0@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.arch.core:core-runtime:2.0.0@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.versionedparcelable:versionedparcelable:1.1.0@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-viewmodel:2.1.0@aar" level="project" />
+  </component>
+</module>
