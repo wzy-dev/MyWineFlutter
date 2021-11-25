@@ -52,8 +52,10 @@ class _AddAppellationState extends State<AddAppellation> {
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
                 children: [
                   TextInputCard(
-                      label: "Nom de l'appellation",
-                      onChanged: (value) => setState(() => _name = value)),
+                    label: "Nom de l'appellation",
+                    value: _name,
+                    onChanged: (value) => _name = value,
+                  ),
                   SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -122,25 +124,24 @@ class _AddAppellationState extends State<AddAppellation> {
                   dense: true,
                   backgroundColor: Theme.of(context).colorScheme.secondary,
                   onPress: () {
+                    Appellation appellation = InitializerModel.initAppellation(
+                      name: _name,
+                      region: _region!.id,
+                      color: _colorIndex!,
+                      yearmin:
+                          _yearRange.minimumIsEnabled ? _yearRange.min : null,
+                      yearmax:
+                          _yearRange.maximumIsEnabled ? _yearRange.max : null,
+                      tempmin:
+                          _tempRange.minimumIsEnabled ? _tempRange.min : null,
+                      tempmax:
+                          _tempRange.maximumIsEnabled ? _tempRange.max : null,
+                    );
+                    appellation.enabled = true;
+
                     MyActions.addAppellation(
                       context: context,
-                      appellation: Appellation(
-                        id: "yolo${DateTime.now().toUtc().millisecondsSinceEpoch.toInt()}",
-                        editedAt: 1636707748293,
-                        createdAt: 1636707748293,
-                        enabled: true,
-                        name: _name,
-                        region: _region!.id,
-                        color: _colorIndex!,
-                        yearmin:
-                            _yearRange.minimumIsEnabled ? _yearRange.min : null,
-                        yearmax:
-                            _yearRange.maximumIsEnabled ? _yearRange.max : null,
-                        tempmin:
-                            _tempRange.minimumIsEnabled ? _tempRange.min : null,
-                        tempmax:
-                            _tempRange.maximumIsEnabled ? _tempRange.max : null,
-                      ),
+                      appellation: appellation,
                     ).then((value) => Navigator.of(context).pop(_name));
                   },
                 ),

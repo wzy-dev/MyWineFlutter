@@ -39,6 +39,7 @@ class RootNavigator {
 
         return CustomRouteBuilders(
             widget: Scaffold(
+              resizeToAvoidBottomInset: false,
               body: WineDetails(wineDetails: arguments),
             ),
             fullScreen: arguments.fullScreenDialog);
@@ -48,6 +49,7 @@ class RootNavigator {
 
         return CustomRouteBuilders(
             widget: Scaffold(
+              resizeToAvoidBottomInset: false,
               body: AppellationDetails(appellationDetails: arguments),
             ),
             fullScreen: arguments.fullScreenDialog);
@@ -57,6 +59,7 @@ class RootNavigator {
 
         return CustomRouteBuilders(
             widget: Scaffold(
+              resizeToAvoidBottomInset: false,
               body: WineList(selectedFilters: selectedFilters),
             ),
             fullScreen: true);
@@ -66,6 +69,7 @@ class RootNavigator {
 
         return CustomRouteBuilders(
           widget: Scaffold(
+            resizeToAvoidBottomInset: false,
             body: Filters(selectedFilters: selectedFilters),
           ),
         );
@@ -75,6 +79,7 @@ class RootNavigator {
 
         return CustomRouteBuilders(
           widget: Scaffold(
+            resizeToAvoidBottomInset: false,
             body: FilterAppellation(
                 filterAppellationArguments: filterAppellationArguments),
           ),
@@ -85,6 +90,7 @@ class RootNavigator {
 
         return CustomRouteBuilders(
           widget: Scaffold(
+            resizeToAvoidBottomInset: false,
             body: FilterDomain(filterDomainArguments: filterDomainArguments),
           ),
         );

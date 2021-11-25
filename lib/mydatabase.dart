@@ -23,13 +23,26 @@ class MyDatabase {
         .firstWhereOrNull((cellar) => cellar.id == cellarId);
   }
 
-  static List<Block> getBlocks({required BuildContext context}) {
-    return Provider.of<List<Block>>(context);
+  static List<Block> getBlocks(
+      {required BuildContext context, bool listen = true}) {
+    return Provider.of<List<Block>>(context, listen: listen);
   }
 
   static List<Position> getPositions(
       {required BuildContext context, bool listen = true}) {
     return Provider.of<List<Position>>(context, listen: listen);
+  }
+
+  static List<Position> getPositionsByCellarId(
+      {required BuildContext context,
+      bool listen = true,
+      required String cellarId}) {
+    List<Block> blocks = MyDatabase.getBlocks(context: context, listen: false);
+    return getPositions(context: context, listen: listen)
+        .where((position) =>
+            blocks.firstWhere((block) => block.id == position.block).cellar ==
+            cellarId)
+        .toList();
   }
 
   static List<Position> getPositionsByBlockId(

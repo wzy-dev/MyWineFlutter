@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:mywine/shelf.dart';
@@ -96,11 +94,12 @@ class _StockCellarState extends State<StockCellar> {
     _cellars = MyDatabase.getCellars(context: context);
 
     return MainContainer(
-      title: Text(_cellars.length > 0 ? _cellars[0].name : "ras"),
+      title: Text("Placer mes bouteilles"),
       child: SafeArea(
         top: false,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: ListView(
+          padding: const EdgeInsets.all(0),
+          shrinkWrap: true,
           children: [
             Card(
               margin: const EdgeInsets.all(0),
@@ -167,20 +166,35 @@ class StockWineCard extends StatelessWidget {
             title: "Placer ${selectedCoors.length} bouteilles",
             icon: Icon(Icons.task_alt_outlined),
             onPress: () {
-              selectedCoors.forEach((coor) {
-                MyActions.addPosition(
-                    context: context,
-                    position: Position(
-                        id: "${new DateTime.now().millisecondsSinceEpoch}${Random().nextInt(100)},",
-                        createdAt: 2592758632869,
-                        editedAt: 2592758632869,
-                        block: coor["blockId"],
-                        wine: enhancedWine["id"],
-                        x: coor["x"],
-                        y: coor["y"],
-                        enabled: true));
+              bool isTheLast = selectedCoors.length /
+                      MyDatabase.countFreeWineById(
+                          context: context,
+                          wineId: enhancedWine["id"],
+                          listen: false) ==
+                  1;
+
+              Future.wait(selectedCoors.map((coor) {
+                Position position = InitializerModel.initPosition(
+                  block: coor["blockId"],
+                  wine: enhancedWine["id"],
+                  x: coor["x"],
+                  y: coor["y"],
+                );
+                position.enabled = true;
+
+                return MyActions.addPosition(
+                  context: context,
+                  position: position,
+                );
+              })).then((value) {
+                resetCoors();
+                if (isTheLast)
+                  Navigator.of(context, rootNavigator: true)
+                      .pushNamedAndRemoveUntil(
+                    "/cellar",
+                    (_) => false,
+                  );
               });
-              resetCoors();
             },
             backgroundColor: Theme.of(context).hintColor,
           ),

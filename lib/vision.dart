@@ -126,7 +126,7 @@ class Vision {
   static int? _processMillesime(String l) {
     String result = l;
     //Recherche du millesime
-    RegExp re = RegExp("^[12][0-9]{3}");
+    RegExp re = RegExp("[12][09][0-9]{2}");
 
     String? date = re.firstMatch(result)?.group(0);
 

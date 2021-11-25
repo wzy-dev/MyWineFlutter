@@ -78,7 +78,10 @@ class _AddWineState extends State<AddWine> {
 
   Future _drawSizesBottomSheet() {
     int index = 0;
-    return showBarModalBottomSheet(
+    return showCupertinoModalBottomSheet(
+      useRootNavigator: true,
+      backgroundColor: Colors.white,
+      barrierColor: Color.fromRGBO(0, 0, 0, 0.8),
       context: context,
       builder: (BuildContext context) => SafeArea(
         child: SingleChildScrollView(
@@ -90,6 +93,7 @@ class _AddWineState extends State<AddWine> {
               return Column(
                 children: [
                   Material(
+                    color: Colors.transparent,
                     child: InkWell(
                       onTap: () {
                         setState(() {
@@ -103,9 +107,22 @@ class _AddWineState extends State<AddWine> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              e.name,
-                              style: Theme.of(context).textTheme.headline2,
+                            Row(
+                              children: [
+                                Padding(
+                                    padding: const EdgeInsets.only(right: 14.0),
+                                    child: Icon(
+                                      e.value == _size.value
+                                          ? Icons.radio_button_checked_outlined
+                                          : Icons
+                                              .radio_button_unchecked_outlined,
+                                      color: Theme.of(context).primaryColor,
+                                    )),
+                                Text(
+                                  e.name,
+                                  style: Theme.of(context).textTheme.headline2,
+                                ),
+                              ],
                             ),
                             Text(
                               "${(e.value / 1000)}L",
@@ -386,29 +403,28 @@ class _AddWineState extends State<AddWine> {
                   dense: true,
                   backgroundColor: Theme.of(context).colorScheme.secondary,
                   onPress: () {
+                    Wine wine = InitializerModel.initWine(
+                      appellation: _appellation!.id,
+                      domain: _domain!.id,
+                      millesime: _millesime.round(),
+                      quantity: _quantity.round(),
+                      size: _size.value,
+                      sparkling: _sparkling,
+                      bio: _bio,
+                      yearmin:
+                          _yearRange.minimumIsEnabled ? _yearRange.min : null,
+                      yearmax:
+                          _yearRange.maximumIsEnabled ? _yearRange.max : null,
+                      tempmin:
+                          _tempRange.minimumIsEnabled ? _tempRange.min : null,
+                      tempmax:
+                          _tempRange.maximumIsEnabled ? _tempRange.max : null,
+                    );
+                    wine.enabled = true;
+
                     MyActions.addWine(
                       context: context,
-                      wine: Wine(
-                        id: "yolo${DateTime.now().toUtc().millisecondsSinceEpoch.toInt()}",
-                        editedAt: 1,
-                        createdAt: 1,
-                        enabled: true,
-                        appellation: _appellation!.id,
-                        domain: _domain!.id,
-                        millesime: _millesime.round(),
-                        quantity: _quantity.round(),
-                        size: _size.value,
-                        sparkling: _sparkling,
-                        bio: _bio,
-                        yearmin:
-                            _yearRange.minimumIsEnabled ? _yearRange.min : null,
-                        yearmax:
-                            _yearRange.maximumIsEnabled ? _yearRange.max : null,
-                        tempmin:
-                            _tempRange.minimumIsEnabled ? _tempRange.min : null,
-                        tempmax:
-                            _tempRange.maximumIsEnabled ? _tempRange.max : null,
-                      ),
+                      wine: wine,
                     );
                     Navigator.of(context).pop();
                   },

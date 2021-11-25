@@ -173,10 +173,18 @@ class _WineListState extends State<WineList> {
         onTap: () => _goToFilters(),
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-              child: Icon(Icons.filter_alt_outlined),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(Icons.filter_alt_outlined),
+                SizedBox(width: 4),
+                Text(
+                  "Trier/Filtrer",
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.w600),
+                ),
+              ],
             ),
           ),
         ),

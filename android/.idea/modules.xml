@@ -4,14 +4,15 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/android.iml" filepath="$PROJECT_DIR$/.idea/android.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/android.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/android.app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/1385895138/android.google_sign_in.iml" filepath="$PROJECT_DIR$/.idea/modules/1385895138/android.google_sign_in.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/36755977/com.apparence.camerawesome.android.camerawesome.iml" filepath="$PROJECT_DIR$/.idea/modules/36755977/com.apparence.camerawesome.android.camerawesome.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/2008095364/com.example.flutterimagecompress.android.flutter_image_compress.iml" filepath="$PROJECT_DIR$/.idea/modules/2008095364/com.example.flutterimagecompress.android.flutter_image_compress.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/1249455798/com.tekartik.sqflite.android.sqflite.iml" filepath="$PROJECT_DIR$/.idea/modules/1249455798/com.tekartik.sqflite.android.sqflite.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-640380101/io.flutter.plugins.firebase.auth.android.firebase_auth.iml" filepath="$PROJECT_DIR$/.idea/modules/-640380101/io.flutter.plugins.firebase.auth.android.firebase_auth.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/1070150138/io.flutter.plugins.firebase.cloudfirestore.android.cloud_firestore.iml" filepath="$PROJECT_DIR$/.idea/modules/1070150138/io.flutter.plugins.firebase.cloudfirestore.android.cloud_firestore.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/1516981766/io.flutter.plugins.firebase.core.android.firebase_core.iml" filepath="$PROJECT_DIR$/.idea/modules/1516981766/io.flutter.plugins.firebase.core.android.firebase_core.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/1675279016/io.flutter.plugins.pathprovider.android.path_provider.iml" filepath="$PROJECT_DIR$/.idea/modules/1675279016/io.flutter.plugins.pathprovider.android.path_provider.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/1754479018/android.camerawesome.iml" filepath="$PROJECT_DIR$/.idea/modules/1754479018/android.camerawesome.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1515010439/android.cloud_firestore.iml" filepath="$PROJECT_DIR$/.idea/modules/-1515010439/android.cloud_firestore.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/1908882298/android.firebase_auth.iml" filepath="$PROJECT_DIR$/.idea/modules/1908882298/android.firebase_auth.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1060262489/android.firebase_core.iml" filepath="$PROJECT_DIR$/.idea/modules/-1060262489/android.firebase_core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/5130533/android.flutter_image_compress.iml" filepath="$PROJECT_DIR$/.idea/modules/5130533/android.flutter_image_compress.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-70425881/android.path_provider.iml" filepath="$PROJECT_DIR$/.idea/modules/-70425881/android.path_provider.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-596831292/android.permission_handler.iml" filepath="$PROJECT_DIR$/.idea/modules/-596831292/android.permission_handler.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-229650827/android.sqflite.iml" filepath="$PROJECT_DIR$/.idea/modules/-229650827/android.sqflite.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1191349117/io.flutter.plugins.googlesignin.android.google_sign_in.iml" filepath="$PROJECT_DIR$/.idea/modules/-1191349117/io.flutter.plugins.googlesignin.android.google_sign_in.iml" />
     </modules>
   </component>
 </project>

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mywine/shelf.dart';
 import 'package:sqlbrite/sqlbrite.dart';
-import 'package:uuid/uuid.dart';
 
 class MyActions {
   static void drinkWine({
@@ -15,18 +14,20 @@ class MyActions {
     if (wine == null) return;
 
     if (position != null) {
+      position.editedAt = InitializerModel.getTimestamp();
       position.enabled = false;
 
       await db.update("positions", position.toJson(),
           where: 'id = ?', whereArgs: [position.id]);
     }
 
+    wine.editedAt = InitializerModel.getTimestamp();
     wine.quantity--;
     await db
         .update("wines", wine.toJson(), where: 'id = ?', whereArgs: [wine.id]);
   }
 
-  static void updateWine({
+  static Future<void> updateWine({
     required BuildContext context,
     required Wine? wine,
   }) async {
@@ -35,11 +36,14 @@ class MyActions {
 
     if (wine == null) return;
 
+    wine.editedAt = InitializerModel.getTimestamp();
+    wine.enabled = true;
+
     await db
         .update("wines", wine.toJson(), where: 'id = ?', whereArgs: [wine.id]);
   }
 
-  static void deletePosition({
+  static Future<void> deletePosition({
     required BuildContext context,
     required Position? position,
   }) async {
@@ -48,13 +52,14 @@ class MyActions {
 
     if (position == null) return;
 
+    position.editedAt = InitializerModel.getTimestamp();
     position.enabled = false;
 
     await db.update("positions", position.toJson(),
         where: 'id = ?', whereArgs: [position.id]);
   }
 
-  static void addPosition({
+  static Future<void> addPosition({
     required BuildContext context,
     required Position? position,
   }) async {
@@ -66,7 +71,7 @@ class MyActions {
     await db.insert("positions", position.toJson());
   }
 
-  static void addWine({
+  static Future<void> addWine({
     required BuildContext context,
     required Wine wine,
   }) async {
@@ -123,20 +128,20 @@ class MyActions {
     BriteDatabase db =
         MyDatabase.getBriteDatabase(context: context, listen: false);
 
-    Cellar editedCellar = cellar;
+    await db.insert("cellars", cellar.toJson());
+  }
 
-    if (editedCellar.createdAt == 0) {
-      editedCellar.createdAt = DateTime.now().millisecondsSinceEpoch;
-    }
-    editedCellar.editedAt = DateTime.now().millisecondsSinceEpoch;
+  static Future<void> editCellar({
+    required BuildContext context,
+    required Cellar cellar,
+  }) async {
+    BriteDatabase db =
+        MyDatabase.getBriteDatabase(context: context, listen: false);
 
-    if (editedCellar.id == "unknow") {
-      editedCellar.id = Uuid().v4();
-      await db.insert("cellars", cellar.toJson());
-    } else {
-      await db.update("cellars", cellar.toJson(),
-          where: 'id = ?', whereArgs: [cellar.id]);
-    }
+    cellar.editedAt = InitializerModel.getTimestamp();
+
+    await db.update("cellars", cellar.toJson(),
+        where: 'id = ?', whereArgs: [cellar.id]);
   }
 
   static Future<void> deleteCellar({
@@ -146,9 +151,47 @@ class MyActions {
     BriteDatabase db =
         MyDatabase.getBriteDatabase(context: context, listen: false);
 
+    cellar.editedAt = InitializerModel.getTimestamp();
     cellar.enabled = false;
 
     await db.update("cellars", cellar.toJson(),
         where: 'id = ?', whereArgs: [cellar.id]);
+  }
+
+  static Future<void> addBlock({
+    required BuildContext context,
+    required Block block,
+  }) async {
+    BriteDatabase db =
+        MyDatabase.getBriteDatabase(context: context, listen: false);
+
+    await db.insert("blocks", block.toJson());
+  }
+
+  static Future<void> editBlock({
+    required BuildContext context,
+    required Block block,
+  }) async {
+    BriteDatabase db =
+        MyDatabase.getBriteDatabase(context: context, listen: false);
+
+    block.editedAt = InitializerModel.getTimestamp();
+
+    await db.update("blocks", block.toJson(),
+        where: 'id = ?', whereArgs: [block.id]);
+  }
+
+  static Future<void> deleteBlock({
+    required BuildContext context,
+    required Block block,
+  }) async {
+    BriteDatabase db =
+        MyDatabase.getBriteDatabase(context: context, listen: false);
+
+    block.editedAt = InitializerModel.getTimestamp();
+    block.enabled = false;
+
+    await db.update("blocks", block.toJson(),
+        where: 'id = ?', whereArgs: [block.id]);
   }
 }

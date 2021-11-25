@@ -89,7 +89,7 @@ class ActionCard extends StatelessWidget {
   }
 }
 
-class TextInputCard extends StatelessWidget {
+class TextInputCard extends StatefulWidget {
   const TextInputCard(
       {Key? key, required this.label, required this.onChanged, this.value})
       : super(key: key);
@@ -99,9 +99,19 @@ class TextInputCard extends StatelessWidget {
   final String? value;
 
   @override
+  State<TextInputCard> createState() => _TextInputCardState();
+}
+
+class _TextInputCardState extends State<TextInputCard> {
+  late final TextEditingController _controller;
+  @override
+  void initState() {
+    _controller = TextEditingController(text: widget.value);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final TextEditingController _controller =
-        TextEditingController(text: value);
     return CustomCard(
       margin: const EdgeInsets.all(0),
       child: Padding(
@@ -110,7 +120,7 @@ class TextInputCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              label,
+              widget.label,
               style: Theme.of(context)
                   .textTheme
                   .headline3!
@@ -118,12 +128,12 @@ class TextInputCard extends StatelessWidget {
             ),
             TextField(
               controller: _controller,
-              onChanged: (value) => onChanged(value),
+              onChanged: (value) => widget.onChanged(value),
               cursorColor: Theme.of(context).hintColor,
               style:
                   Theme.of(context).textTheme.headline4!.copyWith(fontSize: 17),
               decoration: InputDecoration(
-                hintText: label,
+                hintText: widget.label,
                 hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 12),
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.all(0),

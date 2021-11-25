@@ -21,8 +21,10 @@ class CustomScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // resizeToAvoidBottomInset: false,
+
       // Pour que la navigation surchappe la page
-      extendBody: true,
+      // extendBody: true,
 
       // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       // floatingActionButton:

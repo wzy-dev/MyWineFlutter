@@ -20,18 +20,19 @@ class EditCellar extends StatefulWidget {
 class _EditCellarState extends State<EditCellar> {
   late String _name;
   late Cellar _cellar;
+  late final bool _isNew;
 
   @override
   void initState() {
-    _name = widget.cellar?.name ?? "Ma nouvelle cave";
-    _cellar = widget.cellar ??
-        Cellar(
-          createdAt: 0,
-          editedAt: 0,
-          id: "unknow",
-          enabled: true,
-          name: _name,
-        );
+    if (widget.cellar != null) {
+      _name = widget.cellar!.name;
+      _cellar = widget.cellar!;
+      _isNew = false;
+    } else {
+      _name = "Ma nouvelle cave";
+      _cellar = InitializerModel.initCellar(name: _name);
+      _isNew = true;
+    }
     super.initState();
   }
 
@@ -53,7 +54,10 @@ class _EditCellarState extends State<EditCellar> {
     );
   }
 
-  Future<void> _showMyDialog(context) async {
+  Future<void> _drawDeleteDialog(
+      {required BuildContext context,
+      required Function popAction,
+      required List<Position> positions}) async {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -78,21 +82,22 @@ class _EditCellarState extends State<EditCellar> {
             TextButton(
               child: const Text('Supprimer'),
               onPressed: () {
-                if (widget.cellar != null) {
-                  MyActions.deleteCellar(
-                    context: context,
-                    cellar: _cellar,
-                  ).then(
-                    (value) {
-                      Navigator.of(context, rootNavigator: true)
-                          .pushNamedAndRemoveUntil(
-                        "/cellar",
-                        (_) => false,
-                      );
-                    },
+                Navigator.of(context).pop();
+                if (!_isNew) {
+                  Future.wait(positions.map((position) =>
+                      MyActions.deletePosition(
+                          context: context, position: position))).then(
+                    (value) => MyActions.deleteCellar(
+                      context: context,
+                      cellar: _cellar,
+                    ).then(
+                      (value) {
+                        popAction();
+                      },
+                    ),
                   );
                 } else {
-                  Navigator.of(context).pop();
+                  popAction();
                 }
               },
             ),
@@ -104,6 +109,11 @@ class _EditCellarState extends State<EditCellar> {
 
   @override
   Widget build(BuildContext context) {
+    List<Position> positions = _isNew
+        ? []
+        : MyDatabase.getPositionsByCellarId(
+            context: context, cellarId: _cellar.id);
+
     return MainContainer(
       title: Text(_name),
       child: SafeArea(
@@ -142,17 +152,32 @@ class _EditCellarState extends State<EditCellar> {
                     backgroundColor: Theme.of(context).hintColor,
                     onPress: () {
                       _cellar.name = _name;
-                      return MyActions.addCellar(
-                        context: context,
-                        cellar: _cellar,
-                      ).then((value) => Navigator.of(context).pop(_cellar));
+                      _cellar.enabled = true;
+
+                      if (widget.cellar == null) {
+                        MyActions.addCellar(
+                          context: context,
+                          cellar: _cellar,
+                        ).then(
+                            (value) => Navigator.of(context).pop(_cellar.id));
+                      } else {
+                        MyActions.editCellar(
+                          context: context,
+                          cellar: _cellar,
+                        ).then(
+                            (value) => Navigator.of(context).pop(_cellar.id));
+                      }
                     },
                   ),
                   CustomFlatButton(
                     title: "Supprimer cette cave",
                     icon: Icon(Icons.delete_outline),
                     backgroundColor: Theme.of(context).colorScheme.secondary,
-                    onPress: () => _showMyDialog(context),
+                    onPress: () => _drawDeleteDialog(
+                      context: context,
+                      popAction: () => Navigator.of(context).pop(),
+                      positions: positions,
+                    ),
                   ),
                 ],
               ),

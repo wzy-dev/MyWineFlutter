@@ -33,6 +33,7 @@ export 'navigators/right_navigator.dart';
 
 // Database
 export 'mydatabase.dart';
+export 'models/initializer.dart';
 export 'models/myactions.dart';
 export 'models/provider.dart';
 export 'models/cellar/cellar.dart';

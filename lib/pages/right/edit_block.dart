@@ -4,38 +4,30 @@ import 'package:mywine/shelf.dart';
 class EditBlockArguments {
   EditBlockArguments({
     required this.cellarId,
-    this.blockId,
-    this.nbColumn,
-    this.nbLine,
-    this.horizontalAlignment,
-    this.verticalAlignment,
+    required this.x,
+    required this.y,
+    this.block,
   });
 
   final String cellarId;
-  final String? blockId;
-  final int? nbColumn;
-  final int? nbLine;
-  final String? horizontalAlignment;
-  final String? verticalAlignment;
+  final int x;
+  final int y;
+  final Block? block;
 }
 
 class EditBlock extends StatefulWidget {
   const EditBlock({
     Key? key,
     required this.cellarId,
-    this.blockId,
-    this.nbColumn,
-    this.nbLine,
-    this.horizontalAlignment,
-    this.verticalAlignment,
+    required this.x,
+    required this.y,
+    this.block,
   }) : super(key: key);
 
   final String cellarId;
-  final String? blockId;
-  final int? nbColumn;
-  final int? nbLine;
-  final String? horizontalAlignment;
-  final String? verticalAlignment;
+  final int x;
+  final int y;
+  final Block? block;
 
   @override
   State<EditBlock> createState() => _EditBlockState();
@@ -43,26 +35,102 @@ class EditBlock extends StatefulWidget {
 
 class _EditBlockState extends State<EditBlock> {
   final int _sizeCell = 40;
+  late final bool _isNew;
   late int _nbColumn;
   late int _nbLine;
   late String _horizontalAlignment;
   late String _verticalAlignment;
+  late Block _block;
 
   @override
   void initState() {
-    _nbColumn = widget.nbColumn ?? 3;
-    _nbLine = widget.nbLine ?? 4;
-    _horizontalAlignment = widget.horizontalAlignment ?? "center";
-    _verticalAlignment = widget.horizontalAlignment ?? "center";
+    if (widget.block != null) {
+      _isNew = false;
+      _nbColumn = widget.block!.nbColumn;
+      _nbLine = widget.block!.nbLine;
+      _horizontalAlignment = widget.block!.horizontalAlignment ?? "center";
+      _verticalAlignment = widget.block!.verticalAlignment ?? "center";
+    } else {
+      _isNew = true;
+      _nbColumn = 4;
+      _nbLine = 3;
+      _horizontalAlignment = "center";
+      _verticalAlignment = "center";
+    }
+
+    _block = widget.block ??
+        InitializerModel.initBlock(
+          cellar: widget.cellarId,
+          nbColumn: _nbColumn,
+          nbLine: _nbLine,
+          x: widget.x,
+          y: widget.y,
+          horizontalAlignment: _horizontalAlignment,
+          verticalAlignment: _verticalAlignment,
+        );
     super.initState();
+  }
+
+  Future<void> _drawDeleteDialog(
+      {required BuildContext context,
+      required Function popAction,
+      required List<Position> positions}) async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Voulez-vous vraiment supprimer ce casier'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: const <Widget>[
+                Text('Supprimer un casier est une action irréversible !'),
+                Text(
+                    'Tous les vins présents dans ce casier seront mis "en vrac".'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Annuler'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Supprimer'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                if (!_isNew) {
+                  Future.wait(positions.map((position) =>
+                      MyActions.deletePosition(
+                          context: context, position: position))).then(
+                    (value) => MyActions.deleteBlock(
+                      context: context,
+                      block: _block,
+                    ).then(
+                      (value) {
+                        popAction();
+                      },
+                    ),
+                  );
+                } else {
+                  popAction();
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    List<Position> positions = widget.blockId != null
-        ? MyDatabase.getPositionsByBlockId(
-            context: context, blockId: widget.blockId!)
-        : [];
+    List<Position> positions = _isNew
+        ? []
+        : MyDatabase.getPositionsByBlockId(
+            context: context, blockId: _block.id);
+
     final int _maxUsedColumn = CustomMethods.getExtremity(
             list: positions, propertyToCompare: "x")["max"] ??
         0;
@@ -71,10 +139,7 @@ class _EditBlockState extends State<EditBlock> {
         0;
 
     return MainContainer(
-      title: Text(
-          MyDatabase.getCellarById(context: context, cellarId: widget.cellarId)
-                  ?.name ??
-              "ras"),
+      title: Text("Modifier un casier"),
       child: SafeArea(
         top: false,
         child: ListView(
@@ -176,18 +241,43 @@ class _EditBlockState extends State<EditBlock> {
               padding: const EdgeInsets.only(
                   left: 15, top: 40, right: 15, bottom: 22),
               child: Column(
-                // TODO Ajouter actions
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   CustomElevatedButton(
                     title: "Valider les changements",
                     icon: Icon(Icons.save_outlined),
                     backgroundColor: Theme.of(context).hintColor,
+                    onPress: () {
+                      _block.nbColumn = _nbColumn;
+                      _block.nbLine = _nbLine;
+                      _block.x = widget.x;
+                      _block.y = widget.y;
+                      _block.horizontalAlignment = _horizontalAlignment;
+                      _block.verticalAlignment = _verticalAlignment;
+                      _block.enabled = true;
+
+                      if (_isNew) {
+                        MyActions.addBlock(
+                          context: context,
+                          block: _block,
+                        ).then((value) => Navigator.of(context).pop());
+                      } else {
+                        MyActions.editBlock(
+                          context: context,
+                          block: _block,
+                        ).then((value) => Navigator.of(context).pop());
+                      }
+                    },
                   ),
                   CustomFlatButton(
                     title: "Supprimer ce casier",
                     icon: Icon(Icons.delete_outline),
                     backgroundColor: Theme.of(context).colorScheme.secondary,
+                    onPress: () => _drawDeleteDialog(
+                      context: context,
+                      popAction: () => Navigator.of(context).pop(),
+                      positions: positions,
+                    ),
                   ),
                 ],
               ),
@@ -254,7 +344,7 @@ class _EditBlockState extends State<EditBlock> {
                     width: _nbColumn.toDouble() * sizeCell,
                     height: _nbLine.toDouble() * sizeCell,
                     child: DrawBlock(
-                      blockId: widget.blockId,
+                      blockId: _isNew ? null : widget.block!.id,
                       nbColumn: _nbColumn,
                       nbLine: _nbLine,
                     ),

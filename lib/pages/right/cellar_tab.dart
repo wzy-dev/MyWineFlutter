@@ -56,8 +56,11 @@ class _CellarTabState extends State<CellarTab> {
   }
 
   Future _drawSelectCellarBottomSheet() {
-    return showBarModalBottomSheet(
+    return showCupertinoModalBottomSheet(
       context: context,
+      useRootNavigator: true,
+      backgroundColor: Colors.white,
+      barrierColor: Color.fromRGBO(0, 0, 0, 0.8),
       builder: (BuildContext context) => SafeArea(
         child: SingleChildScrollView(
           controller: ModalScrollController.of(context),
@@ -68,6 +71,7 @@ class _CellarTabState extends State<CellarTab> {
                 return Column(
                   children: [
                     Material(
+                      color: Colors.transparent,
                       child: InkWell(
                         onTap: () {
                           setState(() {
@@ -81,9 +85,26 @@ class _CellarTabState extends State<CellarTab> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                e.name,
-                                style: Theme.of(context).textTheme.headline2,
+                              Row(
+                                children: [
+                                  Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 14.0),
+                                      child: Icon(
+                                        _activeCellar != null &&
+                                                e.id == _activeCellar!.id
+                                            ? Icons
+                                                .radio_button_checked_outlined
+                                            : Icons
+                                                .radio_button_unchecked_outlined,
+                                        color: Theme.of(context).primaryColor,
+                                      )),
+                                  Text(
+                                    e.name,
+                                    style:
+                                        Theme.of(context).textTheme.headline2,
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -97,21 +118,9 @@ class _CellarTabState extends State<CellarTab> {
               Container(
                 width: double.infinity,
                 child: Material(
+                  color: Colors.transparent,
                   child: InkWell(
-                    onTap: () async {
-                      Cellar? newCellar = await Navigator.of(context).pushNamed(
-                        "/edit/cellar",
-                        arguments: EditCellarArguments(),
-                      ) as Cellar?;
-
-                      if (newCellar != null) {
-                        setState(() {
-                          _activeCellar = newCellar;
-                        });
-                      }
-
-                      Navigator.of(context).pop();
-                    },
+                    onTap: () => _createNewCellar(),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 8),
@@ -132,6 +141,21 @@ class _CellarTabState extends State<CellarTab> {
         ),
       ),
     );
+  }
+
+  void _createNewCellar() async {
+    Navigator.of(context, rootNavigator: true).pop();
+
+    String? newCellarId = await Navigator.of(context).pushNamed(
+      "/edit/cellar",
+      arguments: EditCellarArguments(),
+    ) as String?;
+
+    if (newCellarId != null) {
+      setState(() {
+        _activeCellarId = newCellarId;
+      });
+    }
   }
 
   @override
@@ -155,7 +179,7 @@ class _CellarTabState extends State<CellarTab> {
     }
 
     if (_activeCellar == null && _cellars.length > 0) {
-      _activeCellar = _cellars[0];
+      _activeCellar = _cellars.first;
     }
 
     return MainContainer(
@@ -167,17 +191,43 @@ class _CellarTabState extends State<CellarTab> {
               padding: const EdgeInsets.only(right: 8.0, top: 2),
               child: Icon(Icons.keyboard_arrow_down_outlined),
             ),
-            Text(_activeCellar != null ? _activeCellar!.name : ""),
+            Expanded(
+              child: Text(
+                _activeCellar != null ? _activeCellar!.name : "Créer ma cave",
+                overflow: TextOverflow.fade,
+              ),
+            ),
           ],
         ),
       ),
-      action: InkWell(
-        child: Text("Modifier"),
-        onTap: _activeCellar != null
-            ? () => Navigator.of(context).pushNamed("/edit/cellar",
-                arguments: EditCellarArguments(cellar: _activeCellar!))
-            : null,
-      ),
+      action: _cellars.length > 0
+          ? InkWell(
+              onTap: _activeCellar != null
+                  ? () => Navigator.of(context).pushNamed("/edit/cellar",
+                      arguments: EditCellarArguments(cellar: _activeCellar!))
+                  : null,
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    right: 20,
+                    top: 8,
+                    bottom: 8,
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Icon(Icons.construction_outlined),
+                      SizedBox(width: 4),
+                      Text("Modifier",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600)),
+                    ],
+                  ),
+                ),
+              ),
+            )
+          : Container(),
       child: SafeArea(
         top: false,
         child: ListView(

@@ -25,46 +25,19 @@ class _AddDomainState extends State<AddDomain> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
                 children: [
-                  CustomCard(
-                    margin: const EdgeInsets.all(0),
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                          left: 20, top: 20, right: 20, bottom: 5),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Nom du domaine",
-                            style: Theme.of(context)
-                                .textTheme
-                                .headline3!
-                                .copyWith(fontWeight: FontWeight.bold),
-                          ),
-                          TextField(
-                            autofocus: true,
-                            onChanged: (value) => setState(() => _name = value),
-                            cursorColor: Theme.of(context).hintColor,
-                            style: Theme.of(context)
-                                .textTheme
-                                .headline4!
-                                .copyWith(fontSize: 17),
-                            decoration: InputDecoration(
-                              hintText: "Nom du domaine",
-                              hintStyle: TextStyle(
-                                  color: Colors.grey.shade500, fontSize: 12),
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.all(0),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                  TextInputCard(
+                    label: "Nom du domaine",
+                    value: _name,
+                    onChanged: (value) => _name = value,
                   ),
                   SizedBox(height: 60),
                 ],
               ),
               Positioned(
                 bottom: 30,
+                // (MediaQuery.of(context).viewInsets.bottom > 200
+                //     ? MediaQuery.of(context).viewInsets.bottom - 30
+                //     : 30),
                 right: 30,
                 child: CustomElevatedButton(
                   icon: Icon(Icons.save_outlined),
@@ -73,15 +46,11 @@ class _AddDomainState extends State<AddDomain> {
                   dense: true,
                   backgroundColor: Theme.of(context).colorScheme.secondary,
                   onPress: () {
+                    Domain domain = InitializerModel.initDomain(name: _name);
+                    domain.enabled = true;
                     MyActions.addDomain(
                       context: context,
-                      domain: Domain(
-                        id: "yolo${DateTime.now().toUtc().millisecondsSinceEpoch.toInt()}",
-                        editedAt: 1636707748293,
-                        createdAt: 1636707748293,
-                        enabled: true,
-                        name: _name,
-                      ),
+                      domain: domain,
                     ).then((value) => Navigator.of(context).pop(_name));
                   },
                 ),

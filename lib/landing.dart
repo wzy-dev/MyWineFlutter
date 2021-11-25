@@ -77,167 +77,185 @@ class _LandingState extends State<Landing> {
                 ),
               ),
               body: SafeArea(
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: AutofillGroup(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Center(
+                        child: ScrollConfiguration(
+                          behavior: ScrollBehavior(),
+                          child: ListView(
+                            shrinkWrap: true,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 10),
                             children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 50),
-                                child: FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  child: Container(
-                                    constraints: BoxConstraints(
-                                        minWidth: 1, minHeight: 1),
-                                    child: SvgPicture.asset(
-                                      "assets/svg/logo_expanded.svg",
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 30),
-                              CustomTextField(
-                                context: context,
-                                onChange: (value) => setState(() {
-                                  _username = value;
-                                }),
-                                placeholder: "Adresse email",
-                                icon: Icons.mail_outline,
-                                autofill: [AutofillHints.email],
-                              ),
-                              SizedBox(height: 10),
-                              CustomTextField(
-                                context: context,
-                                onChange: (value) => setState(() {
-                                  _password = value;
-                                }),
-                                placeholder: "Mot de passe",
-                                icon: Icons.lock_outline,
-                                hidden: true,
-                                autofill: [AutofillHints.password],
-                              ),
-                              SizedBox(height: 10),
-                              Container(
-                                width: double.infinity,
-                                height: 50,
-                                child: ElevatedButton(
-                                  onPressed: () => FirebaseAuth.instance
-                                      .signInWithEmailAndPassword(
-                                          email: _username ?? "",
-                                          password: _password ?? ""),
-                                  child: Center(
-                                    child: Text(
-                                      "ME CONNECTER",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                  style: ButtonStyle(
-                                    padding:
-                                        MaterialStateProperty.all<EdgeInsets>(
-                                      EdgeInsets.all(8),
-                                    ),
-                                    alignment: Alignment.centerLeft,
-                                    backgroundColor:
-                                        MaterialStateProperty.all<Color>(
-                                      Theme.of(context).colorScheme.secondary,
-                                    ),
-                                    foregroundColor:
-                                        MaterialStateProperty.all<Color>(
-                                            Colors.white),
-                                    shape: MaterialStateProperty.all<
-                                        RoundedRectangleBorder>(
-                                      RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 10),
-                              Container(
-                                width: double.infinity,
-                                height: 50,
-                                child: ElevatedButton(
-                                  onPressed: () => print("signup"),
-                                  child: Center(
-                                    child: Text(
-                                      "M'INSCRIRE",
-                                      style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .secondary,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                  style: ButtonStyle(
-                                    padding:
-                                        MaterialStateProperty.all<EdgeInsets>(
-                                      EdgeInsets.all(8),
-                                    ),
-                                    alignment: Alignment.centerLeft,
-                                    backgroundColor:
-                                        MaterialStateProperty.all<Color>(
-                                            Colors.white),
-                                    foregroundColor:
-                                        MaterialStateProperty.all<Color>(
-                                            Colors.white),
-                                    shape: MaterialStateProperty.all<
-                                        RoundedRectangleBorder>(
-                                      RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        side: BorderSide(
-                                          width: 1.2,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondary,
+                              AutofillGroup(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 50),
+                                      child: FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        child: Container(
+                                          constraints: BoxConstraints(
+                                              minWidth: 1, minHeight: 1),
+                                          child: SvgPicture.asset(
+                                            "assets/svg/logo_expanded.svg",
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(20),
-                                child: Text(
-                                  "Ou",
-                                  style: TextStyle(color: Colors.black54),
-                                ),
-                              ),
-                              Container(
-                                width: double.infinity,
-                                height: 50,
-                                child: CustomElevatedButton(
-                                  onPress: () =>
-                                      signInWithGoogle(context: context),
-                                  title: "Me connecter avec Google",
-                                  textColor: Colors.black54,
-                                  backgroundColor: Colors.white,
-                                  icon:
-                                      SvgPicture.asset('assets/svg/google.svg'),
+                                    SizedBox(height: 30),
+                                    CustomTextField(
+                                      context: context,
+                                      onChange: (value) => setState(() {
+                                        _username = value;
+                                      }),
+                                      placeholder: "Adresse email",
+                                      icon: Icons.mail_outline,
+                                      autofill: [AutofillHints.email],
+                                    ),
+                                    SizedBox(height: 10),
+                                    CustomTextField(
+                                      context: context,
+                                      onChange: (value) => setState(() {
+                                        _password = value;
+                                      }),
+                                      placeholder: "Mot de passe",
+                                      icon: Icons.lock_outline,
+                                      hidden: true,
+                                      autofill: [AutofillHints.password],
+                                    ),
+                                    SizedBox(height: 10),
+                                    Container(
+                                      width: double.infinity,
+                                      height: 50,
+                                      child: ElevatedButton(
+                                        onPressed: () => FirebaseAuth.instance
+                                            .signInWithEmailAndPassword(
+                                                email: _username ?? "",
+                                                password: _password ?? ""),
+                                        child: Center(
+                                          child: Text(
+                                            "ME CONNECTER",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                        style: ButtonStyle(
+                                          padding: MaterialStateProperty.all<
+                                              EdgeInsets>(
+                                            EdgeInsets.all(8),
+                                          ),
+                                          alignment: Alignment.centerLeft,
+                                          backgroundColor:
+                                              MaterialStateProperty.all<Color>(
+                                            Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
+                                          ),
+                                          foregroundColor:
+                                              MaterialStateProperty.all<Color>(
+                                                  Colors.white),
+                                          shape: MaterialStateProperty.all<
+                                              RoundedRectangleBorder>(
+                                            RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(height: 10),
+                                    Container(
+                                      width: double.infinity,
+                                      height: 50,
+                                      child: ElevatedButton(
+                                        onPressed: () => print("signup"),
+                                        child: Center(
+                                          child: Text(
+                                            "M'INSCRIRE",
+                                            style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .secondary,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                        style: ButtonStyle(
+                                          padding: MaterialStateProperty.all<
+                                              EdgeInsets>(
+                                            EdgeInsets.all(8),
+                                          ),
+                                          alignment: Alignment.centerLeft,
+                                          backgroundColor:
+                                              MaterialStateProperty.all<Color>(
+                                                  Colors.white),
+                                          foregroundColor:
+                                              MaterialStateProperty.all<Color>(
+                                                  Colors.white),
+                                          shape: MaterialStateProperty.all<
+                                              RoundedRectangleBorder>(
+                                            RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              side: BorderSide(
+                                                width: 1.2,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .secondary,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(20),
+                                      child: Text(
+                                        "Ou",
+                                        style: TextStyle(color: Colors.black54),
+                                      ),
+                                    ),
+                                    Container(
+                                      width: double.infinity,
+                                      height: 50,
+                                      child: CustomElevatedButton(
+                                        onPress: () =>
+                                            signInWithGoogle(context: context),
+                                        title: "Me connecter avec Google",
+                                        textColor: Colors.black54,
+                                        backgroundColor: Colors.white,
+                                        icon: SvgPicture.asset(
+                                            'assets/svg/google.svg'),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
                         ),
                       ),
-                      TextButton(
-                        onPressed: () =>
-                            FirebaseAuth.instance.signInAnonymously(),
-                        child: Text("Commencer sans compte..."),
-                      ),
-                    ],
-                  ),
+                    ),
+                    MediaQuery.of(context).viewInsets.bottom <= 200
+                        ? Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 10),
+                            child: TextButton(
+                              onPressed: () =>
+                                  FirebaseAuth.instance.signInAnonymously(),
+                              child: Text("Commencer sans compte..."),
+                            ),
+                          )
+                        : Container(),
+                  ],
                 ),
               ),
             );

@@ -25,40 +25,10 @@ class _AddCountryState extends State<AddCountry> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
                 children: [
-                  CustomCard(
-                    margin: const EdgeInsets.all(0),
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                          left: 20, top: 20, right: 20, bottom: 5),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Nom du pays",
-                            style: Theme.of(context)
-                                .textTheme
-                                .headline3!
-                                .copyWith(fontWeight: FontWeight.bold),
-                          ),
-                          TextField(
-                            autofocus: true,
-                            onChanged: (value) => setState(() => _name = value),
-                            cursorColor: Theme.of(context).hintColor,
-                            style: Theme.of(context)
-                                .textTheme
-                                .headline4!
-                                .copyWith(fontSize: 17),
-                            decoration: InputDecoration(
-                              hintText: "Nom du pays",
-                              hintStyle: TextStyle(
-                                  color: Colors.grey.shade500, fontSize: 12),
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.all(0),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                  TextInputCard(
+                    label: "Nom du pays",
+                    value: _name,
+                    onChanged: (value) => _name = value,
                   ),
                   SizedBox(height: 60),
                 ],
@@ -73,15 +43,11 @@ class _AddCountryState extends State<AddCountry> {
                   dense: true,
                   backgroundColor: Theme.of(context).colorScheme.secondary,
                   onPress: () {
+                    Country country = InitializerModel.initCountry(name: _name);
+                    country.enabled = true;
                     MyActions.addCountry(
                       context: context,
-                      country: Country(
-                        id: "yolo${DateTime.now().toUtc().millisecondsSinceEpoch.toInt()}",
-                        editedAt: 1636707748293,
-                        createdAt: 1636707748293,
-                        enabled: true,
-                        name: _name,
-                      ),
+                      country: country,
                     ).then((value) => Navigator.of(context).pop(_name));
                   },
                 ),

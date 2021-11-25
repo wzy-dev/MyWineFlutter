@@ -81,6 +81,8 @@ class DrawCellar extends StatelessWidget {
                           "/edit/block",
                           arguments: EditBlockArguments(
                             cellarId: cellarId,
+                            x: x,
+                            y: y,
                           ),
                         ),
                         child: Padding(
@@ -132,12 +134,15 @@ class DrawCellar extends StatelessWidget {
                               context,
                               "/edit/block",
                               arguments: EditBlockArguments(
-                                nbColumn: _drawBlock.nbColumn,
-                                nbLine: _drawBlock.nbLine,
+                                block: cell,
+                                x: x,
+                                y: y,
+                                // nbColumn: _drawBlock.nbColumn,
+                                // nbLine: _drawBlock.nbLine,
                                 cellarId: cellarId,
-                                blockId: _drawBlock.blockId,
-                                horizontalAlignment: cell.horizontalAlignment,
-                                verticalAlignment: cell.horizontalAlignment,
+                                // blockId: _drawBlock.blockId,
+                                // horizontalAlignment: cell.horizontalAlignment,
+                                // verticalAlignment: cell.horizontalAlignment,
                               ),
                             )
                           : Navigator.pushNamed(

@@ -30,11 +30,9 @@ class RightNavigator extends StatelessWidget {
         EditBlockArguments args = settings.arguments as EditBlockArguments;
         return EditBlock(
           cellarId: args.cellarId,
-          blockId: args.blockId,
-          nbColumn: args.nbColumn,
-          nbLine: args.nbLine,
-          horizontalAlignment: args.horizontalAlignment,
-          verticalAlignment: args.verticalAlignment,
+          x: args.x,
+          y: args.y,
+          block: args.block,
         );
       default:
         return CellarTab();

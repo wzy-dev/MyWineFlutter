@@ -130,23 +130,36 @@ class _DrawBlockState extends State<DrawBlock> {
                 : (isSelected ? Theme.of(context).primaryColor : _circleColor),
           ),
           child: Container(
-            color: widget.searchedWine == null
-                ? null
-                : widget.searchedWine!.id == wineId
-                    ? null
-                    : Color.fromRGBO(0, 0, 0, 0.4),
-            child: AnimatedOpacity(
-              duration: Duration(milliseconds: 300),
-              opacity: isSelected ? 1 : 0,
-              child: Icon(
-                (_stockMultipleInEmpty
-                    ? Icons.done_all_outlined
-                    : Icons.check_outlined),
-                color: Colors.white,
-                size: (widget.onPress == null ? 11 : 24),
-              ),
-            ),
-          ),
+              color: widget.searchedWine == null
+                  ? null
+                  : widget.searchedWine!.id == wineId
+                      ? null
+                      : Color.fromRGBO(0, 0, 0, 0.5),
+              child: AnimatedOpacity(
+                duration: Duration(milliseconds: 300),
+                opacity: (widget.searchedWine != null &&
+                            widget.searchedWine!.id == wineId) ||
+                        isSelected
+                    ? 1
+                    : 0,
+                child: Icon(
+                  (isSelected
+                      ? _stockMultipleInEmpty
+                          ? Icons.done_all_outlined
+                          : Icons.check_outlined
+                      : widget.searchedWine != null &&
+                              widget.searchedWine!.id == wineId
+                          ? Icons.location_searching_outlined
+                          : null),
+                  color: Colors.white,
+                  size: (widget.onPress == null
+                      ? (widget.searchedWine != null &&
+                              widget.searchedWine!.id == wineId
+                          ? 7
+                          : 11)
+                      : 24),
+                ),
+              )),
         ),
       ),
     );
