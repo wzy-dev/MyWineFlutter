@@ -102,8 +102,10 @@ class RootNavigator {
             settings.arguments as StockCellarArguments;
 
         return CustomRouteBuilders(
-          widget: StockCellar(
-            toStockWine: arguments.toStockWine,
+          widget: Scaffold(
+            body: StockCellar(
+              toStockWine: arguments.toStockWine,
+            ),
           ),
         );
       case "/stock/block":
@@ -111,9 +113,79 @@ class RootNavigator {
             settings.arguments as StockBlockArguments;
 
         return CustomRouteBuilders(
-          widget: StockBlock(
-            arguments: arguments,
-            stockAddonForCellar: arguments.stockAddonForCellar,
+          widget: Scaffold(
+            body: StockBlock(
+              arguments: arguments,
+              stockAddonForCellar: arguments.stockAddonForCellar,
+            ),
+          ),
+        );
+      case "/add/wine/appellation":
+        AddWineAppellationArguments? args =
+            settings.arguments as AddWineAppellationArguments?;
+        return CustomRouteBuilders(
+          widget: Scaffold(
+            body: AddWineAppellation(
+              selectedRadio: args?.selectedRadio ?? null,
+              addPath: args?.addPath ?? null,
+            ),
+          ),
+        );
+      case "/add/wine/domain":
+        AddWineDomainArguments? args =
+            settings.arguments as AddWineDomainArguments?;
+        return CustomRouteBuilders(
+          widget: Scaffold(
+            body: AddWineDomain(
+              selectedRadio: args?.selectedRadio ?? null,
+              addPath: args?.addPath ?? null,
+            ),
+          ),
+        );
+      case "/add/domain":
+        return CustomRouteBuilders(
+          widget: Scaffold(
+            body: AddDomain(),
+          ),
+        );
+      case "/add/appellation":
+        return CustomRouteBuilders(
+          widget: Scaffold(
+            body: AddAppellation(),
+          ),
+        );
+      case "/add/appellation/region":
+        AddAppellationRegionArguments? args =
+            settings.arguments as AddAppellationRegionArguments?;
+        return CustomRouteBuilders(
+          widget: Scaffold(
+            body: AddAppellationRegion(
+              selectedRadio: args?.selectedRadio ?? null,
+              addPath: args?.addPath ?? null,
+            ),
+          ),
+        );
+      case "/add/region":
+        return CustomRouteBuilders(
+          widget: Scaffold(
+            body: AddRegion(),
+          ),
+        );
+      case "/add/region/country":
+        AddRegionCountryArguments? args =
+            settings.arguments as AddRegionCountryArguments?;
+        return CustomRouteBuilders(
+          widget: Scaffold(
+            body: AddRegionCountry(
+              selectedRadio: args?.selectedRadio ?? null,
+              addPath: args?.addPath ?? null,
+            ),
+          ),
+        );
+      case "/add/country":
+        return CustomRouteBuilders(
+          widget: Scaffold(
+            body: AddCountry(),
           ),
         );
       default:

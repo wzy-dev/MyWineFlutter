@@ -1,8 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:mywine/models/model_methods.dart';
 import 'package:mywine/shelf.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -57,15 +54,37 @@ class _SearchTabState extends State<SearchTab> {
           "assets/svg/logo.svg",
           width: 110,
         ),
-        action: InkWell(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-              child: Icon(Icons.logout_outlined),
+        action: Container(
+          height: 30,
+          width: 30,
+          margin: const EdgeInsets.only(right: 10),
+          child: InkWell(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.secondary,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    spreadRadius: 2,
+                    color: Theme.of(context).colorScheme.primary,
+                    offset: Offset(0, 0),
+                    blurRadius: 7,
+                  )
+                ],
+              ),
+              child: IconButton(
+                padding: const EdgeInsets.all(0),
+                onPressed: () => Navigator.of(context).pushNamed("/profile"),
+                iconSize: 27,
+                icon: Icon(
+                  Icons.account_circle_outlined,
+                  size: 27,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
             ),
-            onTap: () => FirebaseAuth.instance.signOut().then((value) {
-                  GoogleSignIn().signOut();
-                  ModelMethods.initDb(drop: true);
-                })),
+          ),
+        ),
         child: Column(
           children: [
             Padding(

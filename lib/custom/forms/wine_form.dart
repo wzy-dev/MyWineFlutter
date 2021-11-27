@@ -144,6 +144,7 @@ class _WineFormState extends State<WineForm> {
     if (selectedAppellation == null) return;
 
     setState(() {
+      _appellation = null;
       _appellationName = selectedAppellation;
     });
   }

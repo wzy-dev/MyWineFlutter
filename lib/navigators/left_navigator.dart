@@ -19,6 +19,8 @@ class LeftNavigator extends StatelessWidget {
     switch (route) {
       case "/":
         return SearchTab(focusNode: focusNode);
+      case "/profile":
+        return Profile();
       default:
         return SearchTab(focusNode: focusNode);
     }

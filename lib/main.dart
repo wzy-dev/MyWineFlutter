@@ -16,7 +16,7 @@ void main() {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     systemNavigationBarColor: Colors.white,
-    systemNavigationBarContrastEnforced: true,
+    // systemNavigationBarContrastEnforced: true,
     systemNavigationBarIconBrightness: Brightness.dark,
   ));
   SystemChrome.setPreferredOrientations([
