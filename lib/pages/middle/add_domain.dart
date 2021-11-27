@@ -28,16 +28,13 @@ class _AddDomainState extends State<AddDomain> {
                   TextInputCard(
                     label: "Nom du domaine",
                     value: _name,
-                    onChanged: (value) => _name = value,
+                    onChanged: (value) => setState(() => _name = value),
                   ),
                   SizedBox(height: 60),
                 ],
               ),
               Positioned(
                 bottom: 30,
-                // (MediaQuery.of(context).viewInsets.bottom > 200
-                //     ? MediaQuery.of(context).viewInsets.bottom - 30
-                //     : 30),
                 right: 30,
                 child: CustomElevatedButton(
                   icon: Icon(Icons.save_outlined),

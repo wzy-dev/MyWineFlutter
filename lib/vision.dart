@@ -144,7 +144,8 @@ class Vision {
       List<Appellation> appellations;
       Domain? domain;
 
-      if ((resultsAppellation[0]["slug"] == 'bordeaux' ||
+      if (resultsAppellation.length > 1 &&
+          (resultsAppellation[0]["slug"] == 'bordeaux' ||
               resultsAppellation[0]["slug"] == 'alsace') &&
           resultsAppellation[1]["score"] < 0.2) {
         if (resultsAppellation[0]["slug"] != resultsAppellation[1]["slug"]) {

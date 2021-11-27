@@ -35,7 +35,8 @@ class _AddTabState extends State<AddTab> with WidgetsBindingObserver {
   Directory? cacheDirectory;
   Directory? cacheResizedDirectory;
   AppLifecycleState? _notification;
-  late bool _isActive;
+  bool _isActive = true;
+  bool _isInRoot = true;
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -52,7 +53,6 @@ class _AddTabState extends State<AddTab> with WidgetsBindingObserver {
 
   @override
   void initState() {
-    _isActive = true;
     _setDirectory();
     WidgetsBinding.instance!.addObserver(this);
 
@@ -68,8 +68,6 @@ class _AddTabState extends State<AddTab> with WidgetsBindingObserver {
   void _onPermissionsResult() async {
     PermissionStatus statusCamera = await Permission.camera.status;
     PermissionStatus statusStorage = await Permission.storage.status;
-    // if (_permissionEnabled == false) return;
-    // await Permission.camera.request();
 
     if ((statusCamera.isDenied ||
             statusCamera.isPermanentlyDenied ||
@@ -130,20 +128,19 @@ class _AddTabState extends State<AddTab> with WidgetsBindingObserver {
         List<vision.AnnotateImageResponse> ocr = response.toJson()["responses"];
 
         ocr.forEach((anot) async {
-          // List<vision.EntityAnnotation>? list = anot.textAnnotations;
           vision.TextAnnotation? list = anot.fullTextAnnotation;
+
           if (list != null) {
-            // ResultSearchVision? resultSearchVision = Vision.takePicture(context: context, ocr: list);
             ResultSearchVision? resultSearchVision =
                 Vision.takePicture(context: context, ocr: list);
             if (resultSearchVision != null) {
               setState(() {
-                _isActive = false;
+                _isInRoot = false;
               });
               await Navigator.of(context)
                   .pushNamed("/add/wine", arguments: resultSearchVision);
               setState(() {
-                _isActive = true;
+                _isInRoot = true;
               });
             }
           }
@@ -243,7 +240,14 @@ class _AddTabState extends State<AddTab> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    // _isActive = widget.isActive;
+    if (!widget.isActive || !_isInRoot) _isActive = false;
+    if (widget.isActive && !_isActive && !_cameraIsVisible && _isInRoot)
+      _isActive = true;
+
+    if (!_isActive) {
+      _cameraIsVisible = false;
+      _searchLoading = false;
+    }
 
     _viewportHeight = MediaQuery.of(context).size.height;
     _viewportWidth = MediaQuery.of(context).size.width;
@@ -257,7 +261,7 @@ class _AddTabState extends State<AddTab> with WidgetsBindingObserver {
       hideAppBar: true,
       child: SafeArea(
         top: false,
-        child: _isActive && widget.isActive
+        child: _isActive
             ? Container(
                 height: _viewportHeight - 190,
                 width: _viewportWidth,
@@ -433,12 +437,12 @@ class _AddTabState extends State<AddTab> with WidgetsBindingObserver {
                                     title: "Ajouter manuellement",
                                     onPress: () async {
                                       setState(() {
-                                        _isActive = false;
+                                        _isInRoot = false;
                                       });
                                       await Navigator.of(context)
                                           .pushNamed("/add/wine");
                                       setState(() {
-                                        _isActive = true;
+                                        _isInRoot = true;
                                       });
                                     }),
                               ],

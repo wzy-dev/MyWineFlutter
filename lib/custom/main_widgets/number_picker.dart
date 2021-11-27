@@ -66,7 +66,6 @@ class _CustomNumberPickerState extends State<CustomNumberPicker> {
               onTap: () {
                 widget.onChange(i + widget.minValue);
                 _pageController.jumpToPage(i);
-                print('j');
               },
               child: Transform.scale(
                 scale: isSelected ? 1 : 0.7,

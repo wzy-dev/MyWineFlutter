@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,6 +18,10 @@ class Landing extends StatefulWidget {
 }
 
 class _LandingState extends State<Landing> {
+  String? _errorPassword;
+  String? _errorEmail;
+  String? _successPassword;
+
   static Future<User?> signInWithGoogle({required BuildContext context}) async {
     FirebaseAuth auth = FirebaseAuth.instance;
     User? user;
@@ -51,6 +57,198 @@ class _LandingState extends State<Landing> {
     }
 
     return user;
+  }
+
+  bool _tooManyMail = false;
+
+  void _sendConfirmation(User user) {
+    user.sendEmailVerification().then((e) {
+      setState(() => _tooManyMail = false);
+    }).catchError((error) {
+      if (error.code == 'too-many-requests') {
+        setState(() => _tooManyMail = true);
+      }
+    });
+  }
+
+  void _checkIfVerified() {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) return;
+
+    user.sendEmailVerification();
+
+    Timer.periodic(Duration(seconds: 3), (timer) {
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user == null) timer.cancel();
+
+      user!.reload().then((value) {
+        User? refreshUser = FirebaseAuth.instance.currentUser;
+        if (refreshUser != null && refreshUser.emailVerified) {
+          FirebaseAuth.instance.signOut().then((value) => FirebaseAuth.instance
+              .signInWithEmailAndPassword(
+                  email: _username ?? "", password: _password ?? "")
+              .then((value) => timer.cancel()));
+        }
+      });
+    });
+  }
+
+  void _signInWithEmail() {
+    bool hasError = _checkIfError();
+
+    if (hasError) return;
+
+    FirebaseAuth.instance
+        .signInWithEmailAndPassword(
+            email: _username ?? "", password: _password ?? "")
+        .then((value) {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null && !user.emailVerified) _checkIfVerified();
+    }).catchError((error) {
+      switch (error.code) {
+        case 'wrong-password':
+          setState(() => _errorPassword = 'Votre mot de passe est incorrect');
+          break;
+        case 'user-not-found':
+          setState(() => _errorEmail = 'Cette adresse email est inconnue');
+          break;
+        case 'invalid-email':
+          setState(
+              () => _errorEmail = 'Veuillez donner une adresse email correcte');
+          break;
+        default:
+          setState(() => _errorPassword = 'Une erreur est survenue');
+      }
+    });
+  }
+
+  void _resetPassword() {
+    bool hasError = false;
+
+    if (_username == null || _username!.length == 0) {
+      setState(() {
+        _errorEmail = "L'adresse email ne peut pas être nulle";
+      });
+      hasError = true;
+    } else {
+      RegExp checkEmail = RegExp(
+          r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
+
+      if (!checkEmail.hasMatch(_username!)) {
+        setState(() {
+          _errorEmail = "L'adresse email n'est pas valide";
+        });
+        hasError = true;
+      } else {
+        setState(() {
+          _errorEmail = null;
+        });
+      }
+    }
+
+    if (hasError) return;
+
+    FirebaseAuth.instance
+        .sendPasswordResetEmail(email: _username!)
+        .then((value) => setState(() => _successPassword =
+            "Un email a été envoyé à cette adresse pour réinitialiser votre mot de passe"))
+        .catchError((error) {
+      switch (error.code) {
+        case 'user-not-found':
+          setState(() {
+            _errorEmail = "Cette adresse email est inconnue";
+          });
+          break;
+        case 'invalid-email':
+          setState(() {
+            _errorEmail = "Cette adresse email est incorrecte";
+          });
+          break;
+        case 'too-many-requests':
+          setState(() {
+            _errorPassword =
+                "Veuillez patienter avant de demander un nouveau mail";
+          });
+          break;
+        default:
+          setState(() {
+            _errorEmail = "Une erreur est survenue";
+          });
+      }
+    });
+  }
+
+  void _createNewUser() {
+    bool hasError = _checkIfError();
+
+    if (hasError) return;
+
+    FirebaseAuth.instance
+        .createUserWithEmailAndPassword(
+          email: _username ?? "",
+          password: _password ?? "",
+        )
+        .then((value) => _checkIfVerified())
+        .catchError((error) {
+      switch (error.code) {
+        case 'weak-password':
+          setState(() =>
+              _errorPassword = 'Votre mot de passe n\'est pas assez sécurisé');
+          break;
+        case 'email-already-in-use':
+          setState(() => _errorEmail =
+              'Vous possédez déjà un compte avec cette adresse email');
+          break;
+        default:
+          setState(() => _errorPassword = 'Une erreur est survenue');
+      }
+    });
+  }
+
+  bool _checkIfError() {
+    bool hasError = false;
+
+    if (_username == null || _username!.length == 0) {
+      setState(() {
+        _errorEmail = "L'adresse email ne peut pas être nulle";
+      });
+      hasError = true;
+    } else {
+      RegExp checkEmail = RegExp(
+          r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
+
+      if (!checkEmail.hasMatch(_username!)) {
+        setState(() {
+          _errorEmail = "L'adresse email n'est pas valide";
+        });
+        hasError = true;
+      } else {
+        setState(() {
+          _errorEmail = null;
+        });
+      }
+    }
+    if (_password == null || _password!.length == 0) {
+      setState(() {
+        _errorPassword = "Le mot de passe ne peut pas être nul";
+      });
+      hasError = true;
+    } else {
+      if (_password!.length < 6) {
+        setState(() {
+          _errorPassword = "Le mot de passe doit faire plus de 6 charactères";
+        });
+        hasError = true;
+      } else {
+        setState(() {
+          _errorPassword = null;
+        });
+      }
+    }
+
+    return hasError;
   }
 
   Stream<User?> _streamUser = FirebaseAuth.instance.authStateChanges();
@@ -117,6 +315,9 @@ class _LandingState extends State<Landing> {
                                       icon: Icons.mail_outline,
                                       autofill: [AutofillHints.email],
                                     ),
+                                    _errorEmail != null
+                                        ? ErrorLine(string: _errorEmail!)
+                                        : Container(),
                                     SizedBox(height: 10),
                                     CustomTextField(
                                       context: context,
@@ -126,17 +327,23 @@ class _LandingState extends State<Landing> {
                                       placeholder: "Mot de passe",
                                       icon: Icons.lock_outline,
                                       hidden: true,
-                                      autofill: [AutofillHints.password],
+                                      autofill: [
+                                        AutofillHints.password,
+                                        AutofillHints.newPassword
+                                      ],
                                     ),
+                                    _errorPassword != null
+                                        ? ErrorLine(string: _errorPassword!)
+                                        : Container(),
+                                    _successPassword != null
+                                        ? SuccessLine(string: _successPassword!)
+                                        : Container(),
                                     SizedBox(height: 10),
                                     Container(
                                       width: double.infinity,
                                       height: 50,
                                       child: ElevatedButton(
-                                        onPressed: () => FirebaseAuth.instance
-                                            .signInWithEmailAndPassword(
-                                                email: _username ?? "",
-                                                password: _password ?? ""),
+                                        onPressed: () => _signInWithEmail(),
                                         child: Center(
                                           child: Text(
                                             "ME CONNECTER",
@@ -175,8 +382,8 @@ class _LandingState extends State<Landing> {
                                     Container(
                                       width: double.infinity,
                                       height: 50,
-                                      child: ElevatedButton(
-                                        onPressed: () => print("signup"),
+                                      child: TextButton(
+                                        onPressed: () => _createNewUser(),
                                         child: Center(
                                           child: Text(
                                             "M'INSCRIRE",
@@ -216,8 +423,17 @@ class _LandingState extends State<Landing> {
                                         ),
                                       ),
                                     ),
+                                    TextButton(
+                                      onPressed: () => _resetPassword(),
+                                      child: Text(
+                                        "J'ai oublié mon mot de passe",
+                                        style: TextStyle(
+                                            color: Theme.of(context).hintColor),
+                                      ),
+                                    ),
                                     Padding(
-                                      padding: const EdgeInsets.all(20),
+                                      padding: const EdgeInsets.only(
+                                          top: 10, bottom: 30),
                                       child: Text(
                                         "Ou",
                                         style: TextStyle(color: Colors.black54),
@@ -259,8 +475,165 @@ class _LandingState extends State<Landing> {
                 ),
               ),
             );
+          } else if (snapshot.data != null &&
+              snapshot.data.emailVerified == false &&
+              !snapshot.data.isAnonymous) {
+            User user = snapshot.data;
+            return WillPopScope(
+              onWillPop: () async {
+                FirebaseAuth.instance.signOut();
+                return false;
+              },
+              child: Scaffold(
+                appBar: AppBar(
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  systemOverlayStyle: SystemUiOverlayStyle(
+                    statusBarBrightness: Brightness.dark,
+                    systemNavigationBarIconBrightness: Brightness.dark,
+                    statusBarIconBrightness: Brightness.dark,
+                  ),
+                ),
+                body: SafeArea(
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(
+                            color: Theme.of(context).hintColor,
+                          ),
+                          SizedBox(height: 20),
+                          Text(
+                            "En attente de validation".toUpperCase(),
+                            style: Theme.of(context)
+                                .textTheme
+                                .headline1!
+                                .copyWith(fontSize: 25),
+                          ),
+                          SizedBox(height: 30),
+                          TextButton(
+                            child: Text(
+                              "Recevoir un nouveau mail de confirmation",
+                              style: Theme.of(context).textTheme.headline3,
+                            ),
+                            onPressed: () => _sendConfirmation(user),
+                          ),
+                          _tooManyMail
+                              ? ErrorLine(
+                                  string:
+                                      "Veuillez patienter avant de demander un nouveau mail.",
+                                  dense: true,
+                                )
+                              : Container(),
+                        ],
+                      ),
+                      Positioned(
+                        bottom: 5,
+                        child: InkWell(
+                          onTap: () => FirebaseAuth.instance.signOut(),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.expand_more_outlined,
+                                color: Colors.black87,
+                              ),
+                              Text(
+                                "Annuler",
+                                style: TextStyle(
+                                  color: Colors.black87,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
           }
           return widget.child ?? Container();
         });
+  }
+}
+
+class ErrorLine extends StatelessWidget {
+  const ErrorLine({
+    Key? key,
+    required this.string,
+    this.dense = false,
+  }) : super(key: key);
+
+  final String string;
+  final bool dense;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(top: (dense ? 5 : 10), bottom: 5),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.warning_amber_outlined,
+            color: Theme.of(context).colorScheme.secondary,
+          ),
+          SizedBox(width: 8),
+          Expanded(
+            flex: (dense ? 0 : 1),
+            child: Text(
+              string,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.secondary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class SuccessLine extends StatelessWidget {
+  const SuccessLine({
+    Key? key,
+    required this.string,
+    this.dense = false,
+  }) : super(key: key);
+
+  final String string;
+  final bool dense;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(top: (dense ? 5 : 10), bottom: 5),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.forward_to_inbox_outlined,
+            color: Theme.of(context).colorScheme.primaryVariant,
+          ),
+          SizedBox(width: 8),
+          Expanded(
+            flex: (dense ? 0 : 1),
+            child: Text(
+              string,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.primaryVariant,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

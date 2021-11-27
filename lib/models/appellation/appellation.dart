@@ -12,6 +12,7 @@ class Appellation {
   int createdAt;
   int editedAt;
   bool? enabled;
+  String owner;
 
   // Custom
   String color;
@@ -27,6 +28,7 @@ class Appellation {
     required this.id,
     required this.createdAt,
     required this.editedAt,
+    required this.owner,
     this.enabled = false,
     required this.color,
     required this.name,

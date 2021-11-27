@@ -21,6 +21,9 @@ export 'custom/main_widgets/corner.dart';
 export 'custom/main_widgets/multislider.dart';
 export 'custom/main_widgets/number_picker.dart';
 
+// Forms
+export 'custom/forms/wine_form.dart';
+
 // Methods
 export 'custom/methods/custom_methods.dart';
 export 'custom/methods/search_methods.dart';

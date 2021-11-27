@@ -54,7 +54,7 @@ class _AddAppellationState extends State<AddAppellation> {
                   TextInputCard(
                     label: "Nom de l'appellation",
                     value: _name,
-                    onChanged: (value) => _name = value,
+                    onChanged: (value) => setState(() => _name = value),
                   ),
                   SizedBox(height: 20),
                   Row(

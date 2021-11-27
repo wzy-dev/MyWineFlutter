@@ -12,6 +12,7 @@ class Domain {
   int createdAt;
   int editedAt;
   bool? enabled;
+  String owner;
 
   // Custom
   String name;
@@ -20,6 +21,7 @@ class Domain {
     required this.id,
     required this.createdAt,
     required this.editedAt,
+    required this.owner,
     this.enabled = false,
     required this.name,
   });
@@ -33,6 +35,10 @@ class Domain {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = _$DomainToJson(this);
     return ModelMethods.boolToInt(json: json, property: "enabled");
+  }
+
+  Map<String, dynamic> toJsonWithBool() {
+    return _$DomainToJson(this);
   }
 
   factory Domain.fromFirestore(DocumentSnapshot documentSnapshot) {

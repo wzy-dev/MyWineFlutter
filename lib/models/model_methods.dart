@@ -48,6 +48,7 @@ class ModelMethods {
             id STRING PRIMARY KEY,
             createdAt INTEGER,
             editedAt INTEGER,
+            owner STRING,
             enabled INTEGER,
             appellation STRING,
             domain STRING,
@@ -66,19 +67,19 @@ class ModelMethods {
     if (!await ModelMethods.tableExists(db, "cellars")) {
       // Create a table
       await db.execute(
-          'CREATE TABLE cellars (id STRING PRIMARY KEY, createdAt INTEGER, editedAt INTEGER, enabled INTEGER, name STRING)');
+          'CREATE TABLE cellars (id STRING PRIMARY KEY, createdAt INTEGER, editedAt INTEGER, owner STRING, enabled INTEGER, name STRING)');
     }
 
     if (!await ModelMethods.tableExists(db, "blocks")) {
       // Create a table
       await db.execute(
-          'CREATE TABLE blocks (id STRING PRIMARY KEY, createdAt INTEGER, editedAt INTEGER, enabled INTEGER, cellar STRING, horizontalAlignment STRING, verticalAlignment STRING, nbColumn INTEGER, nbLine INTEGER, x INTEGER, y INTEGER)');
+          'CREATE TABLE blocks (id STRING PRIMARY KEY, createdAt INTEGER, editedAt INTEGER, owner STRING, enabled INTEGER, cellar STRING, horizontalAlignment STRING, verticalAlignment STRING, nbColumn INTEGER, nbLine INTEGER, x INTEGER, y INTEGER)');
     }
 
     if (!await ModelMethods.tableExists(db, "positions")) {
       // Create a table
       await db.execute(
-          'CREATE TABLE positions (id STRING PRIMARY KEY, createdAt INTEGER, editedAt INTEGER, enabled INTEGER, block STRING, wine STRING, x INTEGER, y INTEGER)');
+          'CREATE TABLE positions (id STRING PRIMARY KEY, createdAt INTEGER, editedAt INTEGER, owner STRING, enabled INTEGER, block STRING, wine STRING, x INTEGER, y INTEGER)');
     }
 
     if (!await ModelMethods.tableExists(db, "appellations")) {
@@ -87,6 +88,7 @@ class ModelMethods {
             id STRING PRIMARY KEY, 
             createdAt INTEGER, 
             editedAt INTEGER, 
+            owner STRING,
             enabled INTEGER, 
             color STRING, 
             name STRING,
@@ -102,7 +104,7 @@ class ModelMethods {
     if (!await ModelMethods.tableExists(db, "domains")) {
       // Create a table
       await db.execute(
-          'CREATE TABLE domains (id STRING PRIMARY KEY, createdAt INTEGER, editedAt INTEGER, enabled INTEGER, name STRING)');
+          'CREATE TABLE domains (id STRING PRIMARY KEY, createdAt INTEGER, editedAt INTEGER, owner STRING, enabled INTEGER, name STRING)');
     }
 
     if (!await ModelMethods.tableExists(db, "countries")) {
@@ -111,6 +113,7 @@ class ModelMethods {
             id STRING PRIMARY KEY,
             createdAt INTEGER,
             editedAt INTEGER,
+            owner STRING,
             enabled INTEGER,
             name STRING
           )''');
@@ -122,6 +125,7 @@ class ModelMethods {
             id STRING PRIMARY KEY,
             createdAt INTEGER,
             editedAt INTEGER,
+            owner STRING,
             enabled INTEGER,
             name STRING,
             country STRING

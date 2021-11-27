@@ -28,7 +28,7 @@ class _AddCountryState extends State<AddCountry> {
                   TextInputCard(
                     label: "Nom du pays",
                     value: _name,
-                    onChanged: (value) => _name = value,
+                    onChanged: (value) => setState(() => _name = value),
                   ),
                   SizedBox(height: 60),
                 ],

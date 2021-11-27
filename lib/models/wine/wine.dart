@@ -11,6 +11,7 @@ class Wine {
   int createdAt;
   int editedAt;
   bool? enabled;
+  String owner;
 
   // Custom
   String appellation;
@@ -29,6 +30,7 @@ class Wine {
     required this.id,
     required this.createdAt,
     required this.editedAt,
+    required this.owner,
     this.enabled = false,
     required this.appellation,
     required this.domain,

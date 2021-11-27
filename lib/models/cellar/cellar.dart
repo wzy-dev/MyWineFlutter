@@ -11,6 +11,7 @@ class Cellar {
   int createdAt;
   int editedAt;
   bool? enabled;
+  String owner;
 
   // Custom
   String name;
@@ -19,6 +20,7 @@ class Cellar {
     required this.id,
     required this.createdAt,
     required this.editedAt,
+    required this.owner,
     this.enabled = false,
     required this.name,
   });
@@ -32,6 +34,10 @@ class Cellar {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = _$CellarToJson(this);
     return ModelMethods.boolToInt(json: json, property: "enabled");
+  }
+
+  Map<String, dynamic> toJsonWithBool() {
+    return _$CellarToJson(this);
   }
 
   factory Cellar.fromFirestore(DocumentSnapshot documentSnapshot) {

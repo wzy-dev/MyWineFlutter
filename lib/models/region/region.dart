@@ -12,6 +12,7 @@ class Region {
   int createdAt;
   int editedAt;
   bool? enabled;
+  String owner;
 
   // Custom
   String name;
@@ -21,6 +22,7 @@ class Region {
     required this.id,
     required this.createdAt,
     required this.editedAt,
+    required this.owner,
     this.enabled = false,
     required this.name,
     required this.country,

@@ -103,6 +103,30 @@ class WineDetails extends StatelessWidget {
 
     return MainContainer(
       title: Text("Détails du vin"),
+      action: InkWell(
+        onTap: () => Navigator.of(context).pushNamed("/edit/wine",
+            arguments: MyDatabase.getWineById(
+                context: context, wineId: wineId, listen: false)),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.only(
+              right: 20,
+              top: 8,
+              bottom: 8,
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(Icons.construction_outlined),
+                SizedBox(width: 4),
+                Text("Modifier",
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.w600)),
+              ],
+            ),
+          ),
+        ),
+      ),
       backgroundColor: Color.fromRGBO(250, 250, 250, 1),
       child: DetailsScaffold(
         context: context,

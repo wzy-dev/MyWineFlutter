@@ -297,6 +297,7 @@ class _CellarTabState extends State<CellarTab> {
                       Map<String, dynamic>? enhancedWine =
                           MyDatabase.getEnhancedWineById(
                               context: context, wineId: wine.id);
+
                       if (enhancedWine == null) return Container();
 
                       return Container(

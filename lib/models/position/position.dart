@@ -12,6 +12,7 @@ class Position {
   int createdAt;
   int editedAt;
   bool? enabled;
+  String owner;
 
   // Custom
   String block;
@@ -23,6 +24,7 @@ class Position {
     required this.id,
     required this.createdAt,
     required this.editedAt,
+    required this.owner,
     this.enabled = false,
     required this.block,
     required this.wine,
@@ -39,6 +41,10 @@ class Position {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = _$PositionToJson(this);
     return ModelMethods.boolToInt(json: json, property: "enabled");
+  }
+
+  Map<String, dynamic> toJsonWithBool() {
+    return _$PositionToJson(this);
   }
 
   factory Position.fromFirestore(DocumentSnapshot documentSnapshot) {

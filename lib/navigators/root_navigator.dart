@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mywine/pages/root/edit_wine.dart';
 import 'package:mywine/shelf.dart';
 
 class CustomRouteBuilders {
@@ -39,17 +40,23 @@ class RootNavigator {
 
         return CustomRouteBuilders(
             widget: Scaffold(
-              resizeToAvoidBottomInset: false,
               body: WineDetails(wineDetails: arguments),
             ),
             fullScreen: arguments.fullScreenDialog);
+      case "/edit/wine":
+        final Wine arguments = settings.arguments as Wine;
+
+        return CustomRouteBuilders(
+          widget: Scaffold(
+            body: EditWine(wine: arguments),
+          ),
+        );
       case "/appellation":
         final AppellationDetailsArguments arguments =
             settings.arguments as AppellationDetailsArguments;
 
         return CustomRouteBuilders(
             widget: Scaffold(
-              resizeToAvoidBottomInset: false,
               body: AppellationDetails(appellationDetails: arguments),
             ),
             fullScreen: arguments.fullScreenDialog);
@@ -59,7 +66,6 @@ class RootNavigator {
 
         return CustomRouteBuilders(
             widget: Scaffold(
-              resizeToAvoidBottomInset: false,
               body: WineList(selectedFilters: selectedFilters),
             ),
             fullScreen: true);
@@ -69,7 +75,6 @@ class RootNavigator {
 
         return CustomRouteBuilders(
           widget: Scaffold(
-            resizeToAvoidBottomInset: false,
             body: Filters(selectedFilters: selectedFilters),
           ),
         );
@@ -79,7 +84,6 @@ class RootNavigator {
 
         return CustomRouteBuilders(
           widget: Scaffold(
-            resizeToAvoidBottomInset: false,
             body: FilterAppellation(
                 filterAppellationArguments: filterAppellationArguments),
           ),
@@ -90,7 +94,6 @@ class RootNavigator {
 
         return CustomRouteBuilders(
           widget: Scaffold(
-            resizeToAvoidBottomInset: false,
             body: FilterDomain(filterDomainArguments: filterDomainArguments),
           ),
         );

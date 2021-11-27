@@ -23,6 +23,14 @@ class MyDatabase {
         .firstWhereOrNull((cellar) => cellar.id == cellarId);
   }
 
+  static Block? getBlockById(
+      {required BuildContext context,
+      bool listen = true,
+      required String blockId}) {
+    return Provider.of<List<Block>>(context, listen: listen)
+        .firstWhereOrNull((block) => block.id == blockId);
+  }
+
   static List<Block> getBlocks(
       {required BuildContext context, bool listen = true}) {
     return Provider.of<List<Block>>(context, listen: listen);
@@ -319,6 +327,11 @@ class MyDatabase {
           positions.where((position) => position.wine == wine.id).length;
       if (freeQuantity > 0)
         listOfFreeWines.add({"wine": wine, "freeQuantity": freeQuantity});
+    });
+    listOfFreeWines.sort((a, b) {
+      Wine aWine = a["wine"] as Wine;
+      Wine bWine = b["wine"] as Wine;
+      return bWine.createdAt.compareTo(aWine.createdAt);
     });
     return listOfFreeWines;
   }

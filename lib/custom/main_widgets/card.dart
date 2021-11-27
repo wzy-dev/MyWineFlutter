@@ -91,12 +91,17 @@ class ActionCard extends StatelessWidget {
 
 class TextInputCard extends StatefulWidget {
   const TextInputCard(
-      {Key? key, required this.label, required this.onChanged, this.value})
+      {Key? key,
+      required this.label,
+      required this.onChanged,
+      this.value,
+      this.autofocus = true})
       : super(key: key);
 
   final String label;
   final Function(String) onChanged;
   final String? value;
+  final bool autofocus;
 
   @override
   State<TextInputCard> createState() => _TextInputCardState();
@@ -130,6 +135,7 @@ class _TextInputCardState extends State<TextInputCard> {
               controller: _controller,
               onChanged: (value) => widget.onChanged(value),
               cursorColor: Theme.of(context).hintColor,
+              autofocus: widget.autofocus,
               style:
                   Theme.of(context).textTheme.headline4!.copyWith(fontSize: 17),
               decoration: InputDecoration(

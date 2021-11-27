@@ -1,7 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mywine/shelf.dart';
 import 'package:uuid/uuid.dart';
 
 class InitializerModel {
+  static User? _user = FirebaseAuth.instance.currentUser;
+
   static int getTimestamp() {
     return DateTime.now().millisecondsSinceEpoch;
   }
@@ -17,6 +20,7 @@ class InitializerModel {
       createdAt: timestamp,
       editedAt: timestamp,
       name: name,
+      owner: _user!.uid,
     );
   }
 
@@ -41,6 +45,7 @@ class InitializerModel {
       nbLine: nbLine,
       x: x,
       y: y,
+      owner: _user!.uid,
     );
   }
 
@@ -59,6 +64,7 @@ class InitializerModel {
       wine: wine,
       x: x,
       y: y,
+      owner: _user!.uid,
     );
   }
 
@@ -84,6 +90,7 @@ class InitializerModel {
       tempmax: tempmax,
       yearmin: yearmin,
       yearmax: yearmax,
+      owner: _user!.uid,
     );
   }
 
@@ -98,6 +105,7 @@ class InitializerModel {
       editedAt: timestamp,
       name: name,
       country: country,
+      owner: _user!.uid,
     );
   }
 
@@ -110,6 +118,7 @@ class InitializerModel {
       createdAt: timestamp,
       editedAt: timestamp,
       name: name,
+      owner: _user!.uid,
     );
   }
 
@@ -122,6 +131,7 @@ class InitializerModel {
       createdAt: timestamp,
       editedAt: timestamp,
       name: name,
+      owner: _user!.uid,
     );
   }
 
@@ -154,6 +164,7 @@ class InitializerModel {
       tempmax: tempmax,
       yearmin: yearmin,
       yearmax: yearmax,
+      owner: _user!.uid,
     );
   }
 }

@@ -12,6 +12,7 @@ class Block {
   int createdAt;
   int editedAt;
   bool? enabled;
+  String owner;
 
   // Custom
   String cellar;
@@ -26,6 +27,7 @@ class Block {
     required this.id,
     required this.createdAt,
     required this.editedAt,
+    required this.owner,
     this.enabled = false,
     required this.cellar,
     this.horizontalAlignment = "center",
@@ -45,6 +47,10 @@ class Block {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = _$BlockToJson(this);
     return ModelMethods.boolToInt(json: json, property: "enabled");
+  }
+
+  Map<String, dynamic> toJsonWithBool() {
+    return _$BlockToJson(this);
   }
 
   factory Block.fromFirestore(DocumentSnapshot documentSnapshot) {
