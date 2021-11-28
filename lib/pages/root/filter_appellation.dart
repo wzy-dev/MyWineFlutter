@@ -31,6 +31,7 @@ class FilterAppellation extends StatelessWidget {
       title: Text("Filtrer par l'appellation"),
       child: FilterSearch(
         placeholder: "chercher une appellation...",
+        type: "appellation",
         initialSelection: filterAppellationArguments.initialSelection,
         appellationsData: _appellationsList,
       ),

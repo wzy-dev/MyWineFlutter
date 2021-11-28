@@ -24,6 +24,7 @@ class AddRegionCountry extends StatelessWidget {
       title: Text("Choisir un pays"),
       child: FilterSearch(
         placeholder: "chercher un pays...",
+        type: "coutry",
         multiple: false,
         submitLabel: "Choisir",
         initialSelection: selectedRadio != null ? [selectedRadio!] : [],

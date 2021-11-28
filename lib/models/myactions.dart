@@ -178,6 +178,24 @@ class MyActions {
             context: context, object: domain, isNew: true));
   }
 
+  static Future<void> updateDomain({
+    required BuildContext context,
+    required Domain? domain,
+  }) async {
+    BriteDatabase db =
+        MyDatabase.getBriteDatabase(context: context, listen: false);
+
+    if (domain == null) return;
+
+    domain.editedAt = InitializerModel.getTimestamp();
+    domain.enabled = true;
+
+    await db.update("domains", domain.toJson(), where: 'id = ?', whereArgs: [
+      domain.id
+    ]).then(
+        (value) => _updateFirestore<Domain>(context: context, object: domain));
+  }
+
   static Future<void> addAppellation({
     required BuildContext context,
     required Appellation appellation,

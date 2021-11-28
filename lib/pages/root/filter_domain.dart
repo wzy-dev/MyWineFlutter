@@ -28,6 +28,7 @@ class FilterDomain extends StatelessWidget {
       title: Text("Filtrer par un domaine"),
       child: FilterSearch(
         placeholder: "chercher un domaine...",
+        type: "domain",
         initialSelection: filterDomainArguments.initialSelection,
         domainsData: _domainsList,
       ),

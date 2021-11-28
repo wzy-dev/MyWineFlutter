@@ -115,11 +115,13 @@ class MyDatabase {
     Map<String, dynamic>? enhancedAppellation = getEnhancedAppellationById(
       context: context,
       appellationId: enhancedWine["appellation"],
+      listen: listen,
     );
 
     Domain? domain = getDomainById(
       context: context,
       domainId: enhancedWine["domain"],
+      listen: listen,
     );
 
     if (enhancedAppellation == null || domain == null) return null;
@@ -175,15 +177,19 @@ class MyDatabase {
   }
 
   static Appellation? getAppellationById(
-      {required BuildContext context, required String appellationId}) {
-    return Provider.of<List<Appellation>>(context, listen: false)
+      {required BuildContext context,
+      required String appellationId,
+      bool listen = true}) {
+    return Provider.of<List<Appellation>>(context, listen: listen)
         .firstWhereOrNull((appellation) => appellation.id == appellationId);
   }
 
   static Map<String, dynamic>? getEnhancedAppellationById(
-      {required BuildContext context, required String appellationId}) {
-    Appellation? appellation =
-        getAppellationById(context: context, appellationId: appellationId);
+      {required BuildContext context,
+      required String appellationId,
+      bool listen = true}) {
+    Appellation? appellation = getAppellationById(
+        context: context, appellationId: appellationId, listen: listen);
 
     if (appellation == null) return null;
 
@@ -192,6 +198,7 @@ class MyDatabase {
     Map<String, dynamic>? enhancedRegion = getEnhancedRegionById(
       context: context,
       regionId: enhancedAppellation["region"],
+      listen: listen,
     );
 
     if (enhancedRegion == null) return null;
@@ -242,9 +249,11 @@ class MyDatabase {
   }
 
   static Map<String, dynamic>? getEnhancedRegionById(
-      {required BuildContext context, required String regionId}) {
+      {required BuildContext context,
+      required String regionId,
+      bool listen = true}) {
     Region? region =
-        getRegionById(context: context, regionId: regionId, listen: false);
+        getRegionById(context: context, regionId: regionId, listen: listen);
 
     if (region == null) return null;
 
@@ -253,6 +262,7 @@ class MyDatabase {
     Country? country = getCountryById(
       context: context,
       countryId: enhancedRegion["country"],
+      listen: listen,
     );
 
     if (country == null) return null;
@@ -276,8 +286,10 @@ class MyDatabase {
   }
 
   static Country? getCountryById(
-      {required BuildContext context, required String countryId}) {
-    return Provider.of<List<Country>>(context, listen: false)
+      {required BuildContext context,
+      required String countryId,
+      bool listen = true}) {
+    return Provider.of<List<Country>>(context, listen: listen)
         .firstWhereOrNull((country) => country.id == countryId);
   }
 
@@ -311,8 +323,10 @@ class MyDatabase {
   }
 
   static Domain? getDomainById(
-      {required BuildContext context, required String domainId}) {
-    return Provider.of<List<Domain>>(context, listen: false)
+      {required BuildContext context,
+      required String domainId,
+      bool listen = true}) {
+    return Provider.of<List<Domain>>(context, listen: listen)
         .firstWhereOrNull((domain) => domain.id == domainId);
   }
 

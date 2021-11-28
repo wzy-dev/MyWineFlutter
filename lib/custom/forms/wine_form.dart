@@ -70,12 +70,16 @@ class _WineFormState extends State<WineForm> {
 
     _appellation = enhancedWine != null
         ? MyDatabase.getAppellationById(
-            context: context, appellationId: enhancedWine["appellation"]["id"])
+            context: context,
+            appellationId: enhancedWine["appellation"]["id"],
+            listen: false)
         : null;
 
     _domain = enhancedWine != null
         ? MyDatabase.getDomainById(
-            context: context, domainId: enhancedWine["domain"].id)
+            context: context,
+            domainId: enhancedWine["domain"].id,
+            listen: false)
         : widget.domain;
 
     _millesime = enhancedWine != null
@@ -133,7 +137,8 @@ class _WineFormState extends State<WineForm> {
   }
 
   _selectAppellation() async {
-    String? selectedAppellation = await Navigator.of(context).pushNamed(
+    String? selectedAppellation =
+        await Navigator.of(context, rootNavigator: true).pushNamed(
       "/add/wine/appellation",
       arguments: AddWineAppellationArguments(
         selectedRadio: _appellations.length > 0 ? _appellations[0].name : null,
@@ -141,7 +146,7 @@ class _WineFormState extends State<WineForm> {
       ),
     ) as String?;
 
-    if (selectedAppellation == null) return;
+    // if (selectedAppellation == null) return;
 
     setState(() {
       _appellation = null;
@@ -150,7 +155,8 @@ class _WineFormState extends State<WineForm> {
   }
 
   _selectDomain() async {
-    String? selectedDomain = await Navigator.of(context).pushNamed(
+    String? selectedDomain =
+        await Navigator.of(context, rootNavigator: true).pushNamed(
       "/add/wine/domain",
       arguments: AddWineDomainArguments(
         selectedRadio: _domain != null ? _domain!.name : null,
@@ -238,13 +244,17 @@ class _WineFormState extends State<WineForm> {
   Widget build(BuildContext context) {
     if (_domainName != null) {
       _domain = MyDatabase.getDomains(context: context)
-          .firstWhereOrNull((element) => element.name == _domainName);
+              .firstWhereOrNull((element) => element.name == _domainName) ??
+          _domain;
     }
 
     if (_appellationName != null) {
-      _appellations = MyDatabase.getAppellations(context: context)
-          .where((element) => element.name == _appellationName)
-          .toList();
+      List<Appellation> appellationsTemp =
+          MyDatabase.getAppellations(context: context)
+              .where((element) => element.name == _appellationName)
+              .toList();
+      _appellations =
+          appellationsTemp.length > 0 ? appellationsTemp : _appellations;
 
       if (_appellations.length == 1 &&
           (_appellation == null || _appellation!.id != _appellations[0].id)) {

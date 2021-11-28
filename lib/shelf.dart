@@ -25,7 +25,7 @@ export 'custom/main_widgets/number_picker.dart';
 export 'custom/forms/wine_form.dart';
 export 'custom/forms/add_wine_appellation.dart';
 export 'custom/forms/add_wine_domain.dart';
-export 'custom/forms/add_domain.dart';
+export 'custom/forms/domain_form.dart';
 export 'custom/forms/add_appellation.dart';
 export 'custom/forms/add_appellation_region.dart';
 export 'custom/forms/add_region.dart';
@@ -83,6 +83,7 @@ export 'pages/left/profile.dart';
 // Middle
 export 'pages/middle/add_tab.dart';
 export 'pages/middle/add_wine.dart';
+export 'custom/forms/edit_domain.dart';
 
 // Right
 export 'pages/right/cellar_tab.dart';

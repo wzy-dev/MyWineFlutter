@@ -24,6 +24,7 @@ class AddAppellationRegion extends StatelessWidget {
       title: Text("Choisir une region"),
       child: FilterSearch(
         placeholder: "chercher une region...",
+        type: "region",
         multiple: false,
         submitLabel: "Choisir",
         initialSelection: selectedRadio != null ? [selectedRadio!] : [],

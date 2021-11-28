@@ -6,6 +6,7 @@ class FilterSearch extends StatefulWidget {
   const FilterSearch({
     Key? key,
     required this.placeholder,
+    required this.type,
     this.submitLabel = "Appliquer",
     this.multiple = true,
     this.initialSelection = const [],
@@ -17,6 +18,7 @@ class FilterSearch extends StatefulWidget {
   }) : super(key: key);
 
   final String placeholder;
+  final String type;
   final String submitLabel;
   final bool multiple;
   final List<String> initialSelection;
@@ -76,10 +78,147 @@ class _FilterSearchState extends State<FilterSearch> {
   late List<String> _selectedList;
 
   // If not multiple;
-  dynamic _selectedRadio;
+  String? _selectedRadio;
 
   int _sortFunction(a, b) => CustomMethods.removeAccent(a.name.toLowerCase())
       .compareTo(CustomMethods.removeAccent(b.name.toLowerCase()));
+
+  dynamic _getArgumentsToEdit(String itemId) {
+    switch (widget.type) {
+      case "appellation":
+        return MyDatabase.getAppellationById(
+          context: context,
+          appellationId: itemId,
+          listen: false,
+        );
+      case "region":
+        return MyDatabase.getRegionById(
+          context: context,
+          regionId: itemId,
+          listen: false,
+        );
+      case "country":
+        return MyDatabase.getCountryById(
+          context: context,
+          countryId: itemId,
+          listen: false,
+        );
+      case "domain":
+        return MyDatabase.getDomainById(
+          context: context,
+          domainId: itemId,
+          listen: false,
+        );
+    }
+    return;
+  }
+
+  Widget _drawPopupMenu(dynamic item) {
+    return (item["owner"] != null && item["owner"] != "admin"
+        ? widget.addPath != null
+            ? PopupMenuButton(
+                itemBuilder: (contextg) => [
+                  PopupMenuItem(
+                    onTap: () => Future(
+                      () async {
+                        String? name = await Navigator.of(context).pushNamed(
+                                widget.addPath!,
+                                arguments: _getArgumentsToEdit(item["id"]))
+                            as String?;
+
+                        if (name == null) return;
+
+                        setState(() {
+                          if (_selectedRadio == item["name"])
+                            _selectedRadio = name;
+                          item["name"] = name;
+                        });
+                      },
+                    ),
+                    textStyle: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).hintColor,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.construction_outlined,
+                          color: Theme.of(context).hintColor,
+                        ),
+                        SizedBox(width: 5),
+                        Text(
+                          "Modifier".toUpperCase(),
+                        ),
+                      ],
+                    ),
+                  ),
+                  _showDeleteItem(item["id"]),
+                ],
+                icon: Icon(Icons.more_vert_outlined),
+              )
+            : Container()
+        : Container());
+  }
+
+  PopupMenuItem _showDeleteItem(String id) {
+    late int wineQuantity;
+    switch (widget.type) {
+      case "appellation":
+        wineQuantity = MyDatabase.getQuantityOfAppellation(
+            context: context, appellationId: id);
+        break;
+      case "region":
+        wineQuantity =
+            MyDatabase.getQuantityOfRegion(context: context, regionId: id);
+        break;
+      case "country":
+        wineQuantity =
+            MyDatabase.getQuantityOfCountry(context: context, countryId: id);
+        break;
+      case "domain":
+        wineQuantity =
+            MyDatabase.getQuantityOfDomain(context: context, domainId: id);
+        break;
+      default:
+        return PopupMenuItem(
+          child: Container(),
+        );
+    }
+
+    return PopupMenuItem(
+      enabled: wineQuantity == 0,
+      onTap: wineQuantity == 0 ? () => print("retirer") : null,
+      textStyle: TextStyle(
+        fontWeight: FontWeight.bold,
+        color: Theme.of(context).colorScheme.secondary,
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.delete_outline,
+            color: wineQuantity == 0
+                ? Theme.of(context).colorScheme.secondary
+                : Colors.black87,
+          ),
+          SizedBox(width: 5),
+          Text(
+            "Supprimer".toUpperCase(),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          wineQuantity > 0
+              ? Text(
+                  " ($wineQuantity bouteilles)",
+                  style: TextStyle(
+                      fontWeight: FontWeight.normal,
+                      fontStyle: FontStyle.italic),
+                )
+              : Text(""),
+        ],
+      ),
+    );
+  }
 
   @override
   void initState() {
@@ -284,8 +423,19 @@ class _FilterSearchState extends State<FilterSearch> {
                                               .primary,
                                           controlAffinity:
                                               ListTileControlAffinity.leading,
-                                          title: Text(
-                                              _scrollListChildren[i]["name"]),
+                                          title: GestureDetector(
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text(_scrollListChildren[i]
+                                                    ["name"]),
+                                                _drawPopupMenu(
+                                                    _scrollListChildren[i]),
+                                              ],
+                                            ),
+                                          ),
                                           value: _scrollListChildren[i]["name"],
                                           onChanged: (dynamic value) =>
                                               setState(
@@ -325,7 +475,8 @@ class _FilterSearchState extends State<FilterSearch> {
                       ? ElevatedButton(
                           onPressed: widget.addPath != null
                               ? () async {
-                                  String? name = await Navigator.of(context)
+                                  String? name = await Navigator.of(context,
+                                          rootNavigator: true)
                                       .pushNamed(widget.addPath!) as String?;
 
                                   if (name != null)

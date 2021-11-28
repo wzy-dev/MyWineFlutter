@@ -27,42 +27,45 @@ class _MiddleNavigatorState extends State<MiddleNavigator> {
       case "/add/wine":
         ResultSearchVision? args = settings.arguments as ResultSearchVision?;
         return AddWine(resultSearchVision: args);
-      case "/add/wine/appellation":
-        AddWineAppellationArguments? args =
-            settings.arguments as AddWineAppellationArguments?;
-        return AddWineAppellation(
-          selectedRadio: args?.selectedRadio ?? null,
-          addPath: args?.addPath ?? null,
-        );
-      case "/add/wine/domain":
-        AddWineDomainArguments? args =
-            settings.arguments as AddWineDomainArguments?;
-        return AddWineDomain(
-          selectedRadio: args?.selectedRadio ?? null,
-          addPath: args?.addPath ?? null,
-        );
-      case "/add/domain":
-        return AddDomain();
-      case "/add/appellation":
-        return AddAppellation();
-      case "/add/appellation/region":
-        AddAppellationRegionArguments? args =
-            settings.arguments as AddAppellationRegionArguments?;
-        return AddAppellationRegion(
-          selectedRadio: args?.selectedRadio ?? null,
-          addPath: args?.addPath ?? null,
-        );
-      case "/add/region":
-        return AddRegion();
-      case "/add/region/country":
-        AddRegionCountryArguments? args =
-            settings.arguments as AddRegionCountryArguments?;
-        return AddRegionCountry(
-          selectedRadio: args?.selectedRadio ?? null,
-          addPath: args?.addPath ?? null,
-        );
-      case "/add/country":
-        return AddCountry();
+      // case "/add/wine/appellation":
+      //   AddWineAppellationArguments? args =
+      //       settings.arguments as AddWineAppellationArguments?;
+      //   return AddWineAppellation(
+      //     selectedRadio: args?.selectedRadio ?? null,
+      //     addPath: args?.addPath ?? null,
+      //   );
+      // case "/add/wine/domain":
+      //   AddWineDomainArguments? args =
+      //       settings.arguments as AddWineDomainArguments?;
+      //   return AddWineDomain(
+      //     selectedRadio: args?.selectedRadio ?? null,
+      //     addPath: args?.addPath ?? null,
+      //   );
+      // case "/add/domain":
+      //   Domain? args = settings.arguments as Domain?;
+      //   return EditDomain(
+      //     domain: args,
+      //   );
+      // case "/add/appellation":
+      //   return AddAppellation();
+      // case "/add/appellation/region":
+      //   AddAppellationRegionArguments? args =
+      //       settings.arguments as AddAppellationRegionArguments?;
+      //   return AddAppellationRegion(
+      //     selectedRadio: args?.selectedRadio ?? null,
+      //     addPath: args?.addPath ?? null,
+      //   );
+      // case "/add/region":
+      //   return AddRegion();
+      // case "/add/region/country":
+      //   AddRegionCountryArguments? args =
+      //       settings.arguments as AddRegionCountryArguments?;
+      //   return AddRegionCountry(
+      //     selectedRadio: args?.selectedRadio ?? null,
+      //     addPath: args?.addPath ?? null,
+      //   );
+      // case "/add/country":
+      //   return AddCountry();
       default:
         return AddTab(isActive: widget.isActive);
     }

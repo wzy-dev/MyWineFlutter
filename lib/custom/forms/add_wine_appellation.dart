@@ -19,13 +19,13 @@ class AddWineAppellation extends StatelessWidget {
     List<Appellation> _appellationsList = List<Appellation>.from(
         MyDatabase.getOnce(
             context: context,
-            dataList:
-                MyDatabase.getAppellations(context: context, listen: false)));
+            dataList: MyDatabase.getAppellations(context: context)));
 
     return MainContainer(
       title: Text("Choisir une appellation"),
       child: FilterSearch(
         placeholder: "chercher une appellation...",
+        type: "appellation",
         multiple: false,
         submitLabel: "Choisir",
         initialSelection: selectedRadio != null ? [selectedRadio!] : [],

@@ -24,6 +24,7 @@ class AddWineDomain extends StatelessWidget {
       title: Text("Choisir un domaine"),
       child: FilterSearch(
         placeholder: "chercher un domaine...",
+        type: "domain",
         multiple: false,
         submitLabel: "Choisir",
         initialSelection: selectedRadio != null ? [selectedRadio!] : [],

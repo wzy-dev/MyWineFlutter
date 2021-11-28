@@ -143,9 +143,11 @@ class RootNavigator {
           ),
         );
       case "/add/domain":
+        Domain? args = settings.arguments as Domain?;
+
         return CustomRouteBuilders(
           widget: Scaffold(
-            body: AddDomain(),
+            body: EditDomain(domain: args),
           ),
         );
       case "/add/appellation":
