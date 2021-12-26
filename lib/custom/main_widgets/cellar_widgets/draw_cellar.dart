@@ -14,6 +14,7 @@ class DrawCellar extends StatelessWidget {
     this.searchedWine,
     this.stockAddonForCellar,
     this.editable = false,
+    this.hero = true,
   }) : super(key: key);
 
   final String cellarId;
@@ -25,6 +26,7 @@ class DrawCellar extends StatelessWidget {
   final Wine? searchedWine;
   final StockAddonForCellar? stockAddonForCellar;
   final bool editable;
+  final bool hero;
 
   @override
   Widget build(BuildContext context) {
@@ -176,7 +178,7 @@ class DrawCellar extends StatelessWidget {
                         ),
                         child: Hero(
                           transitionOnUserGestures: true,
-                          tag: "block${cell.id}",
+                          tag: hero ? "block${cell.id}" : UniqueKey(),
                           child: Container(
                             width: cell.nbColumn.toDouble() * sizeCell,
                             height: cell.nbLine.toDouble() * sizeCell,

@@ -25,6 +25,7 @@ class Wine {
   int? tempmax;
   int? yearmin;
   int? yearmax;
+  String? notes;
 
   Wine({
     required this.id,
@@ -43,6 +44,7 @@ class Wine {
     this.tempmax,
     this.yearmin,
     this.yearmax,
+    this.notes,
   });
 
   factory Wine.fromJson(Map<String, dynamic> json) {

@@ -19,6 +19,7 @@ class AddWine extends StatelessWidget {
     int? yearmax,
     int? tempmin,
     int? tempmax,
+    String? notes,
   }) {
     Wine wine = InitializerModel.initWine(
       appellation: appellationId,
@@ -32,6 +33,7 @@ class AddWine extends StatelessWidget {
       yearmax: yearmax,
       tempmin: tempmin,
       tempmax: tempmax,
+      notes: notes,
     );
     wine.enabled = true;
 

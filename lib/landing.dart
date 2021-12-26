@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:mywine/shelf.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -306,7 +305,7 @@ class _LandingState extends State<Landing> {
                                       ),
                                     ),
                                     SizedBox(height: 30),
-                                    CustomTextField(
+                                    CustomTextFieldWithIcon(
                                       context: context,
                                       onChange: (value) => setState(() {
                                         _username = value;
@@ -319,7 +318,7 @@ class _LandingState extends State<Landing> {
                                         ? ErrorLine(string: _errorEmail!)
                                         : Container(),
                                     SizedBox(height: 10),
-                                    CustomTextField(
+                                    CustomTextFieldWithIcon(
                                       context: context,
                                       onChange: (value) => setState(() {
                                         _password = value;
@@ -460,17 +459,17 @@ class _LandingState extends State<Landing> {
                         ),
                       ),
                     ),
-                    MediaQuery.of(context).viewInsets.bottom <= 200
-                        ? Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 10),
-                            child: TextButton(
-                              onPressed: () =>
-                                  FirebaseAuth.instance.signInAnonymously(),
-                              child: Text("Commencer sans compte..."),
-                            ),
-                          )
-                        : Container(),
+                    // MediaQuery.of(context).viewInsets.bottom <= 200
+                    //     ? Padding(
+                    //         padding: const EdgeInsets.symmetric(
+                    //             horizontal: 20, vertical: 10),
+                    //         child: TextButton(
+                    //           onPressed: () =>
+                    //               FirebaseAuth.instance.signInAnonymously(),
+                    //           child: Text("Commencer sans compte..."),
+                    //         ),
+                    //       )
+                    //     : Container(),
                   ],
                 ),
               ),

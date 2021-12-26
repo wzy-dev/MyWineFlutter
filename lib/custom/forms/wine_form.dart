@@ -27,6 +27,7 @@ class WineForm extends StatefulWidget {
     int? yearmax,
     int? tempmin,
     int? tempmax,
+    String? notes,
   }) submitAction;
   final List<Appellation> appellations;
   final Domain? domain;
@@ -53,6 +54,9 @@ class _WineFormState extends State<WineForm> {
 
   late String? _appellationName;
   late String? _domainName;
+  String? _appellationsId;
+  String? _domainId;
+  String? _notes;
 
   @override
   void initState() {
@@ -114,6 +118,11 @@ class _WineFormState extends State<WineForm> {
 
     _appellationName = enhancedWine?["appellation"]["name"] ?? null;
     _domainName = enhancedWine?["domain"].name ?? null;
+
+    _appellationsId = enhancedWine?["appellation"]["id"] ?? null;
+    _domainId = enhancedWine?["domain"].id ?? null;
+
+    _notes = enhancedWine?["notes"];
     super.initState();
   }
 
@@ -146,10 +155,8 @@ class _WineFormState extends State<WineForm> {
       ),
     ) as String?;
 
-    // if (selectedAppellation == null) return;
-
     setState(() {
-      _appellation = null;
+      if (selectedAppellation != null) _appellationsId = null;
       _appellationName = selectedAppellation;
     });
   }
@@ -165,6 +172,7 @@ class _WineFormState extends State<WineForm> {
     ) as String?;
 
     setState(() {
+      if (selectedDomain != null) _domainId = null;
       _domainName = selectedDomain;
     });
   }
@@ -242,19 +250,46 @@ class _WineFormState extends State<WineForm> {
 
   @override
   Widget build(BuildContext context) {
-    if (_domainName != null) {
+    if (_domainId != null) {
+      _domain =
+          MyDatabase.getDomainById(context: context, domainId: _domainId!);
+    } else if (_domainName != null) {
       _domain = MyDatabase.getDomains(context: context)
-              .firstWhereOrNull((element) => element.name == _domainName) ??
-          _domain;
+          .firstWhereOrNull((element) => element.name == _domainName);
+
+      _domainId = _domain?.id;
     }
 
-    if (_appellationName != null) {
+    if (_appellationsId != null) {
+      String? appellationName = MyDatabase.getAppellationById(
+              context: context, appellationId: _appellationsId!)
+          ?.name;
+
+      if (appellationName != null) {
+        List<Appellation> _appellations =
+            MyDatabase.getAppellations(context: context)
+                .where((element) => element.name == appellationName)
+                .toList();
+
+        _appellationsId = _appellations[0].id;
+
+        if (_appellations.length == 1 &&
+            (_appellation == null || _appellation!.id != _appellations[0].id)) {
+          _initSlider(_appellations[0]);
+        }
+      } else {
+        _appellations = [];
+        _appellation = null;
+      }
+    } else if (_appellationName != null) {
       List<Appellation> appellationsTemp =
           MyDatabase.getAppellations(context: context)
               .where((element) => element.name == _appellationName)
               .toList();
       _appellations =
           appellationsTemp.length > 0 ? appellationsTemp : _appellations;
+
+      if (appellationsTemp.length > 0) _appellationsId = _appellations[0].id;
 
       if (_appellations.length == 1 &&
           (_appellation == null || _appellation!.id != _appellations[0].id)) {
@@ -473,6 +508,14 @@ class _WineFormState extends State<WineForm> {
                       ),
                     ],
                   ),
+                  SizedBox(height: 20),
+                  MultilineTextInputCard(
+                    label: "Annotations",
+                    value: _notes,
+                    autofocus: false,
+                    elevation: 1,
+                    onChanged: (value) => setState(() => _notes = value),
+                  ),
                   SizedBox(height: 60),
                 ],
               ),
@@ -502,6 +545,7 @@ class _WineFormState extends State<WineForm> {
                         _tempRange.minimumIsEnabled ? _tempRange.min : null,
                     tempmax:
                         _tempRange.maximumIsEnabled ? _tempRange.max : null,
+                    notes: _notes,
                   ),
                 ),
               ),

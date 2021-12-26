@@ -1,6 +1,5 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:mywine/custom/main_widgets/search_card.dart';
 import 'package:mywine/shelf.dart';
@@ -182,138 +181,146 @@ class _CellarTabState extends State<CellarTab> {
       _activeCellar = _cellars.first;
     }
 
-    return MainContainer(
-      title: InkWell(
-        onTap: () => _drawSelectCellarBottomSheet(),
-        child: Row(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 8.0, top: 2),
-              child: Icon(Icons.keyboard_arrow_down_outlined),
-            ),
-            Expanded(
-              child: Text(
-                _activeCellar != null ? _activeCellar!.name : "Créer ma cave",
-                overflow: TextOverflow.fade,
+    return WillPopScope(
+      onWillPop: () async {
+        setState(() {
+          _searchedWine = null;
+        });
+        return false;
+      },
+      child: MainContainer(
+        title: InkWell(
+          onTap: () => _drawSelectCellarBottomSheet(),
+          child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0, top: 2),
+                child: Icon(Icons.keyboard_arrow_down_outlined),
               ),
-            ),
-          ],
-        ),
-      ),
-      action: _cellars.length > 0
-          ? InkWell(
-              onTap: _activeCellar != null
-                  ? () => Navigator.of(context).pushNamed("/edit/cellar",
-                      arguments: EditCellarArguments(cellar: _activeCellar!))
-                  : null,
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    right: 20,
-                    top: 8,
-                    bottom: 8,
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(Icons.construction_outlined),
-                      SizedBox(width: 4),
-                      Text("Modifier",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600)),
-                    ],
-                  ),
+              Expanded(
+                child: Text(
+                  _activeCellar != null ? _activeCellar!.name : "Créer ma cave",
+                  overflow: TextOverflow.fade,
                 ),
               ),
-            )
-          : Container(),
-      child: SafeArea(
-        top: false,
-        child: ListView(
-          padding: const EdgeInsets.all(0),
-          shrinkWrap: true,
-          children: [
-            Card(
-              margin: const EdgeInsets.all(0),
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(0),
-              ),
-              color: Colors.white,
-              child: AnimatedSize(
-                duration: Duration(milliseconds: 500),
-                child: _activeCellar != null
-                    ? _drawCellar(
-                        cellar: _activeCellar!,
-                      )
-                    : Container(),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: 10,
+            ],
+          ),
+        ),
+        action: _cellars.length > 0
+            ? InkWell(
+                onTap: _activeCellar != null
+                    ? () => Navigator.of(context).pushNamed("/edit/cellar",
+                        arguments: EditCellarArguments(cellar: _activeCellar!))
+                    : null,
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      right: 20,
+                      top: 8,
+                      bottom: 8,
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(Icons.construction_outlined),
+                        SizedBox(width: 4),
+                        Text("Modifier",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600)),
+                      ],
+                    ),
                   ),
-                  _searchedWine != null
-                      ? SearchCard(
-                          context: context,
-                          wineId: _searchedWine!.id,
-                          stopSearchAction: () => setState(() {
-                            _searchedWine = null;
-                          }),
-                        )
-                      : Container(
-                          width: double.infinity,
-                          child: CustomElevatedButton(
-                            title: "Voir tous mes vins",
-                            icon: Icon(Icons.wine_bar_outlined),
-                            backgroundColor: Theme.of(context).primaryColor,
-                            onPress: () =>
-                                Navigator.of(context, rootNavigator: true)
-                                    .pushNamed("/wine/list"),
-                          ),
-                        ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  _countFreeWines > 0
-                      ? Text(
-                          "$_countFreeWines bouteille${_countFreeWines > 1 ? "s" : ""} en vrac"
-                              .toUpperCase(),
-                          style: Theme.of(context).textTheme.headline1,
+                ),
+              )
+            : Container(),
+        child: SafeArea(
+          top: false,
+          child: ListView(
+            padding: const EdgeInsets.all(0),
+            shrinkWrap: true,
+            children: [
+              Card(
+                margin: const EdgeInsets.all(0),
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(0),
+                ),
+                color: Colors.white,
+                child: AnimatedSize(
+                  duration: Duration(milliseconds: 500),
+                  child: _activeCellar != null
+                      ? _drawCellar(
+                          cellar: _activeCellar!,
                         )
                       : Container(),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Column(
-                    children: _listFreeWines.map<Widget>((freeWines) {
-                      Wine wine = freeWines["wine"] as Wine;
-                      int freeQuantity = freeWines["freeQuantity"] as int;
-                      Map<String, dynamic>? enhancedWine =
-                          MyDatabase.getEnhancedWineById(
-                              context: context, wineId: wine.id);
-
-                      if (enhancedWine == null) return Container();
-
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 15),
-                        child: WineItem(
-                          enhancedWine: enhancedWine,
-                          freeQuantity: freeQuantity,
-                          expandable: true,
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ],
+                ),
               ),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: 10,
+                    ),
+                    _searchedWine != null
+                        ? SearchCard(
+                            context: context,
+                            wineId: _searchedWine!.id,
+                            stopSearchAction: () => setState(() {
+                              _searchedWine = null;
+                            }),
+                          )
+                        : Container(
+                            width: double.infinity,
+                            child: CustomElevatedButton(
+                              title: "Voir tous mes vins",
+                              icon: Icon(Icons.wine_bar_outlined),
+                              backgroundColor: Theme.of(context).primaryColor,
+                              onPress: () =>
+                                  Navigator.of(context, rootNavigator: true)
+                                      .pushNamed("/wine/list"),
+                            ),
+                          ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    _countFreeWines > 0
+                        ? Text(
+                            "$_countFreeWines bouteille${_countFreeWines > 1 ? "s" : ""} en vrac"
+                                .toUpperCase(),
+                            style: Theme.of(context).textTheme.headline1,
+                          )
+                        : Container(),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Column(
+                      children: _listFreeWines.map<Widget>((freeWines) {
+                        Wine wine = freeWines["wine"] as Wine;
+                        int freeQuantity = freeWines["freeQuantity"] as int;
+                        Map<String, dynamic>? enhancedWine =
+                            MyDatabase.getEnhancedWineById(
+                                context: context, wineId: wine.id);
+
+                        if (enhancedWine == null) return Container();
+
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 15),
+                          child: WineItem(
+                            enhancedWine: enhancedWine,
+                            freeQuantity: freeQuantity,
+                            expandable: true,
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

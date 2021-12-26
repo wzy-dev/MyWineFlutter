@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mywine/custom/scaffold/main_container.dart';
 import 'package:mywine/shelf.dart';
 
 class AppellationDetailsArguments {

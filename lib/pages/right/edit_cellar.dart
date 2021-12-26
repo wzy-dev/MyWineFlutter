@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:mywine/shelf.dart';
 
 class EditCellarArguments {
@@ -47,6 +46,7 @@ class _EditCellarState extends State<EditCellar> {
               cellarId: cellar.id,
               editable: true,
               sizeCell: 16,
+              hero: false,
             ),
           ),
         ),
@@ -126,6 +126,7 @@ class _EditCellarState extends State<EditCellar> {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
               child: TextInputCard(
                   label: "Nom de la cave",
+                  autofocus: false,
                   value: _name,
                   onChanged: (value) => _name = value),
             ),

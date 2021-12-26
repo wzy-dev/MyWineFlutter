@@ -60,7 +60,8 @@ class ModelMethods {
             tempmax INTEGER,
             yearmin INTEGER,
             yearmax INTEGER,
-            size INTEGER
+            size INTEGER,
+            notes STRING
           )''');
     }
 

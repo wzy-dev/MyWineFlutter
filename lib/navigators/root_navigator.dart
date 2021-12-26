@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mywine/pages/root/edit_wine.dart';
+import 'package:mywine/custom/forms/edit_appellation.dart';
+import 'package:mywine/custom/forms/edit_country.dart';
+import 'package:mywine/custom/forms/edit_region.dart';
+import 'package:mywine/custom/forms/edit_wine.dart';
 import 'package:mywine/shelf.dart';
 
 class CustomRouteBuilders {
@@ -13,11 +16,17 @@ class RootNavigator {
   static MaterialPageRoute onGenerateRoute({
     required BuildContext context,
     required RouteSettings settings,
+    // required bool isLogged,
+    // required void Function(bool) updateLogged,
   }) {
     CustomRouteBuilders customRouteBuilders =
         _routeBuilders(context: context, settings: settings);
     return MaterialPageRoute(
-        builder: (context) => Landing(child: customRouteBuilders.widget),
+        builder: (context) => Landing(
+              child: customRouteBuilders.widget,
+              // isLogged: isLogged,
+              // updateLogged: updateLogged,
+            ),
         fullscreenDialog: customRouteBuilders.fullScreen);
   }
 
@@ -151,9 +160,13 @@ class RootNavigator {
           ),
         );
       case "/add/appellation":
+        Appellation? args = settings.arguments as Appellation?;
+
         return CustomRouteBuilders(
           widget: Scaffold(
-            body: AddAppellation(),
+            body: EditAppellation(
+              appellation: args,
+            ),
           ),
         );
       case "/add/appellation/region":
@@ -168,9 +181,13 @@ class RootNavigator {
           ),
         );
       case "/add/region":
+        Region? args = settings.arguments as Region?;
+
         return CustomRouteBuilders(
           widget: Scaffold(
-            body: AddRegion(),
+            body: EditRegion(
+              region: args,
+            ),
           ),
         );
       case "/add/region/country":
@@ -185,9 +202,11 @@ class RootNavigator {
           ),
         );
       case "/add/country":
+        Country? args = settings.arguments as Country?;
+
         return CustomRouteBuilders(
           widget: Scaffold(
-            body: AddCountry(),
+            body: EditCountry(country: args),
           ),
         );
       default:

@@ -6,7 +6,7 @@ export 'custom/scaffold/scaffold.dart';
 export 'custom/scaffold/main_container.dart';
 
 // Main Widgets
-export 'custom/main_widgets/search_bar.dart';
+export 'custom/main_widgets/text_field.dart';
 export 'custom/main_widgets/shadow_box.dart';
 export 'custom/main_widgets/animated_gradient.dart';
 export 'custom/main_widgets/button.dart';
@@ -26,11 +26,11 @@ export 'custom/forms/wine_form.dart';
 export 'custom/forms/add_wine_appellation.dart';
 export 'custom/forms/add_wine_domain.dart';
 export 'custom/forms/domain_form.dart';
-export 'custom/forms/add_appellation.dart';
+export 'custom/forms/appellation_form.dart';
 export 'custom/forms/add_appellation_region.dart';
-export 'custom/forms/add_region.dart';
+export 'custom/forms/region_form.dart';
 export 'custom/forms/add_region_country.dart';
-export 'custom/forms/add_country.dart';
+export 'custom/forms/country_form.dart';
 
 // Methods
 export 'custom/methods/custom_methods.dart';
@@ -78,7 +78,7 @@ export 'pages/root/stock_block.dart';
 
 // Left
 export 'pages/left/search_tab.dart';
-export 'pages/left/profile.dart';
+export 'pages/left/profile.test.dart';
 
 // Middle
 export 'pages/middle/add_tab.dart';

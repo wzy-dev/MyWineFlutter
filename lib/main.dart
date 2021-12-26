@@ -1,12 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:mywine/database_initializer.dart';
 import 'package:mywine/shelf.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,7 +23,18 @@ void main() {
   ]);
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  // bool _isLogged = true;
+
+  // void _updateLogged(bool newValue) {
+  //   _isLogged = newValue;
+  // }
+
   @override
   Widget build(BuildContext context) {
     return FirebaseInitializer(
@@ -41,10 +50,18 @@ class MyApp extends StatelessWidget {
                     briteDb: briteDb, user: snapshot.data),
                 child: MaterialApp(
                   title: 'MyWine',
+                  localizationsDelegates: [
+                    GlobalMaterialLocalizations.delegate,
+                    GlobalWidgetsLocalizations.delegate,
+                    GlobalCupertinoLocalizations.delegate,
+                  ],
+                  supportedLocales: [Locale('fr', 'FR')],
                   onGenerateRoute: (routeSettings) =>
                       RootNavigator.onGenerateRoute(
                     context: context,
                     settings: routeSettings,
+                    // isLogged: _isLogged,
+                    // updateLogged: _updateLogged,
                   ),
                   theme: ThemeData(
                     // Colors

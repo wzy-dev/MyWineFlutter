@@ -23,6 +23,7 @@ Wine _$WineFromJson(Map<String, dynamic> json) => Wine(
       tempmax: json['tempmax'] as int?,
       yearmin: json['yearmin'] as int?,
       yearmax: json['yearmax'] as int?,
+      notes: json['notes'] as String?,
     );
 
 Map<String, dynamic> _$WineToJson(Wine instance) => <String, dynamic>{
@@ -42,4 +43,5 @@ Map<String, dynamic> _$WineToJson(Wine instance) => <String, dynamic>{
       'tempmax': instance.tempmax,
       'yearmin': instance.yearmin,
       'yearmax': instance.yearmax,
+      'notes': instance.notes,
     };

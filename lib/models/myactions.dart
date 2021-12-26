@@ -178,6 +178,24 @@ class MyActions {
             context: context, object: domain, isNew: true));
   }
 
+  static Future<void> deleteDomain({
+    required BuildContext context,
+    required Domain? domain,
+  }) async {
+    BriteDatabase db =
+        MyDatabase.getBriteDatabase(context: context, listen: false);
+
+    if (domain == null) return;
+
+    domain.editedAt = InitializerModel.getTimestamp();
+    domain.enabled = false;
+
+    await db.update("domains", domain.toJson(), where: 'id = ?', whereArgs: [
+      domain.id
+    ]).then(
+        (value) => _updateFirestore<Domain>(context: context, object: domain));
+  }
+
   static Future<void> updateDomain({
     required BuildContext context,
     required Domain? domain,
@@ -208,6 +226,46 @@ class MyActions {
             context: context, object: appellation, isNew: true));
   }
 
+  static Future<void> deleteAppellation({
+    required BuildContext context,
+    required Appellation? appellation,
+  }) async {
+    BriteDatabase db =
+        MyDatabase.getBriteDatabase(context: context, listen: false);
+
+    if (appellation == null) return;
+
+    appellation.editedAt = InitializerModel.getTimestamp();
+    appellation.enabled = false;
+
+    await db.update("appellations", appellation.toJson(),
+        where: 'id = ?',
+        whereArgs: [
+          appellation.id
+        ]).then((value) =>
+        _updateFirestore<Appellation>(context: context, object: appellation));
+  }
+
+  static Future<void> updateAppellation({
+    required BuildContext context,
+    required Appellation? appellation,
+  }) async {
+    BriteDatabase db =
+        MyDatabase.getBriteDatabase(context: context, listen: false);
+
+    if (appellation == null) return;
+
+    appellation.editedAt = InitializerModel.getTimestamp();
+    appellation.enabled = true;
+
+    await db.update("appellations", appellation.toJson(),
+        where: 'id = ?',
+        whereArgs: [
+          appellation.id
+        ]).then((value) =>
+        _updateFirestore<Appellation>(context: context, object: appellation));
+  }
+
   static Future<void> addRegion({
     required BuildContext context,
     required Region region,
@@ -220,6 +278,42 @@ class MyActions {
             context: context, object: region, isNew: true));
   }
 
+  static Future<void> deleteRegion({
+    required BuildContext context,
+    required Region? region,
+  }) async {
+    BriteDatabase db =
+        MyDatabase.getBriteDatabase(context: context, listen: false);
+
+    if (region == null) return;
+
+    region.editedAt = InitializerModel.getTimestamp();
+    region.enabled = false;
+
+    await db.update("regions", region.toJson(), where: 'id = ?', whereArgs: [
+      region.id
+    ]).then(
+        (value) => _updateFirestore<Region>(context: context, object: region));
+  }
+
+  static Future<void> updateRegion({
+    required BuildContext context,
+    required Region? region,
+  }) async {
+    BriteDatabase db =
+        MyDatabase.getBriteDatabase(context: context, listen: false);
+
+    if (region == null) return;
+
+    region.editedAt = InitializerModel.getTimestamp();
+    region.enabled = true;
+
+    await db.update("regions", region.toJson(), where: 'id = ?', whereArgs: [
+      region.id
+    ]).then(
+        (value) => _updateFirestore<Region>(context: context, object: region));
+  }
+
   static Future<void> addCountry({
     required BuildContext context,
     required Country country,
@@ -230,6 +324,42 @@ class MyActions {
     await db.insert("countries", country.toJson()).then((value) =>
         _updateFirestore<Country>(
             context: context, object: country, isNew: true));
+  }
+
+  static Future<void> deleteCountry({
+    required BuildContext context,
+    required Country? country,
+  }) async {
+    BriteDatabase db =
+        MyDatabase.getBriteDatabase(context: context, listen: false);
+
+    if (country == null) return;
+
+    country.editedAt = InitializerModel.getTimestamp();
+    country.enabled = false;
+
+    await db.update("countries", country.toJson(), where: 'id = ?', whereArgs: [
+      country.id
+    ]).then((value) =>
+        _updateFirestore<Country>(context: context, object: country));
+  }
+
+  static Future<void> updateCountry({
+    required BuildContext context,
+    required Country? country,
+  }) async {
+    BriteDatabase db =
+        MyDatabase.getBriteDatabase(context: context, listen: false);
+
+    if (country == null) return;
+
+    country.editedAt = InitializerModel.getTimestamp();
+    country.enabled = true;
+
+    await db.update("countries", country.toJson(), where: 'id = ?', whereArgs: [
+      country.id
+    ]).then((value) =>
+        _updateFirestore<Country>(context: context, object: country));
   }
 
   static Future<void> addCellar({

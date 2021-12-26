@@ -147,6 +147,7 @@ class InitializerModel {
     int? tempmax,
     int? yearmin,
     int? yearmax,
+    String? notes,
   }) {
     int timestamp = getTimestamp();
     return Wine(
@@ -165,6 +166,7 @@ class InitializerModel {
       yearmin: yearmin,
       yearmax: yearmax,
       owner: _user!.uid,
+      notes: notes,
     );
   }
 }

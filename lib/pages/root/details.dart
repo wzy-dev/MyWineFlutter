@@ -17,6 +17,7 @@ class DetailsScaffold extends StatefulWidget {
     required this.millesime,
     this.editMillesime,
     this.stockWidget,
+    this.notes,
   }) : super(key: key);
 
   final BuildContext context;
@@ -31,6 +32,7 @@ class DetailsScaffold extends StatefulWidget {
   final int millesime;
   final Function(double)? editMillesime;
   final Widget? stockWidget;
+  final String? notes;
 
   @override
   _DetailsScaffoldState createState() => _DetailsScaffoldState();
@@ -166,6 +168,38 @@ class _DetailsScaffoldState extends State<DetailsScaffold> {
           tempmin: widget.tempmin,
           tempmax: widget.tempmax,
         ),
+        SizedBox(height: 20),
+        widget.notes != null
+            ? CustomCard(
+                margin: const EdgeInsets.all(0),
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                      left: 20, top: 20, right: 20, bottom: 5),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Annotations",
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline3!
+                            .copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10, bottom: 20),
+                        child: Text(
+                          widget.notes!,
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline3!
+                              .copyWith(fontSize: 17),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              )
+            : SizedBox(),
       ],
     );
   }

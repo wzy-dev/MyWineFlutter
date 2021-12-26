@@ -1,6 +1,3 @@
-// ignore: import_of_legacy_library_into_null_safe
-import 'package:fuzzy/data/fuzzy_options.dart';
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:fuzzy/fuzzy.dart';
 import 'package:mywine/shelf.dart';
 import 'package:string_similarity/string_similarity.dart';

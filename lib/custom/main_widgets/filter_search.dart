@@ -2,6 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:mywine/shelf.dart';
 import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 
+class GlobalKeyWithItemId {
+  const GlobalKeyWithItemId({required this.id, required this.globalKey});
+
+  final String id;
+  final GlobalKey globalKey;
+}
+
 class FilterSearch extends StatefulWidget {
   const FilterSearch({
     Key? key,
@@ -74,6 +81,9 @@ class _FilterSearchState extends State<FilterSearch> {
   late List<Region> _sortedRegionsData;
   late List<Country> _sortedCountriesData;
 
+  List<GlobalKeyWithItemId> _keys = [];
+  String _query = "";
+
   // If multiple
   late List<String> _selectedList;
 
@@ -113,71 +123,172 @@ class _FilterSearchState extends State<FilterSearch> {
     return;
   }
 
-  Widget _drawPopupMenu(dynamic item) {
+  Widget _drawPopupMenu(dynamic item, int index) {
     return (item["owner"] != null && item["owner"] != "admin"
         ? widget.addPath != null
-            ? PopupMenuButton(
-                itemBuilder: (contextg) => [
-                  PopupMenuItem(
-                    onTap: () => Future(
-                      () async {
-                        String? name = await Navigator.of(context).pushNamed(
-                                widget.addPath!,
-                                arguments: _getArgumentsToEdit(item["id"]))
-                            as String?;
+            ? IconButton(
+                key: _keys
+                    .firstWhere((element) => element.id == item["id"])
+                    .globalKey,
+                onPressed: () {
+                  GlobalKey key = _keys
+                      .firstWhere((element) => element.id == item["id"])
+                      .globalKey;
 
-                        if (name == null) return;
+                  if (key.currentContext == null) return null;
+                  RenderBox box =
+                      key.currentContext!.findRenderObject() as RenderBox;
+                  Offset position = box.localToGlobal(Offset.zero);
 
-                        setState(() {
-                          if (_selectedRadio == item["name"])
-                            _selectedRadio = name;
-                          item["name"] = name;
-                        });
-                      },
-                    ),
-                    textStyle: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).hintColor,
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.construction_outlined,
+                  showMenu(
+                    context: context,
+                    position: RelativeRect.fromLTRB(
+                        position.dx, position.dy + 10, 35, 0),
+                    items: [
+                      PopupMenuItem(
+                        onTap: () => Future(
+                          () async {
+                            String? name = await Navigator.of(context)
+                                    .pushNamed(widget.addPath!,
+                                        arguments:
+                                            _getArgumentsToEdit(item["id"]))
+                                as String?;
+
+                            if (name == null) return;
+
+                            setState(() {
+                              if (_selectedRadio == item["name"])
+                                _selectedRadio = name;
+                              item["name"] = name;
+                              _scrollListChildren.sort((a, b) =>
+                                  CustomMethods.removeAccent(
+                                          a["name"].toLowerCase())
+                                      .compareTo(CustomMethods.removeAccent(
+                                          b["name"].toLowerCase())));
+                            });
+                          },
+                        ),
+                        textStyle: TextStyle(
+                          fontWeight: FontWeight.bold,
                           color: Theme.of(context).hintColor,
                         ),
-                        SizedBox(width: 5),
-                        Text(
-                          "Modifier".toUpperCase(),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.construction_outlined,
+                              color: Theme.of(context).hintColor,
+                            ),
+                            SizedBox(width: 5),
+                            Text(
+                              "Modifier".toUpperCase(),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
-                  _showDeleteItem(item["id"]),
-                ],
+                      ),
+                      _showDeleteItem(id: item["id"], name: item["name"]),
+                    ],
+                  );
+                },
                 icon: Icon(Icons.more_vert_outlined),
               )
             : Container()
         : Container());
   }
 
-  PopupMenuItem _showDeleteItem(String id) {
+  void _deleteItem({
+    required String id,
+    required String name,
+    required Function deleteFunction,
+  }) {
+    if (_selectedRadio == name) _selectedRadio = null;
+    deleteFunction();
+  }
+
+  _refreshListAfterDelete(
+      {required List listWhereDelete, required String name}) {
+    setState(() {
+      listWhereDelete.removeWhere((data) => data.name == name);
+      _data = [
+        ..._sortedAppellationsData,
+        ..._sortedDomainsData,
+        ..._sortedRegionsData,
+        ..._sortedCountriesData,
+      ];
+      _onChangeQuery(_query);
+    });
+  }
+
+  PopupMenuItem _showDeleteItem({required String id, required String name}) {
     late int wineQuantity;
+    late Future<void> Function() deleteFunction;
     switch (widget.type) {
       case "appellation":
         wineQuantity = MyDatabase.getQuantityOfAppellation(
             context: context, appellationId: id);
+
+        deleteFunction = () {
+          _refreshListAfterDelete(
+              listWhereDelete: _sortedAppellationsData, name: name);
+
+          Appellation? appellation = MyDatabase.getAppellationById(
+              context: context, appellationId: id, listen: false);
+
+          return MyActions.deleteAppellation(
+            context: context,
+            appellation: appellation,
+          );
+        };
         break;
       case "region":
         wineQuantity =
             MyDatabase.getQuantityOfRegion(context: context, regionId: id);
+
+        deleteFunction = () {
+          _refreshListAfterDelete(
+              listWhereDelete: _sortedRegionsData, name: name);
+
+          Region? region = MyDatabase.getRegionById(
+              context: context, regionId: id, listen: false);
+
+          return MyActions.deleteRegion(
+            context: context,
+            region: region,
+          );
+        };
         break;
       case "country":
         wineQuantity =
             MyDatabase.getQuantityOfCountry(context: context, countryId: id);
+
+        deleteFunction = () {
+          _refreshListAfterDelete(
+              listWhereDelete: _sortedCountriesData, name: name);
+
+          Country? country = MyDatabase.getCountryById(
+              context: context, countryId: id, listen: false);
+
+          return MyActions.deleteCountry(
+            context: context,
+            country: country,
+          );
+        };
         break;
       case "domain":
         wineQuantity =
             MyDatabase.getQuantityOfDomain(context: context, domainId: id);
+
+        deleteFunction = () {
+          _refreshListAfterDelete(
+              listWhereDelete: _sortedDomainsData, name: name);
+
+          Domain? domain = MyDatabase.getDomainById(
+              context: context, domainId: id, listen: false);
+
+          return MyActions.deleteDomain(
+            context: context,
+            domain: domain,
+          );
+        };
         break;
       default:
         return PopupMenuItem(
@@ -187,7 +298,10 @@ class _FilterSearchState extends State<FilterSearch> {
 
     return PopupMenuItem(
       enabled: wineQuantity == 0,
-      onTap: wineQuantity == 0 ? () => print("retirer") : null,
+      onTap: wineQuantity == 0
+          ? () =>
+              _deleteItem(id: id, name: name, deleteFunction: deleteFunction)
+          : null,
       textStyle: TextStyle(
         fontWeight: FontWeight.bold,
         color: Theme.of(context).colorScheme.secondary,
@@ -241,6 +355,10 @@ class _FilterSearchState extends State<FilterSearch> {
       ..._sortedCountriesData,
     ];
 
+    _data.forEach((data) {
+      _keys.add(GlobalKeyWithItemId(id: data.id, globalKey: new GlobalKey()));
+    });
+
     // Evite que le state du filter_search.dart influence filters.dart
     _selectedList = List<String>.from(widget.initialSelection);
     _selectedRadio =
@@ -282,6 +400,26 @@ class _FilterSearchState extends State<FilterSearch> {
     });
   }
 
+  _onChangeQuery(String query) {
+    _query = query;
+
+    if (query == "") {
+      _drawChildrenList(_data);
+      return;
+    }
+
+    List<dynamic> resultsList = [];
+    SearchMethods.getResults(
+      query: query,
+      appellations: _sortedAppellationsData,
+      domains: _sortedDomainsData,
+      regions: _sortedRegionsData,
+      countries: _sortedCountriesData,
+    ).forEach((result) => resultsList.add(result.item["entity"][0]));
+
+    _drawChildrenList(resultsList);
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -297,27 +435,10 @@ class _FilterSearchState extends State<FilterSearch> {
                     horizontal: 15,
                     vertical: 30,
                   ),
-                  child: CustomTextField(
+                  child: CustomTextFieldWithIcon(
                     context: context,
                     autofocus: true,
-                    onChange: (query) {
-                      if (query == "") {
-                        _drawChildrenList(_data);
-                        return;
-                      }
-
-                      List<dynamic> resultsList = [];
-                      SearchMethods.getResults(
-                        query: query,
-                        appellations: widget.appellationsData,
-                        domains: widget.domainsData,
-                        regions: widget.regionsData,
-                        countries: widget.countriesData,
-                      ).forEach((result) =>
-                          resultsList.add(result.item["entity"][0]));
-
-                      _drawChildrenList(resultsList);
-                    },
+                    onChange: (query) => _onChangeQuery(query),
                     placeholder: widget.placeholder,
                   ),
                 ),
@@ -363,6 +484,8 @@ class _FilterSearchState extends State<FilterSearch> {
                             : null,
                         controller: _scrollController,
                         child: ListView.separated(
+                          keyboardDismissBehavior:
+                              ScrollViewKeyboardDismissBehavior.onDrag,
                           separatorBuilder: (BuildContext context, int i) =>
                               Divider(
                             height: 1,
@@ -432,7 +555,7 @@ class _FilterSearchState extends State<FilterSearch> {
                                                 Text(_scrollListChildren[i]
                                                     ["name"]),
                                                 _drawPopupMenu(
-                                                    _scrollListChildren[i]),
+                                                    _scrollListChildren[i], i),
                                               ],
                                             ),
                                           ),

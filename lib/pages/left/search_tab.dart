@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:mywine/models/model_methods.dart';
 import 'package:mywine/shelf.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -60,29 +62,110 @@ class _SearchTabState extends State<SearchTab> {
           margin: const EdgeInsets.only(right: 10),
           child: InkWell(
             child: Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.secondary,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    spreadRadius: 2,
-                    color: Theme.of(context).colorScheme.primary,
-                    offset: Offset(0, 0),
-                    blurRadius: 7,
-                  )
-                ],
-              ),
-              child: IconButton(
-                padding: const EdgeInsets.all(0),
-                onPressed: () => Navigator.of(context).pushNamed("/profile"),
-                iconSize: 27,
-                icon: Icon(
-                  Icons.account_circle_outlined,
-                  size: 27,
-                  color: Theme.of(context).colorScheme.primary,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.secondary,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      spreadRadius: 2,
+                      color: Theme.of(context).colorScheme.primary,
+                      offset: Offset(0, 0),
+                      blurRadius: 7,
+                    )
+                  ],
                 ),
-              ),
-            ),
+                child: PopupMenuButton<String>(
+                  padding: const EdgeInsets.all(0),
+                  onSelected: (String value) {
+                    switch (value) {
+                      case "logout":
+                        FirebaseAuth.instance.signOut().then(
+                          (value) {
+                            GoogleSignIn().signOut();
+                            ModelMethods.initDb(drop: true);
+                          },
+                        );
+                        break;
+                      // case "login":
+                      //   Navigator.of(context).pushNamed("/profile");
+                      //   break;
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    // !FirebaseAuth.instance.currentUser!.isAnonymous
+                    //     ?
+                    PopupMenuItem(
+                      value: "logout",
+                      child: Row(
+                        children: [
+                          Text(
+                            FirebaseAuth.instance.currentUser!.email!
+                                .toLowerCase(),
+                            style: TextStyle(
+                              fontSize: 15,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: "logout",
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.logout_rounded,
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            "Déconnexion".toUpperCase(),
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                    // : PopupMenuItem(
+                    //     value: "login",
+                    //     child: Row(
+                    //       children: [
+                    //         Icon(
+                    //           Icons.backup_rounded,
+                    //           color: Theme.of(context).hintColor,
+                    //         ),
+                    //         SizedBox(width: 10),
+                    //         Text(
+                    //           "Connexion".toUpperCase(),
+                    //           style: TextStyle(
+                    //             fontSize: 16,
+                    //             fontWeight: FontWeight.bold,
+                    //             color: Theme.of(context).hintColor,
+                    //           ),
+                    //         ),
+                    //       ],
+                    //     ),
+                    //   ),
+                  ],
+                  icon: Icon(
+                    Icons.account_circle_outlined,
+                    size: 27,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                )
+                // child: IconButton(
+                //   padding: const EdgeInsets.all(0),
+                //   onPressed: () => Navigator.of(context).pushNamed("/profile"),
+                //   iconSize: 27,
+                //   icon: Icon(
+                //     Icons.account_circle_outlined,
+                //     size: 27,
+                //     color: Theme.of(context).colorScheme.primary,
+                //   ),
+                // ),
+                ),
           ),
         ),
         child: Column(
@@ -106,7 +189,7 @@ class _SearchTabState extends State<SearchTab> {
                   SizedBox(
                     height: 20,
                   ),
-                  CustomTextField(
+                  CustomTextFieldWithIcon(
                     context: context,
                     onChange: _onSearch,
                     focusNode: widget.focusNode,

@@ -1,9 +1,5 @@
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter/cupertino.dart';
-import 'package:fuzzy/data/fuzzy_options.dart';
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:fuzzy/data/result.dart';
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:fuzzy/fuzzy.dart';
 import 'package:googleapis/vision/v1.dart' as vision;
 import 'package:mywine/shelf.dart';
@@ -25,10 +21,6 @@ class ResultSearchVision {
 
 class Vision {
   static String slice({required String subject, int start = 0, int? end}) {
-    if (subject is! String) {
-      return '';
-    }
-
     int _realEnd;
     int _realStart = start < 0 ? subject.length + start : start;
     if (end is! int) {
