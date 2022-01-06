@@ -7,21 +7,28 @@ class RekognizeProvider {
       CredentialsProvider().client;
 
   static Future<BatchAnnotateImagesResponse> search(String image) async {
-    var _vision = VisionApi(await _client);
-    var _api = _vision.images;
-    var _response = await _api.annotate(BatchAnnotateImagesRequest.fromJson({
-      "requests": [
-        {
-          "image": {"content": image},
-          "features": [
-            {
-              "type": "DOCUMENT_TEXT_DETECTION",
-            }
-          ]
-        }
-      ]
-    }));
+    return _client.then((value) async {
+      var _vision = VisionApi(value);
 
-    return _response;
+      var _api = _vision.images;
+      var _response = await _api.annotate(BatchAnnotateImagesRequest.fromJson({
+        "requests": [
+          {
+            "image": {"content": image},
+            "features": [
+              {
+                "type": "DOCUMENT_TEXT_DETECTION",
+              }
+            ]
+          }
+        ]
+      }));
+
+      return _response;
+    }).timeout(Duration(seconds: 10), onTimeout: () async {
+      return BatchAnnotateImagesResponse();
+    }).onError((error, stackTrace) {
+      return BatchAnnotateImagesResponse();
+    });
   }
 }

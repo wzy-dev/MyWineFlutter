@@ -12,15 +12,16 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/camerawesome-0.3.0+1/android" />
-            <option value="$PROJECT_DIR$/../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/cloud_firestore-3.1.0/android" />
-            <option value="$PROJECT_DIR$/../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/firebase_auth-3.1.2/android" />
-            <option value="$PROJECT_DIR$/../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/firebase_core-1.10.0/android" />
-            <option value="$PROJECT_DIR$/../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/flutter_image_compress-1.1.0/android" />
-            <option value="$PROJECT_DIR$/../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/google_sign_in-5.2.1/android" />
-            <option value="$PROJECT_DIR$/../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/path_provider-2.0.6/android" />
-            <option value="$PROJECT_DIR$/../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/permission_handler-8.2.6/android" />
-            <option value="$PROJECT_DIR$/../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/sqflite-2.0.0+4/android" />
+            <option value="$USER_HOME$/Flutter/.pub-cache/hosted/pub.dartlang.org/camerawesome-0.3.0+1/android" />
+            <option value="$USER_HOME$/Flutter/.pub-cache/hosted/pub.dartlang.org/cloud_firestore-3.1.4/android" />
+            <option value="$USER_HOME$/Flutter/.pub-cache/hosted/pub.dartlang.org/firebase_auth-3.3.3/android" />
+            <option value="$USER_HOME$/Flutter/.pub-cache/hosted/pub.dartlang.org/firebase_core-1.10.5/android" />
+            <option value="$USER_HOME$/Flutter/.pub-cache/hosted/pub.dartlang.org/flutter_image_compress-1.1.0/android" />
+            <option value="$USER_HOME$/Flutter/.pub-cache/hosted/pub.dartlang.org/flutter_keyboard_visibility-5.1.0/android" />
+            <option value="$USER_HOME$/Flutter/.pub-cache/hosted/pub.dartlang.org/google_sign_in-5.2.1/android" />
+            <option value="$USER_HOME$/Flutter/.pub-cache/hosted/pub.dartlang.org/path_provider_android-2.0.9/android" />
+            <option value="$USER_HOME$/Flutter/.pub-cache/hosted/pub.dartlang.org/permission_handler-8.3.0/android" />
+            <option value="$USER_HOME$/Flutter/.pub-cache/hosted/pub.dartlang.org/sqflite-2.0.1/android" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

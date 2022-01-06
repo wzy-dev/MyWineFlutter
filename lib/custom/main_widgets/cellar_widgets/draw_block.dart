@@ -8,6 +8,8 @@ class DrawBlock extends StatefulWidget {
     this.blockId,
     required this.nbLine,
     required this.nbColumn,
+    this.selectMultiple = false,
+    this.setSelectMultiple,
     this.selectedCoor,
     this.selectedCoors = const [],
     this.onPress,
@@ -18,6 +20,8 @@ class DrawBlock extends StatefulWidget {
   final String? blockId;
   final int nbLine;
   final int nbColumn;
+  final bool selectMultiple;
+  final Function(bool)? setSelectMultiple;
   final Map<String, int>? selectedCoor;
   final List<Map<String, dynamic>> selectedCoors;
   final Function? onPress;
@@ -67,13 +71,12 @@ class _DrawBlockState extends State<DrawBlock> {
 
     // Multiple
     if (widget.selectedCoors.length > 0) {
-      widget.selectedCoors.indexWhere((e) =>
-                  e["x"] == coor["x"] &&
-                  e["y"] == coor["y"] &&
-                  e["blockId"] == widget.blockId) >
-              -1
-          ? isSelected = true
-          : isSelected = false;
+      isSelected = widget.selectedCoors.indexWhere((e) =>
+              e["x"] == coor["x"] &&
+              e["y"] == coor["y"] &&
+              e["blockId"] == widget.blockId) >
+          -1;
+      // widget.selectedCoors.forEach((e) => print(e));
     }
 
     _focusCoor != null &&
@@ -117,6 +120,19 @@ class _DrawBlockState extends State<DrawBlock> {
                 });
               }
             : null,
+        onLongPress: widget.onPress != null && wineId != null
+            ? () {
+                if (widget.setSelectMultiple != null)
+                  widget.setSelectMultiple!(!widget.selectMultiple);
+
+                if (!isSelected) {
+                  return widget.onPress!(
+                    {"id": wineId, "coor": coor, "blockId": widget.blockId},
+                    isSelected,
+                  );
+                }
+              }
+            : null,
         child: AnimatedContainer(
           clipBehavior: Clip.hardEdge,
           height: double.infinity,
@@ -144,7 +160,7 @@ class _DrawBlockState extends State<DrawBlock> {
                     : 0,
                 child: Icon(
                   (isSelected
-                      ? _stockMultipleInEmpty
+                      ? _stockMultipleInEmpty || widget.selectMultiple
                           ? Icons.done_all_outlined
                           : Icons.check_outlined
                       : widget.searchedWine != null &&

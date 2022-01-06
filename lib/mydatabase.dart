@@ -66,7 +66,7 @@ class MyDatabase {
       {required BuildContext context,
       bool listen = true,
       required String blockId,
-      required Map<String, int> coor}) {
+      required Map<String, dynamic> coor}) {
     return getPositions(context: context, listen: listen).firstWhere(
         (position) =>
             position.block == blockId &&

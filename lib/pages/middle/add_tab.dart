@@ -123,9 +123,11 @@ class _AddTabState extends State<AddTab> with WidgetsBindingObserver {
             minHeight: 700,
           ) ??
           File(filePath);
+
       RekognizeProvider.search(base64Encode(fileResized.readAsBytesSync()))
           .then((response) {
-        List<vision.AnnotateImageResponse> ocr = response.toJson()["responses"];
+        List<vision.AnnotateImageResponse> ocr =
+            response.toJson()["responses"] ?? [];
 
         ocr.forEach((anot) async {
           vision.TextAnnotation? list = anot.fullTextAnnotation;

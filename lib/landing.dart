@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:mywine/shelf.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:the_apple_sign_in/the_apple_sign_in.dart' as appleSignin;
 
 class Landing extends StatefulWidget {
   const Landing({Key? key, required this.child}) : super(key: key);
@@ -20,6 +22,79 @@ class _LandingState extends State<Landing> {
   String? _errorPassword;
   String? _errorEmail;
   String? _successPassword;
+  bool _supportsAppleSignIn = false;
+
+  @override
+  void initState() {
+    if (Platform.isIOS) {
+      appleSignin.TheAppleSignIn.isAvailable()
+          .then((isAvailable) => _supportsAppleSignIn = isAvailable);
+    }
+    super.initState();
+  }
+
+  static Future<User?> signInWithApple({required BuildContext context}) async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? user;
+
+    try {
+      final appleSignin.AuthorizationResult result =
+          await appleSignin.TheAppleSignIn.performRequests([
+        appleSignin.AppleIdRequest(requestedScopes: [
+          appleSignin.Scope.email,
+        ])
+      ]);
+
+      print(result.status);
+
+      switch (result.status) {
+        case appleSignin.AuthorizationStatus.authorized:
+          try {
+            print("successfull sign in");
+
+            final appleSignin.AppleIdCredential? appleIdCredential =
+                result.credential;
+
+            String? idToken;
+            String? accessToken;
+
+            if (appleIdCredential != null) {
+              if (appleIdCredential.identityToken != null)
+                idToken = String.fromCharCodes(
+                    appleIdCredential.identityToken as Iterable<int>);
+
+              if (appleIdCredential.authorizationCode != null)
+                accessToken = String.fromCharCodes(
+                    appleIdCredential.authorizationCode as Iterable<int>);
+            }
+
+            OAuthProvider oAuthProvider = new OAuthProvider("apple.com");
+            final AuthCredential credential = oAuthProvider.credential(
+              idToken: idToken,
+              accessToken: accessToken,
+            );
+            final UserCredential userCredential =
+                await auth.signInWithCredential(credential);
+
+            user = userCredential.user;
+
+            return user;
+          } catch (e) {
+            print("error");
+          }
+          break;
+        case appleSignin.AuthorizationStatus.error:
+          // do something
+          break;
+
+        case appleSignin.AuthorizationStatus.cancelled:
+          print('User cancelled');
+          break;
+      }
+    } catch (error) {
+      print("error with apple sign in");
+    }
+  }
 
   static Future<User?> signInWithGoogle({required BuildContext context}) async {
     FirebaseAuth auth = FirebaseAuth.instance;
@@ -268,7 +343,7 @@ class _LandingState extends State<Landing> {
                 backgroundColor: Colors.transparent,
                 elevation: 0,
                 systemOverlayStyle: SystemUiOverlayStyle(
-                  statusBarBrightness: Brightness.dark,
+                  statusBarBrightness: Brightness.light,
                   systemNavigationBarIconBrightness: Brightness.dark,
                   statusBarIconBrightness: Brightness.dark,
                 ),
@@ -438,6 +513,24 @@ class _LandingState extends State<Landing> {
                                         style: TextStyle(color: Colors.black54),
                                       ),
                                     ),
+                                    _supportsAppleSignIn
+                                        ? Container(
+                                            margin: const EdgeInsets.only(
+                                                bottom: 15),
+                                            child:
+                                                appleSignin.AppleSignInButton(
+                                              type: appleSignin
+                                                  .ButtonType.continueButton,
+                                              cornerRadius: 10,
+                                              buttonText:
+                                                  "Continuer avec Apple",
+                                              style: appleSignin
+                                                  .ButtonStyle.whiteOutline,
+                                              onPressed: () => signInWithApple(
+                                                  context: context),
+                                            ),
+                                          )
+                                        : SizedBox(),
                                     Container(
                                       width: double.infinity,
                                       height: 50,

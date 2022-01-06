@@ -7,7 +7,7 @@
   
   <!-- (android:usesCleartextTraffic) HTTP Request in debug -->
    <application
-        android:label="mywine"
+        android:label="MyWine"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true" >
         <activity

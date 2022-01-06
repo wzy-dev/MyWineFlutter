@@ -78,7 +78,6 @@ export 'pages/root/stock_block.dart';
 
 // Left
 export 'pages/left/search_tab.dart';
-export 'pages/left/profile.test.dart';
 
 // Middle
 export 'pages/middle/add_tab.dart';

@@ -25,12 +25,13 @@ class BlockTab extends StatefulWidget {
 
 class _BlockTabState extends State<BlockTab> {
   List<Map<String, dynamic>?> _enhancedWine = [];
-  Map<String, int>? _selectedCoor;
+  List<Map<String, dynamic>> _selectedCoors = [];
   late Wine? _searchedWine;
   late final DrawBlock _originBlock;
   late final Function? _resetSearch;
   late final String _cellarId;
   final int _sizeCell = 40;
+  bool _selectMultiple = false;
 
   @override
   void initState() {
@@ -96,10 +97,10 @@ class _BlockTabState extends State<BlockTab> {
           enhancedWine: _enhancedWine,
           hide: () => _enhancedWine.add({}),
           index: index,
-          coor: _selectedCoor,
+          coors: _selectedCoors,
           blockId: _originBlock.blockId!,
           resetSelected: () => setState(() {
-                _selectedCoor = null;
+                _selectedCoors = [];
               })));
     }
 
@@ -139,13 +140,52 @@ class _BlockTabState extends State<BlockTab> {
                         blockId: originBlock.blockId,
                         nbColumn: originBlock.nbColumn,
                         nbLine: originBlock.nbLine,
-                        selectedCoor: _selectedCoor,
+                        selectedCoors: _selectedCoors,
                         searchedWine: searchedWine,
+                        selectMultiple: _selectMultiple,
+                        setSelectMultiple: (bool value) => setState(() {
+                          _selectMultiple = value;
+
+                          if (!value && _selectedCoors.length > 0) {
+                            _selectedCoors = [_selectedCoors.last];
+                          }
+                        }),
                         onPress: (Map<String, dynamic> coorPressed,
                             bool isEvenSelected) {
+                          if (_selectMultiple) {
+                            setState(() {
+                              isEvenSelected
+                                  ? _selectedCoors.removeWhere((e) =>
+                                      e["x"] == coorPressed["coor"]["x"] &&
+                                      e["y"] == coorPressed["coor"]["y"] &&
+                                      e["blockId"] == coorPressed["blockId"])
+                                  : _selectedCoors.add({
+                                      "x": coorPressed["coor"]["x"],
+                                      "y": coorPressed["coor"]["y"],
+                                      "blockId": coorPressed["blockId"]
+                                    });
+                              _selectedCoors.length > 0
+                                  ? _enhancedWine.add(
+                                      MyDatabase.getEnhancedWineById(
+                                        context: context,
+                                        listen: false,
+                                        wineId: coorPressed["id"],
+                                      ),
+                                    )
+                                  : _enhancedWine.add({});
+                            });
+                            return;
+                          }
+
                           if (isEvenSelected == true) return;
                           setState(() {
-                            _selectedCoor = coorPressed["coor"];
+                            _selectedCoors = [
+                              {
+                                "x": coorPressed["coor"]["x"],
+                                "y": coorPressed["coor"]["y"],
+                                "blockId": coorPressed["blockId"]
+                              }
+                            ];
                             _enhancedWine.add(
                               MyDatabase.getEnhancedWineById(
                                 context: context,
@@ -169,19 +209,19 @@ class _BlockTabState extends State<BlockTab> {
 }
 
 class CarouselItem extends StatefulWidget {
-  const CarouselItem(
-      {Key? key,
-      required this.enhancedWine,
-      required this.index,
-      required this.coor,
-      required this.blockId,
-      required this.resetSelected,
-      required this.hide})
-      : super(key: key);
+  const CarouselItem({
+    Key? key,
+    required this.enhancedWine,
+    required this.index,
+    required this.blockId,
+    required this.resetSelected,
+    required this.hide,
+    this.coors = const [],
+  }) : super(key: key);
 
   final List<Map<String, dynamic>?> enhancedWine;
   final int index;
-  final Map<String, int>? coor;
+  final List<Map<String, dynamic>> coors;
   final String blockId;
   final Function resetSelected;
   final Function hide;
@@ -278,48 +318,55 @@ class _CarouselItemState extends State<CarouselItem> {
                           backgroundColor: Color.fromRGBO(26, 143, 52, 1),
                         ),
                         CustomFlatButton(
-                          title: "Boire cette bouteille",
+                          title: widget.coors.length > 1
+                              ? "Boire ces bouteilles"
+                              : "Boire cette bouteille",
                           icon: Icon(Icons.wine_bar_outlined),
                           backgroundColor:
                               Theme.of(context).colorScheme.secondary,
                           onPress: () {
                             widget.hide();
                             widget.resetSelected();
-                            MyActions.drinkWine(
-                              context: context,
-                              wine: MyDatabase.getWineById(
+                            widget.coors.forEach((coor) {
+                              MyActions.drinkWine(
+                                context: context,
+                                wine: MyDatabase.getWineById(
+                                    context: context,
+                                    listen: false,
+                                    wineId: _wine!["id"]),
+                                position:
+                                    MyDatabase.getPositionByBlockIdAndCoor(
                                   context: context,
                                   listen: false,
-                                  wineId: _wine!["id"]),
-                              position: widget.coor != null
-                                  ? MyDatabase.getPositionByBlockIdAndCoor(
-                                      context: context,
-                                      listen: false,
-                                      blockId: widget.blockId,
-                                      coor: widget.coor!,
-                                    )
-                                  : null,
-                            );
+                                  blockId: widget.blockId,
+                                  coor: coor,
+                                ),
+                              );
+                            });
                           },
                         ),
                         CustomFlatButton(
-                          title: "Mettre cette bouteille en vrac",
+                          title: widget.coors.length > 1
+                              ? "Mettre ces bouteilles en vrac"
+                              : "Mettre cette bouteille en vrac",
                           icon: Icon(Icons.logout_outlined),
                           backgroundColor: Colors.orange,
                           onPress: () {
                             widget.hide();
                             widget.resetSelected();
-                            MyActions.deletePosition(
-                              context: context,
-                              position: widget.coor != null
-                                  ? MyDatabase.getPositionByBlockIdAndCoor(
-                                      context: context,
-                                      listen: false,
-                                      blockId: widget.blockId,
-                                      coor: widget.coor!,
-                                    )
-                                  : null,
-                            );
+
+                            widget.coors.forEach((coor) {
+                              MyActions.deletePosition(
+                                context: context,
+                                position:
+                                    MyDatabase.getPositionByBlockIdAndCoor(
+                                  context: context,
+                                  listen: false,
+                                  blockId: widget.blockId,
+                                  coor: coor,
+                                ),
+                              );
+                            });
                           },
                         ),
                       ],
