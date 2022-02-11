@@ -85,9 +85,8 @@ class WineItem extends StatelessWidget {
                                         toStockWine: wine,
                                       ),
                                     ),
-                                    backgroundColor: Theme.of(context)
-                                        .colorScheme
-                                        .primaryVariant,
+                                    backgroundColor:
+                                        Theme.of(context).colorScheme.tertiary,
                                   ),
                                 )
                               : Container()),

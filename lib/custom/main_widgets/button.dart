@@ -28,7 +28,7 @@ class CustomIconButton extends StatelessWidget {
         backgroundColor: MaterialStateProperty.all<Color>(
           disabled
               ? Color.fromRGBO(208, 188, 188, 1)
-              : backgroundColor ?? Theme.of(context).colorScheme.primaryVariant,
+              : backgroundColor ?? Theme.of(context).colorScheme.tertiary,
         ),
         foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -87,7 +87,7 @@ class CustomElevatedButton extends StatelessWidget {
         backgroundColor: MaterialStateProperty.all<Color>(
           disabled
               ? Color.fromRGBO(208, 188, 188, 1)
-              : backgroundColor ?? Theme.of(context).colorScheme.primaryVariant,
+              : backgroundColor ?? Theme.of(context).colorScheme.tertiary,
         ),
         foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
         shape: MaterialStateProperty.all<RoundedRectangleBorder>(

@@ -81,18 +81,18 @@ class _LandingState extends State<Landing> {
             return user;
           } catch (e) {
             print("error");
+            return null;
           }
-          break;
         case appleSignin.AuthorizationStatus.error:
-          // do something
-          break;
+          return null;
 
         case appleSignin.AuthorizationStatus.cancelled:
           print('User cancelled');
-          break;
+          return null;
       }
     } catch (error) {
       print("error with apple sign in");
+      return null;
     }
   }
 
@@ -711,7 +711,7 @@ class SuccessLine extends StatelessWidget {
         children: [
           Icon(
             Icons.forward_to_inbox_outlined,
-            color: Theme.of(context).colorScheme.primaryVariant,
+            color: Theme.of(context).colorScheme.tertiary,
           ),
           SizedBox(width: 8),
           Expanded(
@@ -719,7 +719,7 @@ class SuccessLine extends StatelessWidget {
             child: Text(
               string,
               style: TextStyle(
-                color: Theme.of(context).colorScheme.primaryVariant,
+                color: Theme.of(context).colorScheme.tertiary,
                 fontWeight: FontWeight.bold,
               ),
             ),

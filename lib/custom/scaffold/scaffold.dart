@@ -104,7 +104,7 @@ class CustomScaffold extends StatelessWidget {
                       ),
                       color: (selectedIndex == 0
                           ? Theme.of(context).primaryColor
-                          : Theme.of(context).colorScheme.primaryVariant),
+                          : Theme.of(context).colorScheme.tertiary),
                       iconSize: iconSize,
                       onPressed: () => onItemTapped(0),
                     ),
@@ -169,7 +169,7 @@ class CustomScaffold extends StatelessWidget {
                     ),
                     color: (selectedIndex == 2
                         ? Theme.of(context).primaryColor
-                        : Theme.of(context).colorScheme.primaryVariant),
+                        : Theme.of(context).colorScheme.tertiary),
                     iconSize: iconSize,
                     onPressed: () => onItemTapped(2),
                   ),

@@ -270,7 +270,7 @@ class _WineListState extends State<WineList> {
               ? CustomFlatButton(
                   title: "Vois les informations sur l'appellation",
                   icon: Icon(Icons.info_outline),
-                  backgroundColor: Theme.of(context).colorScheme.primaryVariant,
+                  backgroundColor: Theme.of(context).colorScheme.tertiary,
                   onPress: () => Navigator.of(context).pushNamed(
                     "/appellation",
                     arguments: AppellationDetailsArguments(

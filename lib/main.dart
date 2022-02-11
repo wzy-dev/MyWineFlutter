@@ -68,9 +68,8 @@ class _MyAppState extends State<MyApp> {
                     primaryColor: Color.fromRGBO(5, 60, 92, 1),
                     colorScheme: ColorScheme(
                       primary: Color.fromRGBO(5, 60, 92, 1),
-                      primaryVariant: Color.fromRGBO(138, 162, 158, 1),
                       secondary: Color.fromRGBO(219, 84, 97, 1),
-                      secondaryVariant: Colors.white,
+                      tertiary: Color.fromRGBO(138, 162, 158, 1),
                       surface: Colors.white,
                       background: Colors.white,
                       error: Color.fromRGBO(219, 84, 97, 1),
