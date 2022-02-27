@@ -5,6 +5,14 @@
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
   <uses-permission android:name="android.permission.INTERNET"/>
   
+  <queries> 
+    <!-- If your app opens https URLs -->
+    <intent>
+        <action android:name="android.intent.action.VIEW" />
+        <data android:scheme="https" />
+    </intent>
+  </queries>
+
   <!-- (android:usesCleartextTraffic) HTTP Request in debug -->
    <application
         android:label="MyWine"

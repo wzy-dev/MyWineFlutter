@@ -4,6 +4,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mywine/models/model_methods.dart';
 import 'package:mywine/shelf.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SearchTab extends StatefulWidget {
   const SearchTab({
@@ -86,16 +87,17 @@ class _SearchTabState extends State<SearchTab> {
                           },
                         );
                         break;
-                      // case "login":
-                      //   Navigator.of(context).pushNamed("/profile");
-                      //   break;
+                      case "about":
+                        launch(
+                          "https://mywine-9221a.web.app/",
+                        );
+                        break;
                     }
                   },
                   itemBuilder: (context) => [
                     // !FirebaseAuth.instance.currentUser!.isAnonymous
                     //     ?
                     PopupMenuItem(
-                      value: "logout",
                       child: Row(
                         children: [
                           Text(
@@ -127,7 +129,27 @@ class _SearchTabState extends State<SearchTab> {
                           ),
                         ],
                       ),
-                    )
+                    ),
+                    PopupMenuItem(
+                      value: "about",
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.info_outline_rounded,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            "A propos".toUpperCase(),
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                     // : PopupMenuItem(
                     //     value: "login",
                     //     child: Row(

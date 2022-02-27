@@ -8,6 +8,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:mywine/shelf.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:the_apple_sign_in/the_apple_sign_in.dart' as appleSignin;
+import 'package:url_launcher/url_launcher.dart';
 
 class Landing extends StatefulWidget {
   const Landing({Key? key, required this.child}) : super(key: key);
@@ -347,6 +348,31 @@ class _LandingState extends State<Landing> {
                   systemNavigationBarIconBrightness: Brightness.dark,
                   statusBarIconBrightness: Brightness.dark,
                 ),
+                title: Align(
+                  alignment: Alignment.center,
+                  child: InkWell(
+                    onTap: () => launch(
+                      "https://mywine-9221a.web.app/",
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.info_outline_rounded,
+                          color: Theme.of(context).hintColor,
+                        ),
+                        SizedBox(width: 5),
+                        Text(
+                          "En savoir plus",
+                          style: TextStyle(
+                            color: Theme.of(context).hintColor,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
               ),
               body: SafeArea(
                 child: Column(
@@ -552,17 +578,6 @@ class _LandingState extends State<Landing> {
                         ),
                       ),
                     ),
-                    // MediaQuery.of(context).viewInsets.bottom <= 200
-                    //     ? Padding(
-                    //         padding: const EdgeInsets.symmetric(
-                    //             horizontal: 20, vertical: 10),
-                    //         child: TextButton(
-                    //           onPressed: () =>
-                    //               FirebaseAuth.instance.signInAnonymously(),
-                    //           child: Text("Commencer sans compte..."),
-                    //         ),
-                    //       )
-                    //     : Container(),
                   ],
                 ),
               ),

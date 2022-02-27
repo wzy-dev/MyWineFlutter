@@ -1,13 +1,14 @@
 <component name="libraryTable">
   <library name="Gradle: androidx.heifwriter:heifwriter:1.0.0@aar">
     <ANNOTATIONS>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/eb67b84cfd0f46db5d86c15c52a215e9/transformed/heifwriter-1.0.0/annotations.zip!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/85453f98e2f86c13217d33207f95c739/transformed/heifwriter-1.0.0/annotations.zip!/" />
     </ANNOTATIONS>
     <CLASSES>
       <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/f0cf01e565bdc79fbd27c0f6faf3529c/heifwriter-1.0.0/res" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-3/eb67b84cfd0f46db5d86c15c52a215e9/transformed/heifwriter-1.0.0/res" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/eb67b84cfd0f46db5d86c15c52a215e9/transformed/heifwriter-1.0.0/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/eb67b84cfd0f46db5d86c15c52a215e9/transformed/heifwriter-1.0.0/AndroidManifest.xml" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/85453f98e2f86c13217d33207f95c739/transformed/heifwriter-1.0.0/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/85453f98e2f86c13217d33207f95c739/transformed/heifwriter-1.0.0/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/85453f98e2f86c13217d33207f95c739/transformed/heifwriter-1.0.0/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
