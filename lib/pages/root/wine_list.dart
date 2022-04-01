@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:mywine/shelf.dart';
 
 class WineListArguments {
@@ -156,6 +157,33 @@ class _WineListState extends State<WineList> {
             .compareTo(b["domain"].name.toLowerCase()));
         break;
     }
+
+    if (listWines.length == 0)
+      return [
+        SvgPicture.asset(
+          "assets/svg/wines_tasting.svg",
+          width: MediaQuery.of(context).size.width,
+        ),
+        Text(
+          "Vous n'avez pas de vins qui répondent à ces critères",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        SizedBox(height: 15),
+        CustomElevatedButton(
+          title: "Ajouter des bouteilles",
+          icon: Icon(Icons.add_rounded),
+          backgroundColor: Theme.of(context).colorScheme.secondary,
+          onPress: () => Navigator.of(context, rootNavigator: true)
+              .pushNamedAndRemoveUntil(
+            "/add",
+            (_) => false,
+          ),
+        ),
+      ];
 
     return listWines
         .map((wine) => Padding(

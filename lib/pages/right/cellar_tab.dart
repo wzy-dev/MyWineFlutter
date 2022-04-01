@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:mywine/custom/main_widgets/search_card.dart';
 import 'package:mywine/shelf.dart';
@@ -142,8 +143,8 @@ class _CellarTabState extends State<CellarTab> {
     );
   }
 
-  void _createNewCellar() async {
-    Navigator.of(context, rootNavigator: true).pop();
+  void _createNewCellar({bool pop = true}) async {
+    if (pop) Navigator.of(context, rootNavigator: true).pop();
 
     String? newCellarId = await Navigator.of(context).pushNamed(
       "/edit/cellar",
@@ -264,6 +265,28 @@ class _CellarTabState extends State<CellarTab> {
                     SizedBox(
                       height: 10,
                     ),
+                    _cellars.length == 0
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              SvgPicture.asset(
+                                "assets/svg/build_cellar.svg",
+                                width: MediaQuery.of(context).size.width,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 0, vertical: 8),
+                                child: CustomElevatedButton(
+                                  title: "Créer ma première cave",
+                                  icon: Icon(Icons.add_outlined),
+                                  backgroundColor:
+                                      Theme.of(context).colorScheme.secondary,
+                                  onPress: () => _createNewCellar(pop: false),
+                                ),
+                              ),
+                            ],
+                          )
+                        : SizedBox(),
                     _searchedWine != null
                         ? SearchCard(
                             context: context,

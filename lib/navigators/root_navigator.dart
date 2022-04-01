@@ -35,6 +35,11 @@ class RootNavigator {
     switch (settings.name ?? null) {
       case "/search":
         return CustomRouteBuilders(widget: Homepage());
+      case "/add":
+        return CustomRouteBuilders(
+            widget: Homepage(
+          initialIndex: 1,
+        ));
       case "/cellar":
         CellarTabArguments? arguments =
             settings.arguments as CellarTabArguments?;

@@ -53,6 +53,7 @@ class _MyAppState extends State<MyApp> {
                   providers: CustomProvider.generateProvidersList(
                       briteDb: briteDb, user: snapshot.data),
                   child: MaterialApp(
+                    debugShowCheckedModeBanner: false,
                     title: 'MyWine',
                     localizationsDelegates: [
                       GlobalMaterialLocalizations.delegate,
