@@ -8,10 +8,13 @@ class DrawBlock extends StatefulWidget {
     this.blockId,
     required this.nbLine,
     required this.nbColumn,
+    required this.sizeCell,
+    this.showAxis = false,
     this.selectMultiple = false,
     this.setSelectMultiple,
     this.selectedCoor,
     this.selectedCoors = const [],
+    this.layout = "center",
     this.onPress,
     this.searchedWine,
     this.toStockWine,
@@ -20,10 +23,13 @@ class DrawBlock extends StatefulWidget {
   final String? blockId;
   final int nbLine;
   final int nbColumn;
+  final int sizeCell;
+  final bool showAxis;
   final bool selectMultiple;
   final Function(bool)? setSelectMultiple;
   final Map<String, int>? selectedCoor;
   final List<Map<String, dynamic>> selectedCoors;
+  final String? layout;
   final Function? onPress;
   final Wine? searchedWine;
   final Wine? toStockWine;
@@ -181,6 +187,17 @@ class _DrawBlockState extends State<DrawBlock> {
     );
   }
 
+  List<int> _mapInt(int maxIndex, {bool desc = false}) {
+    List<int> list = [];
+    for (var i = 1; i <= maxIndex; i++) {
+      list.add(i);
+    }
+
+    if (desc) return list.reversed.toList();
+
+    return list;
+  }
+
   @override
   Widget build(BuildContext context) {
     List<Widget> rows = [];
@@ -188,8 +205,9 @@ class _DrawBlockState extends State<DrawBlock> {
         ? MyDatabase.getPositionsByBlockId(
             context: context, blockId: widget.blockId!)
         : [];
-
+    List<int> lineIndex = [];
     for (var y = widget.nbLine; y >= 1; y--) {
+      lineIndex.add(y);
       List<Widget> cells = [];
 
       for (var x = 1; x <= widget.nbColumn; x++) {
@@ -209,15 +227,98 @@ class _DrawBlockState extends State<DrawBlock> {
 
       rows.add(
         Expanded(
-          child: Row(
-            children: cells,
+          child: Container(
+            child: Transform.translate(
+              offset: Offset(
+                  widget.layout == "center"
+                      ? 0
+                      : widget.layout == "start"
+                          ? y.isOdd
+                              ? -widget.sizeCell / 4
+                              : widget.sizeCell / 4
+                          : y.isOdd
+                              ? widget.sizeCell / 4
+                              : -widget.sizeCell / 4,
+                  0),
+              child: Row(
+                children: cells,
+              ),
+            ),
           ),
         ),
       );
     }
 
-    return Column(
-      children: rows,
+    return Row(
+      children: [
+        widget.showAxis
+            ? Transform.translate(
+                offset: Offset(
+                    widget.layout == "center" ? 0 : -widget.sizeCell / 4, 0),
+                child: Container(
+                  width: 20,
+                  child: Column(children: [
+                    ...lineIndex
+                        .map((e) => Expanded(
+                              child: Center(
+                                  child: Text(
+                                e.toString(),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              )),
+                            ))
+                        .toList(),
+                    SizedBox(
+                      height: 20,
+                    )
+                  ]),
+                ),
+              )
+            : SizedBox(),
+        Expanded(
+          child: Column(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: rows,
+                ),
+              ),
+              widget.showAxis
+                  ? Transform.translate(
+                      offset: Offset(
+                          widget.layout == "center"
+                              ? 0
+                              : widget.layout == "end"
+                                  ? widget.sizeCell / 4
+                                  : -widget.sizeCell / 4,
+                          0),
+                      child: Container(
+                        height: 20,
+                        child: Row(
+                            children: _mapInt(widget.nbColumn)
+                                .map((e) => Expanded(
+                                      child: Center(
+                                          child: Text(
+                                        e.toString(),
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black87,
+                                        ),
+                                      )),
+                                    ))
+                                .toList()),
+                      ),
+                    )
+                  : SizedBox(),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

@@ -117,6 +117,8 @@ class DrawCellar extends StatelessWidget {
             blockId: cell.id,
             nbLine: cell.nbLine,
             nbColumn: cell.nbColumn,
+            sizeCell: sizeCell.round(),
+            layout: cell.layout,
             searchedWine: searchedWine,
             toStockWine: stockAddonForCellar?.toStockWine ?? null,
             selectedCoors: stockAddonForCellar?.selectedCoors ?? [],

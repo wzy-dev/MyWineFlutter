@@ -101,6 +101,7 @@ class _StockBlockState extends State<StockBlock> {
                         blockId: originBlock.blockId,
                         nbColumn: originBlock.nbColumn,
                         nbLine: originBlock.nbLine,
+                        sizeCell: _sizeCell,
                         selectedCoors: widget.stockAddonForCellar.selectedCoors,
                         toStockWine: originBlock.toStockWine,
                         onPress: (Map<String, dynamic> coorPressed,

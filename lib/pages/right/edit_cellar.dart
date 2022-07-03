@@ -80,7 +80,13 @@ class _EditCellarState extends State<EditCellar> {
               },
             ),
             TextButton(
-              child: const Text('Supprimer'),
+              child: Text(
+                'Supprimer',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.secondary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
                 if (!_isNew) {

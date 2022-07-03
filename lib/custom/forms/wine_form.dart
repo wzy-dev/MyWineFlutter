@@ -96,7 +96,7 @@ class _WineFormState extends State<WineForm> {
 
     _quantity = enhancedWine != null
         ? double.parse(enhancedWine["quantity"].toString())
-        : 6;
+        : 1;
 
     _yearRange = MultiSliderArguments(
       min: enhancedWine?["yearmin"] ?? null,

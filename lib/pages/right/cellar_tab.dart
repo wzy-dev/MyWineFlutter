@@ -200,7 +200,9 @@ class _CellarTabState extends State<CellarTab> {
               ),
               Expanded(
                 child: Text(
-                  _activeCellar != null ? _activeCellar!.name : "Créer ma cave",
+                  _cellars.length > 0 && _activeCellar != null
+                      ? _activeCellar!.name
+                      : "Créer ma cave",
                   overflow: TextOverflow.fade,
                 ),
               ),
@@ -250,7 +252,7 @@ class _CellarTabState extends State<CellarTab> {
                 color: Colors.white,
                 child: AnimatedSize(
                   duration: Duration(milliseconds: 500),
-                  child: _activeCellar != null
+                  child: _cellars.length > 0 && _activeCellar != null
                       ? _drawCellar(
                           cellar: _activeCellar!,
                         )

@@ -151,23 +151,6 @@ class MyDatabase {
     return Provider.of<List<Appellation>>(context, listen: listen);
   }
 
-  // static List<Appellation> getUsedAppellations(
-  //     {required BuildContext context, bool listen = true}) {
-  //   List<Appellation> listUsedAppellations = [];
-  //   List<Wine> listWines = MyDatabase.getWines(context: context, listen: false)
-  //       .where((element) => element.size > 0)
-  //       .toList();
-
-  //   listWines.forEach((wine) {
-  //     Appellation? appellation = MyDatabase.getAppellationById(
-  //         context: context, appellationId: wine.appellation);
-  //     if (appellation == null) return;
-  //     listUsedAppellations.add(appellation);
-  //   });
-  //   return List<Appellation>.from(
-  //       MyDatabase.getOnce(context: context, dataList: listUsedAppellations));
-  // }
-
   static List<Appellation> getAppellationsWithStock(
       {required BuildContext context, bool listen = true}) {
     return getAppellations(context: context, listen: listen)
@@ -212,26 +195,6 @@ class MyDatabase {
       {required BuildContext context, bool listen = true}) {
     return Provider.of<List<Region>>(context, listen: listen);
   }
-
-  // static List<Region> getUsedRegions(
-  //     {required BuildContext context, bool listen = true}) {
-  //   List<Region> listUsedRegions = [];
-  //   List<Wine> listWines = MyDatabase.getWines(context: context, listen: false)
-  //       .where((element) => element.size > 0)
-  //       .toList();
-
-  //   listWines.forEach((wine) {
-  //     Appellation? appellation = MyDatabase.getAppellationById(
-  //         context: context, appellationId: wine.appellation);
-  //     if (appellation == null) return;
-  //     Region? region = MyDatabase.getRegionById(
-  //         context: context, regionId: appellation.region);
-  //     if (region == null) return;
-  //     listUsedRegions.add(region);
-  //   });
-  //   return List<Region>.from(
-  //       MyDatabase.getOnce(context: context, dataList: listUsedRegions));
-  // }
 
   static List<Region> getRegionsWithStock(
       {required BuildContext context, bool listen = true}) {
@@ -297,23 +260,6 @@ class MyDatabase {
       {required BuildContext context, bool listen = true}) {
     return Provider.of<List<Domain>>(context, listen: listen);
   }
-
-  // static List<Domain> getUsedDomains(
-  //     {required BuildContext context, bool listen = true}) {
-  //   List<Domain> listUsedDomains = [];
-  //   List<Wine> listWines = MyDatabase.getWines(context: context, listen: false)
-  //       .where((element) => element.size > 0)
-  //       .toList();
-
-  //   listWines.forEach((wine) {
-  //     Domain? domain =
-  //         MyDatabase.getDomainById(context: context, domainId: wine.domain);
-  //     if (domain == null) return;
-  //     listUsedDomains.add(domain);
-  //   });
-  //   return List<Domain>.from(
-  //       MyDatabase.getOnce(context: context, dataList: listUsedDomains));
-  // }
 
   static List<Domain> getDomainsWithStock(
       {required BuildContext context, bool listen = true}) {

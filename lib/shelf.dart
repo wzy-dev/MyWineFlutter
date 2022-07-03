@@ -75,6 +75,7 @@ export 'pages/root/filter_appellation.dart';
 export 'pages/root/filter_domain.dart';
 export 'pages/root/stock_cellar.dart';
 export 'pages/root/stock_block.dart';
+export 'pages/root/account.dart';
 
 // Left
 export 'pages/left/search_tab.dart';

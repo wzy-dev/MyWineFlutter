@@ -16,6 +16,7 @@ class Block {
 
   // Custom
   String cellar;
+  String? layout;
   String? horizontalAlignment;
   String? verticalAlignment;
   int nbColumn;
@@ -30,6 +31,7 @@ class Block {
     required this.owner,
     this.enabled = false,
     required this.cellar,
+    this.layout = "center",
     this.horizontalAlignment = "center",
     this.verticalAlignment = "center",
     required this.nbColumn,

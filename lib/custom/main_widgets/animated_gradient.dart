@@ -25,7 +25,7 @@ class _AnimatedGradientState extends State<AnimatedGradient> {
     middleColor = Color.fromRGBO(122, 100, 136, 1);
     topColor = Color.fromRGBO(9, 118, 181, 1);
 
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         middlePosition = maxValue;
       });

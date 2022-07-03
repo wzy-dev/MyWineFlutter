@@ -185,12 +185,27 @@ class _WineListState extends State<WineList> {
         ),
       ];
 
-    return listWines
-        .map((wine) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: WineItem(enhancedWine: wine),
-            ))
-        .toList();
+    int totalWines = 0;
+    listWines.forEach(
+        (wine) => totalWines += int.parse(wine["quantity"].toString()));
+
+    return [
+      Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: totalWines > 1
+            ? Text(
+                "$totalWines résultats",
+                style: TextStyle(color: Colors.black38),
+              )
+            : SizedBox(),
+      ),
+      ...listWines
+          .map((wine) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: WineItem(enhancedWine: wine),
+              ))
+          .toList()
+    ];
   }
 
   @override
@@ -307,7 +322,7 @@ class _WineListState extends State<WineList> {
                     ),
                   ),
                 )
-              : Text("")),
+              : SizedBox()),
           ..._drawListWines(),
         ],
       ),

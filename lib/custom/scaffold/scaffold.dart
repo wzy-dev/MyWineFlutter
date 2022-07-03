@@ -203,7 +203,7 @@ class _CurrentTabIndicatorState extends State<CurrentTabIndicator> {
   void initState() {
     _size = 0;
 
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         _size = widget.isActive ? 50 : 0;
       });

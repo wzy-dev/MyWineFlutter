@@ -1,5 +1,6 @@
 import 'package:sqflite/utils/utils.dart';
 import 'package:sqlbrite/sqlbrite.dart';
+import 'package:collection/collection.dart';
 
 class ModelMethods {
   static Map<String, dynamic> boolToInt(
@@ -74,7 +75,15 @@ class ModelMethods {
     if (!await ModelMethods.tableExists(db, "blocks")) {
       // Create a table
       await db.execute(
-          'CREATE TABLE blocks (id STRING PRIMARY KEY, createdAt INTEGER, editedAt INTEGER, owner STRING, enabled INTEGER, cellar STRING, horizontalAlignment STRING, verticalAlignment STRING, nbColumn INTEGER, nbLine INTEGER, x INTEGER, y INTEGER)');
+          'CREATE TABLE blocks (id STRING PRIMARY KEY, createdAt INTEGER, editedAt INTEGER, owner STRING, enabled INTEGER, cellar STRING, horizontalAlignment STRING, verticalAlignment STRING, layout STRING, nbColumn INTEGER, nbLine INTEGER, x INTEGER, y INTEGER)');
+    } else {
+      List<Map> pragma = await db.rawQuery(
+        "PRAGMA table_info(blocks)",
+      );
+      if (pragma.firstWhereOrNull((element) => element["name"] == "layout") ==
+          null) {
+        db.rawQuery("ALTER TABLE blocks ADD layout STRING");
+      }
     }
 
     if (!await ModelMethods.tableExists(db, "positions")) {

@@ -38,6 +38,7 @@ class _EditBlockState extends State<EditBlock> {
   late final bool _isNew;
   late int _nbColumn;
   late int _nbLine;
+  late String _layout;
   late String _horizontalAlignment;
   late String _verticalAlignment;
   late Block _block;
@@ -48,12 +49,14 @@ class _EditBlockState extends State<EditBlock> {
       _isNew = false;
       _nbColumn = widget.block!.nbColumn;
       _nbLine = widget.block!.nbLine;
+      _layout = widget.block!.layout ?? "center";
       _horizontalAlignment = widget.block!.horizontalAlignment ?? "center";
       _verticalAlignment = widget.block!.verticalAlignment ?? "center";
     } else {
       _isNew = true;
       _nbColumn = 4;
       _nbLine = 3;
+      _layout = "center";
       _horizontalAlignment = "center";
       _verticalAlignment = "center";
     }
@@ -97,7 +100,13 @@ class _EditBlockState extends State<EditBlock> {
               },
             ),
             TextButton(
-              child: const Text('Supprimer'),
+              child: Text(
+                'Supprimer',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.secondary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
                 if (!_isNew) {
@@ -149,6 +158,38 @@ class _EditBlockState extends State<EditBlock> {
             _drawBlock(
               sizeCell: _sizeCell,
               context: context,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                  left: 15, top: 22, right: 15, bottom: 22),
+              child: Text("Disposition des rangées".toUpperCase(),
+                  style: Theme.of(context).textTheme.headline1),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Row(
+                  children: [
+                    _drawAlignmentIcon(
+                      selected: _layout == "start",
+                      onPress: () => setState(() => _layout = "start"),
+                      iconName: Icons.align_horizontal_left_outlined,
+                    ),
+                    SizedBox(width: 10),
+                    _drawAlignmentIcon(
+                      selected: _layout == "center",
+                      onPress: () => setState(() => _layout = "center"),
+                      iconName: Icons.align_horizontal_center_outlined,
+                    ),
+                    SizedBox(width: 10),
+                    _drawAlignmentIcon(
+                      selected: _layout == "end",
+                      onPress: () => setState(() => _layout = "end"),
+                      iconName: Icons.align_horizontal_right_outlined,
+                    ),
+                  ],
+                ),
+              ],
             ),
             Padding(
               padding: const EdgeInsets.only(
@@ -221,7 +262,7 @@ class _EditBlockState extends State<EditBlock> {
               value: _nbColumn,
               onChange: (int index) => setState(() => _nbColumn = index),
               minValue: _maxUsedColumn > 0 ? _maxUsedColumn : 1,
-              maxValue: 15,
+              maxValue: 99,
             ),
             Padding(
               padding: const EdgeInsets.only(
@@ -235,7 +276,7 @@ class _EditBlockState extends State<EditBlock> {
               value: _nbLine,
               onChange: (int index) => setState(() => _nbLine = index),
               minValue: _maxUsedLine > 0 ? _maxUsedLine : 1,
-              maxValue: 15,
+              maxValue: 99,
             ),
             Padding(
               padding: const EdgeInsets.only(
@@ -252,6 +293,7 @@ class _EditBlockState extends State<EditBlock> {
                       _block.nbLine = _nbLine;
                       _block.x = widget.x;
                       _block.y = widget.y;
+                      _block.layout = _layout;
                       _block.horizontalAlignment = _horizontalAlignment;
                       _block.verticalAlignment = _verticalAlignment;
                       _block.enabled = true;
@@ -347,6 +389,8 @@ class _EditBlockState extends State<EditBlock> {
                       blockId: _isNew ? null : widget.block!.id,
                       nbColumn: _nbColumn,
                       nbLine: _nbLine,
+                      sizeCell: _sizeCell,
+                      layout: _layout,
                     ),
                   ),
                 ),

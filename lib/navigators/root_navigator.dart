@@ -35,6 +35,8 @@ class RootNavigator {
     switch (settings.name ?? null) {
       case "/search":
         return CustomRouteBuilders(widget: Homepage());
+      case "/account":
+        return CustomRouteBuilders(widget: Scaffold(body: Account()));
       case "/add":
         return CustomRouteBuilders(
             widget: Homepage(

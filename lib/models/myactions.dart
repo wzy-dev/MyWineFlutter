@@ -63,14 +63,15 @@ class MyActions {
           .collection(tableName)
           .doc(typeObject.id)
           .set(mapObject)
-          .then((value) => print("updated"))
+          // .then((value) => print("updated"))
           .onError((error, stackTrace) => print(error));
     } else {
+      print(typeObject.toJsonWithBool());
       FirebaseFirestore.instance
           .collection(tableName)
           .doc(typeObject.id)
           .update(typeObject.toJsonWithBool())
-          .then((value) => print("updated"))
+          // .then((value) => print("updated"))
           .onError((error, stackTrace) => print(error));
     }
   }

@@ -78,7 +78,7 @@ class _BlockTabState extends State<BlockTab> {
                   )
                 : Container(),
             Container(
-              height: 306,
+              height: 326,
               child: Stack(
                 children: _drawCarousel(),
               ),
@@ -140,9 +140,12 @@ class _BlockTabState extends State<BlockTab> {
                         blockId: originBlock.blockId,
                         nbColumn: originBlock.nbColumn,
                         nbLine: originBlock.nbLine,
+                        showAxis: true,
+                        sizeCell: _sizeCell,
                         selectedCoors: _selectedCoors,
                         searchedWine: searchedWine,
                         selectMultiple: _selectMultiple,
+                        layout: originBlock.layout,
                         setSelectMultiple: (bool value) => setState(() {
                           _selectMultiple = value;
 
@@ -236,7 +239,7 @@ class _CarouselItemState extends State<CarouselItem> {
 
   @override
   void initState() {
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         _isBuild = true;
       });

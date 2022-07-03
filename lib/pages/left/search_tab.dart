@@ -87,17 +87,19 @@ class _SearchTabState extends State<SearchTab> {
                           },
                         );
                         break;
+                      case "account":
+                        Navigator.of(context, rootNavigator: true)
+                            .pushNamed("/account");
+                        break;
                       case "about":
-                        launch(
-                          "https://mywine-9221a.web.app/",
-                        );
+                        launchUrl(
+                            Uri(scheme: "https", path: "mywine-9221a.web.app"));
                         break;
                     }
                   },
                   itemBuilder: (context) => [
-                    // !FirebaseAuth.instance.currentUser!.isAnonymous
-                    //     ?
                     PopupMenuItem(
+                      value: "account",
                       child: Row(
                         children: [
                           Text(
@@ -105,26 +107,6 @@ class _SearchTabState extends State<SearchTab> {
                                 .toLowerCase(),
                             style: TextStyle(
                               fontSize: 15,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: "logout",
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.logout_rounded,
-                            color: Theme.of(context).colorScheme.secondary,
-                          ),
-                          SizedBox(width: 10),
-                          Text(
-                            "Déconnexion".toUpperCase(),
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.secondary,
                             ),
                           ),
                         ],

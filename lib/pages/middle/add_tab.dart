@@ -54,14 +54,14 @@ class _AddTabState extends State<AddTab> with WidgetsBindingObserver {
   @override
   void initState() {
     _setDirectory();
-    WidgetsBinding.instance!.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
 
     super.initState();
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance!.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 

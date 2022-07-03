@@ -351,9 +351,8 @@ class _LandingState extends State<Landing> {
                 title: Align(
                   alignment: Alignment.center,
                   child: InkWell(
-                    onTap: () => launch(
-                      "https://mywine-9221a.web.app/",
-                    ),
+                    onTap: () => launchUrl(
+                        Uri(scheme: "https", path: "mywine-9221a.web.app")),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisSize: MainAxisSize.min,
